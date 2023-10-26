@@ -1,0 +1,6 @@
+/* Skills list actions links align to inline and center */
+.skill-course-actions.skill-actions a,
+#tool_skills_list .menu-item-actions a {
+    display: inline-block;
+    vertical-align: middle;
+}
