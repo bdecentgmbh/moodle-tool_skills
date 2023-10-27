@@ -43,7 +43,7 @@ if ($skillid && $courseid) {
 $action = optional_param('action', null, PARAM_ALPHAEXT);
 
 // Get system context.
-$context = context_course::instance($courseid);
+$context = \context_course::instance($courseid);
 
 // Access checks.
 require_capability('tool/skills:managecourseskills', $context);

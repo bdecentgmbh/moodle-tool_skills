@@ -229,6 +229,32 @@ class skills {
         return false;
     }
 
+
+    /**
+     * Archive the skills
+     *
+     * @return void
+     */
+    public function archive_skill() {
+        global $DB;
+
+        if ($DB->update_record('tool_skills', ['id' => $this->skillid, 'archived' => 1, 'timearchived' => time()])) {
+
+            \tool_skills\courseskills::disable_course_skills($this->skillid);
+        }
+    }
+
+    /**
+     * Activate the skills.
+     *
+     * @return void
+     */
+    public function active_skill() {
+        global $DB;
+
+        $DB->update_record('tool_skills', ['id' => $this->skillid, 'archived' => 0, 'timearchived' => null]);
+    }
+
     /**
      * Duplicate the skill and its levels.
      *

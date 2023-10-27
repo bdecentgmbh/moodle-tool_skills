@@ -41,12 +41,14 @@ class archived_skills extends \table_sql {
         parent::__construct('toolskills');
 
         // Define table headers and columns.
-        $columns = ['identitykey', 'name', 'description', 'timecreated', 'categories', 'actions'];
+        $columns = ['identitykey', 'name', 'description', 'timecreated', 'timearchived', 'categories', 'actions'];
         $headers = [
             get_string('key', 'tool_skills'),
             get_string('name', 'core'),
             get_string('description', 'core'),
             get_string('timecreated', 'core'),
+            get_string('timearchived', 'tool_skills'),
+            get_string('categories', 'core'),
             get_string('actions'),
         ];
 
@@ -70,9 +72,19 @@ class archived_skills extends \table_sql {
      * @throws \dml_exception
      */
     public function query_db($pagesize, $useinitialsbar = true) {
+        global $DB;
+
+        $condition = 'archived = 1';
+        // Filter the category.
+        if ($this->filterset->has_filter('category')) {
+            $values = $this->filterset->get_filter('category')->get_filter_values();
+            $category = isset($values[0]) ? current($values) : '';
+            $condition .= ' AND ' . $DB->sql_like('categories', ':value');
+            $params = ['value' => '%"'.$category.'"%'];
+        }
 
         // Set the query values to fetch skills.
-        $this->set_sql('*', '{tool_skills}', 'archived = 1');
+        $this->set_sql('*', '{tool_skills}', $condition, $params ?? []);
 
         parent::query_db($pagesize, $useinitialsbar);
     }
@@ -127,17 +139,74 @@ class archived_skills extends \table_sql {
      * @param stdClass $row
      * @return string
      */
-    public function timecreated(stdClass $row) :string {
-        return usertime($row->timecreated);
+    public function col_timecreated(stdClass $row) :string {
+        return userdate($row->timecreated);
     }
 
+
     /**
+     * Skill created time in user readable.
+     *
+     * @param stdClass $row
+     * @return string
+     */
+    public function col_timearchived(stdClass $row) :string {
+        return userdate($row->timearchived);
+    }
+
+   /**
      * Actions to manage the skill row. Like edit, change status, archive and delete.
      *
      * @param stdClass $row
      * @return string
      */
     public function col_actions(stdClass $row) : string {
-        return '';
+        global $OUTPUT;
+
+        // Base url to edit the skills.
+        $baseurl = new \moodle_url('/admin/tool/skills/manage/edit.php', [
+            'id' => $row->id,
+            'sesskey' => \sesskey()
+        ]);
+
+        // Skills List URL.
+        $listurl = new \moodle_url('/admin/tool/skills/manage/list.php', [
+            'id' => $row->id,
+            'sesskey' => \sesskey()
+        ]);
+
+        $actions = [];
+
+        // Delete.
+        $actions[] = [
+            'url' => new \moodle_url($listurl, ['action' => 'delete']),
+            'icon' => new \pix_icon('t/delete', \get_string('delete')),
+            'attributes' => array('class' => 'action-delete'),
+            'action' => new \confirm_action(get_string('deleteskill', 'tool_skills'))
+        ];
+
+        // Unarchive the skills.
+        $actions[] = [
+            'url' => new \moodle_url($listurl, ['action' => 'active']),
+            'icon' => new \pix_icon('t/unlocked', \get_string('active', 'tool_skills')),
+            'attributes' => array('class' => 'action-active'),
+            'action' => new \confirm_action(get_string('activeskillwarning', 'tool_skills'))
+        ];
+
+        $actionshtml = [];
+        foreach ($actions as $action) {
+            if (!is_array($action)) {
+                $actionshtml[] = $action;
+                continue;
+            }
+            $action['attributes']['role'] = 'button';
+            $actionshtml[] = $OUTPUT->action_icon(
+                $action['url'],
+                $action['icon'],
+                ($action['action'] ?? null),
+                $action['attributes']
+            );
+        }
+        return \html_writer::div(join('', $actionshtml), 'menu-item-actions item-actions mr-0');
     }
 }

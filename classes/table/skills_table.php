@@ -78,9 +78,20 @@ class skills_table extends \table_sql {
      * @throws \dml_exception
      */
     public function query_db($pagesize, $useinitialsbar = true) {
+        global $DB;
+
+        $condition = 'archived != 1';
+
+        // Filter the category.
+        if ($this->filterset->has_filter('category')) {
+            $values = $this->filterset->get_filter('category')->get_filter_values();
+            $category = isset($values[0]) ? current($values) : '';
+            $condition .= ' AND ' . $DB->sql_like('categories', ':value');
+            $params = ['value' => '%"'.$category.'"%'];
+        }
 
         // Set the query values to fetch skills.
-        $this->set_sql('*', '{tool_skills}', 'archived != 1');
+        $this->set_sql('*', '{tool_skills}', $condition, $params ?? []);
 
         parent::query_db($pagesize, $useinitialsbar);
     }
@@ -120,7 +131,7 @@ class skills_table extends \table_sql {
 
         $categories = json_decode($categories);
         $list = core_course_category::get_many($categories);
-        $list = array_map(fn(&$cate) => $cate->get_formatted_name(), $list);
+        $list = array_map(fn($cate) => $cate->get_formatted_name(), $list);
 
         return implode(', ', $list);
     }
@@ -179,11 +190,19 @@ class skills_table extends \table_sql {
         $actions[] = html_writer::link($statusurl->out(false), $checkbox, ['class' => $statusclass]);
 
         // Delete.
-        $actions[] = [
+        /* $actions[] = [
             'url' => new \moodle_url($listurl, ['action' => 'delete']),
             'icon' => new \pix_icon('t/delete', \get_string('delete')),
             'attributes' => array('class' => 'action-delete'),
             'action' => new \confirm_action(get_string('deleteskill', 'tool_skills'))
+        ]; */
+
+        // Archived.
+        $actions[] = [
+            'url' => new \moodle_url($listurl, ['action' => 'archive']),
+            'icon' => new \pix_icon('f/archive', \get_string('archive', 'tool_skills')),
+            'attributes' => array('class' => 'action-archive'),
+            'action' => new \confirm_action(get_string('archiveskill', 'tool_skills'))
         ];
 
         $actionshtml = [];

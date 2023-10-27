@@ -4,3 +4,35 @@
     display: inline-block;
     vertical-align: middle;
 }
+/* Make the skills tab marning top */
+body#page-admin-tool-skills-manage-list .nav-tabs {
+    margin-top: 30px;
+}
+
+/* Filter form in table */
+.path-admin-tool-skills-manage .box.generalbox {
+    position: relative;
+}
+.path-admin-tool-skills-manage .filter-form-container {
+    float: right;
+}
+.path-admin-tool-skills-manage .filter-form-container #tool-skills-filter i.icon {
+    margin-right: 0;
+}
+.path-admin-tool-skills-manage .filter-form-container #tool-skills-filterform {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 0 0.1px;
+    padding: 15px;
+    position: absolute;
+    top: 80%;
+    right: 0;
+    z-index: 2;
+}
+.path-admin-tool-skills-manage .filter-form-container #tool-skills-filterform form .form-group {
+    margin-left: 0;
+}
+.path-admin-tool-skills-manage .filter-form-container #tool-skills-filterform form .form-group .col-form-label {
+    padding-left: 0;
+}
+/* E.O Filter form in table */

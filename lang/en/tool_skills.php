@@ -57,10 +57,18 @@ $string['createskill'] = 'Create skill';
 $string['create'] = 'Create';
 $string['editskill'] = 'Edit skill';
 $string['edit'] = 'Edit';
+$string['archive'] = 'Archive';
+$string['activeskills'] = 'Active skills';
+$string['archiveskills'] = 'Archived skills';
+$string['active'] = 'Active';
+$string['timearchived'] = 'Archived time';
 // ...Delete message.
 $string['skillsdeleted'] = 'Skills deleted';
 $string['deleteskill'] = 'Are you sure! do you want to delete this skill and its levels';
-$string['skillsnothingtodisplay'] = 'Skills are not created yet or not in use, Create a new skill using the below create button';
+$string['skillsnothingtodisplay'] = 'Skills are not created yet or not in use, Create a new skill using the create button';
+$string['archiveskill'] = 'Are you sure! do you want to archive this skill and its levels';
+$string['activeskillwarning'] = 'Are you sure! do you want to activate this skill and its levels';
+
 // ...Levels form fields string.
 $string['skillslevels'] = 'Levels';
 $string['levelscount'] = 'Number of levels';

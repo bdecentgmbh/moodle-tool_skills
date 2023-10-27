@@ -15,18 +15,37 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tool skills - Plugin informations defined.
+ * Tool skills - Commonly used skill methods.
  *
  * @package   tool_skills
- * @copyright 2023 bdecent GmbH <https://bdecent.de>
+ * @copyright 2023, bdecent gmbh bdecent.de
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die('No direct access');
 
-$plugin->version = 2023102700;
-$plugin->requires  = 2021051700;        // Requires this Moodle version.
-$plugin->component = 'tool_skills'; // Full name of the plugin (used for diagnostics).
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release = '1.0';
-$plugin->supported = [400, 402];
+require_once($CFG->dirroot.'/lib/formslib.php');
+
+/**
+ * Filter form for the templates table.
+ */
+class tool_skills_table_filter extends \moodleform {
+
+    /**
+     * Filter form elements defined.
+     *
+     * @return void
+     */
+    public function definition() {
+        $mform =& $this->_form;
+
+        $mform->addElement('html', html_writer::tag('h3', get_string('filter')));
+        $list = [0 => get_string('all')] + core_course_category::make_categories_list();
+        $mform->addElement('autocomplete', 'category', get_string('category'), $list);
+
+        $mform->addElement('hidden', 't', $this->_customdata['t'] ?? 'active');
+        $mform->setType('t', PARAM_ALPHA);
+
+        $this->add_action_buttons(false, get_string('filter'));
+    }
+}

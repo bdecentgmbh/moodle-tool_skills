@@ -81,7 +81,7 @@ class courseskills extends \tool_skills\allocation_method {
 
         $courses = $DB->get_records('tool_skills_courses', ['skill' => $skillid]);
 
-        return array_map(fn(&$course) => new self($course->id), $courses);
+        return array_map(fn($course) => new self($course->id), $courses);
     }
 
     /**
@@ -164,7 +164,7 @@ class courseskills extends \tool_skills\allocation_method {
     public function manage_course_completions(int $userid) {
         global $CFG;
 
-        require_once($CFG->dirroot . '\lib\completionlib.php');
+        require_once($CFG->dirroot . '/lib/completionlib.php');
 
         $completion = new completion_info($this->get_course());
         $coursecompletion = $completion->is_course_complete($userid);
@@ -188,7 +188,7 @@ class courseskills extends \tool_skills\allocation_method {
     public function manage_users_completion() {
         global $CFG;
 
-        require_once($CFG->dirroot.'\lib\enrollib.php');
+        require_once($CFG->dirroot . '/lib/enrollib.php');
         $context = \context_course::instance($this->courseid);
 
         // Enrolled users.
@@ -208,6 +208,23 @@ class courseskills extends \tool_skills\allocation_method {
         global $DB;
 
         $DB->delete_records('tool_skills_courses', ['skill' => $skillid]);
+    }
+
+    /**
+     * Disable the skills assigned to courses.
+     *
+     * @param int $skillid
+     * @return void
+     */
+    public static function disable_course_skills(int $skillid) {
+        global $DB;
+
+        // Get the list of skills.
+        $courses = self::get_for_skill($skillid);
+        foreach ($courses as $courseskillid => $course) {
+            // Disable the skill of the course.
+            $DB->update_record('tool_skills_courses', ['id' => $courseskillid, 'status' => 0]);
+        }
     }
 
 }
