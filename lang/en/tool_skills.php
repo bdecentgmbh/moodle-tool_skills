@@ -27,8 +27,8 @@ defined('MOODLE_INTERNAL') || die('No direct access');
 $string['pluginname'] = 'Skill award';
 $string['skills'] = 'Skills';
 // ...Skills capabilities.
-$strings['skills:manage'] = 'Manage skills';
-$strings['skills:managecourseskills'] = 'Manage course skills';
+$string['skills:manage'] = 'Manage skills';
+$string['skills:managecourseskills'] = 'Manage course skills';
 // ...error strings.
 $string['error:skillsnotfound'] = 'Skill record not found for the given id';
 $string['error:identityexists'] = 'Given skill identity is exists, Please use unique value';
