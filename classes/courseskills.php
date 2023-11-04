@@ -38,20 +38,19 @@ class courseskills extends \tool_skills\allocation_method {
      *
      * @var int
      */
-    protected int $id;
+    protected $id;
 
     /**
      * ID of the course record id.
      *
      * @var int
      */
-    protected int $courseid;
-
+    protected $courseid;
 
     /**
      * Constructor
      *
-     * @param int $skillcourseid ID of the skill course record.
+     * @param int $courseid ID of the skill course record.
      */
     protected function __construct(int $courseid) {
         parent::__construct(); // Create a parent instance
@@ -63,7 +62,7 @@ class courseskills extends \tool_skills\allocation_method {
     /**
      * Create the retunr the clas instance for this skillcourse id.
      *
-     * @param int $skillcourseid
+     * @param int $courseid
      * @return self
      */
     public static function get(int $courseid) : self {
@@ -73,7 +72,7 @@ class courseskills extends \tool_skills\allocation_method {
     /**
      * Create the retunr the clas instance for this skillcourse id.
      *
-     * @param int $skillcourseid
+     * @param int $skillid
      * @return self
      */
     public static function get_for_skill(int $skillid) : array {
@@ -96,7 +95,6 @@ class courseskills extends \tool_skills\allocation_method {
     /**
      * Fetch the skills assigned/enabled for this course.
      *
-     * @param int $courseid
      * @return array
      */
     public function get_instance_skills(): array {
@@ -144,11 +142,45 @@ class courseskills extends \tool_skills\allocation_method {
      *
      * @return int
      */
-    public function get_points() : ?int {
+    public function get_points() {
 
         $this->build_data(); // Build the data of the skill for this course.
 
         return $this->data->points ?? false;
+    }
+
+    /**
+     * Get points earned from this course completion.
+     *
+     * @return string
+     */
+    public function get_points_earned_fromcourse() {
+
+        $data = $this->get_data();
+
+        if ($data->uponcompletion == skills::COMPLETIONPOINTS) {
+            return $data->points;
+        } else if ($data->uponcompletion == skills::COMPLETIONFORCELEVEL || $data->uponcompletion == skills::COMPLETIONSETLEVEL) {
+            $levelid = $data->level;
+            $level = \tool_skills\level::get($levelid);
+            return $level->get_points();
+        }
+
+        return '';
+    }
+
+    /**
+     * Fetch the points user earned for this instance.
+     *
+     * @param int $userid
+     * @return int
+     */
+    public function get_user_earned_points(int $userid) {
+
+        $user = \tool_skills\user::get($userid);
+        $points = $user->get_user_award_by_method('course', $this->instanceid);
+
+        return $points ?? null;
     }
 
     /**
@@ -158,7 +190,6 @@ class courseskills extends \tool_skills\allocation_method {
      * Trigger the skills to update the user points based on the upon completion option for this skill added in courses.
      *
      * @param int $userid
-     * @param stdclass $eventdata
      * @return void
      */
     public function manage_course_completions(int $userid) {
@@ -226,5 +257,4 @@ class courseskills extends \tool_skills\allocation_method {
             $DB->update_record('tool_skills_courses', ['id' => $courseskillid, 'status' => 0]);
         }
     }
-
 }

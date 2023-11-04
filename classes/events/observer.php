@@ -67,7 +67,8 @@ class observer {
     /**
      * Course deleted, then deletes the course skills records.
      *
-     * @return array
+     * @param \core\event\course_deleted $event
+     * @return void
      */
     public static function course_deleted(\core\event\course_deleted $event) {
 

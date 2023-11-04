@@ -28,16 +28,13 @@ defined('MOODLE_INTERNAL') || die();
 
 // Require forms library.
 require_once($CFG->libdir.'/formslib.php');
-// require_once($CFG->dirroot.'/cohort/lib.php');
-
-// use theme_boost_union\smartmenu_item as menuitem;
 
 use context_system;
 use html_writer;
 use \tool_skills\skills;
 
 /**
- * Smart menu items edit form.
+ * Skills create/edit form.
  */
 class skills_form extends \moodleform {
 
@@ -80,6 +77,7 @@ class skills_form extends \moodleform {
         // Add the internal description element.
         $mform->addElement('textarea', 'description', get_string('description'), ['size' => '50']);
         $mform->setType('description', PARAM_TEXT);
+        $mform->addHelpButton('description', 'description', 'tool_skills');
 
         // Add the status element.
         $statusoptions = [
@@ -95,6 +93,7 @@ class skills_form extends \moodleform {
             'defaultunit' => DAYSECS,
         ]);
         $mform->setDefault('learningtime', 90 * DAYSECS);
+        $mform->addHelpButton('learningtime', 'learningtime', 'tool_skills');
 
         // Skill color element.
         $mform->addElement('tool_skills_colorpicker', 'color', get_string('skillcolor', 'tool_skills'));
@@ -114,7 +113,7 @@ class skills_form extends \moodleform {
         // Levels count selection element.
         $options = array_combine(range(0, 10), range(0, 10));
         $mform->addElement('select', 'levelscount', get_string('levelscount', 'tool_skills'), $options);
-        // $mform->addHelpButton('levelscount', 'levelscount', 'tool_skills');
+        $mform->addHelpButton('levelscount', 'levelscount', 'tool_skills');
 
         $mform->registerNoSubmitButton('updatelevelscount');
         $mform->addElement('submit', 'updatelevelscount', get_string('updatelevelscount', 'tool_skills'), [
@@ -125,15 +124,16 @@ class skills_form extends \moodleform {
             document.querySelector('select[name=levelscount]') !== null ? document.querySelector('select[name=levelscount]')
                 .onchange = (e) => document.querySelector('input[name=updatelevelscount]').click() : ''; "
         );
-
-        // $this->include_levels();
-
-        // $mform->addElement('static', 'levelselement', '');
-
     }
 
-    public function definition_after_data()
-    {
+
+    /**
+     * Definied the levels form fields to attach with form after the forms are defined,
+     * Levels are created based on the number of levels.
+     *
+     * @return void
+     */
+    public function definition_after_data() {
         $mform = $this->_form;
 
         $levelscount = $mform->getElementValue('levelscount');
@@ -151,12 +151,14 @@ class skills_form extends \moodleform {
             $mform->addElement('text', "levels[$i][name]", get_string('levelsname', 'tool_skills', $i), '');
             $mform->setType("levels[$i][name]", PARAM_TEXT);
             $mform->addRule("levels[$i][name]", get_string('required'), 'required', '', 'client');
+            $mform->addHelpButton("levels[$i][name]", 'levelsname', 'tool_skills');
 
             // Level points.
             $mform->addElement('text', "levels[$i][points]", get_string('levelspoint', 'tool_skills', $i), '');
             $mform->setType("levels[$i][points]", PARAM_INT);
             $mform->addRule("levels[$i][points]", get_string('required'), 'required', '', 'client');
             $mform->addRule("levels[$i][points]", get_string('error:numeric', 'tool_skills'), 'numeric', '', 'client');
+            $mform->addHelpButton("levels[$i][points]", 'levelspoint', 'tool_skills');
 
             // Set the default point for this level.
             if ($mform->getElementValue("levels[$i][points]") === null) {
@@ -166,12 +168,15 @@ class skills_form extends \moodleform {
             // Level color.
             $mform->addElement('tool_skills_colorpicker', "levels[$i][color]", get_string('levelscolor', 'tool_skills', $i), '');
             $mform->setType("levels[$i][color]", PARAM_TEXT);
+            $mform->addHelpButton("levels[$i][color]", 'levelscolor', 'tool_skills');
+
             // Level image.
             $mform->addElement('filemanager', "levels[$i][image]", get_string('levelsimage', 'tool_skills', $i));
+            $mform->addHelpButton("levels[$i][image]", 'levelsimage', 'tool_skills');
+
         }
         // Action buttons.
         $this->add_action_buttons();
-
     }
 
     /**
@@ -183,7 +188,7 @@ class skills_form extends \moodleform {
      *
      * @param stdClass|array $defaultvalues object or array of default values
      */
-    function set_data($defaultvalues) {
+    public function set_data($defaultvalues) {
 
         $this->data_preprocessing($defaultvalues); // Include to store the files.
 
@@ -207,7 +212,7 @@ class skills_form extends \moodleform {
     }
 
     /**
-     * Process the pulse module data before set the default.
+     * Process the skills module data before set the default.
      *
      * @param  mixed $defaultvalues default values
      * @return void
@@ -283,12 +288,13 @@ class skills_form extends \moodleform {
                     continue;
                 }
 
-                $levelid = $data->levels[$i]['id'];
+                $levelid = $data->levels[$i]['id'] ?: 0;
                 // Now save the files in correct part of the File API.
                 $filearea .= '_' . $i;
 
                 file_save_draft_area_files(
-                    $data->levels[$i][$configname], $context->id, 'tool_skills', $filearea, $levelid, $this->get_editor_options($context)
+                    $data->levels[$i][$configname], $context->id, 'tool_skills',
+                    $filearea, $levelid, $this->get_editor_options($context)
                 );
             }
         }

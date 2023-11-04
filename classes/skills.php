@@ -1,4 +1,26 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Tool skills - Skills class to manage the skills allocation points, awards skills.
+ *
+ * @package   tool_skills
+ * @copyright 2023, bdecent gmbh bdecent.de
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace tool_skills;
 
@@ -55,28 +77,28 @@ class skills {
      *
      * @var int
      */
-    protected int $skillid;
+    protected $skillid;
 
     /**
      * Skill db record.
      *
      * @var stdClass
      */
-    protected stdClass $skillrecord;
+    protected $skillrecord;
 
     /**
      * Data updated structure data of the skill.
      *
      * @var stdClass
      */
-    protected stdClass $data;
+    protected $data;
 
     /**
      * Data updated structure data of the levels associated with this skill.
      *
      * @var array
      */
-    protected array $levels;
+    protected $levels;
 
     /**
      * Log the skill points allocation to users.
@@ -171,7 +193,7 @@ class skills {
 
         $levelscount = count($data->levels);
         $data->levelsrecordscount = $levelscount;
-        $data->levelscount = $levelscount ? $levelscount - 1 : 0; // Levels count without the default level 0;
+        $data->levelscount = $levelscount ? $levelscount - 1 : 0; // Levels count without the default level 0.
 
         return $data;
     }
@@ -180,16 +202,9 @@ class skills {
      * Updates the "status" field of the current skill.
      *
      * @param bool $status The new value for the "status" field.
-     * @param bool $levels
      * @return bool True if the update was successful, false otherwise.
      */
-    public function update_status(bool $status, bool $levels=true) {
-
-        if ($levels) {
-            /* foreach ($this->get_instances_record() as $instanceid => $instance) {
-                instances::create($instanceid)->update_status($status);
-            } */
-        }
+    public function update_status(bool $status) {
 
         return $this->update_field('status', $status);
     }
@@ -334,15 +349,15 @@ class skills {
 
         switch ($csdata->uponcompletion) {
 
-            case skills::COMPLETIONFORCELEVEL:
+            case self::COMPLETIONFORCELEVEL:
                 $this->force_level($skillobj, $csdata->level, $userid);
                 break;
 
-            case skills::COMPLETIONSETLEVEL:
+            case self::COMPLETIONSETLEVEL:
                 $this->moveto_level($skillobj, $csdata->level, $userid);
                 break;
 
-            case skills::COMPLETIONPOINTS:
+            case self::COMPLETIONPOINTS:
                 $this->increase_points($skillobj, $csdata->points, $userid);
                 break;
         }
@@ -358,7 +373,7 @@ class skills {
      *
      * @return stdClass
      */
-    public function get_user_skill(int $userid, $create=true): stdClass {
+    public function get_user_skill(int $userid, $create=true) {
         global $DB;
 
         // Fetch the user skill record.
@@ -381,7 +396,7 @@ class skills {
     /**
      * Force user points to match this level.
      *
-     * @param skills $skillobj
+     * @param allocation_method $skillobj
      * @param int $levelid
      * @param int $userid
      *
@@ -392,10 +407,10 @@ class skills {
         // Fetch the level instance for this level.
         $level = level::get($levelid);
         $levelpoints = $level->get_data()->points; // Points to complete this level.
-        // Find the method of the course skills.
-        $method = ($skillobj instanceof \tool_skills\courseskills) ? 'course' : '';
         // Update the new points for this user in db.
-        $this->set_userskill_points($skillobj, $userid, $levelpoints);
+        $this->set_userskill_points($userid, $levelpoints);
+        // Create a award log for this user point increase.
+        $this->create_user_point_award($skillobj, $userid, $levelpoints);
     }
 
     /**
@@ -417,7 +432,9 @@ class skills {
         // User not reached this level, then increase the users skill points to reach the new level.
         if ($userskill->points < $levelpoints) {
             // Update the new points for this user in db.
-            $this->set_userskill_points($skillobj, $userid, $levelpoints);
+            $this->set_userskill_points($userid, $levelpoints);
+            // Create a award log for this user point increase.
+            $this->create_user_point_award($skillobj, $userid, $levelpoints);
         }
     }
 
@@ -438,17 +455,20 @@ class skills {
         // Find the method of the course skills.
         $method = ($skillobj instanceof \tool_skills\courseskills) ? 'course' : '';
         // Update the new points for this user in db.
-        $this->set_userskill_points($skillobj, $userid, $levelpoints);
+        $this->set_userskill_points($userid, $levelpoints);
+
+        // Create a award log for this user point increase.
+        $this->create_user_point_award($skillobj, $userid, $points);
     }
 
     /**
      * Update the course completion points to users
      *
-     * @param integer $userid
-     * @param integer $points
+     * @param int $userid
+     * @param int $points
      * @return int
      */
-    protected function set_userskill_points(allocation_method $skillobj, int $userid, int $points) : int {
+    protected function set_userskill_points(int $userid, int $points) : int {
         global $DB;
 
         $record = ['skill' => $this->skillid, 'userid' => $userid];
@@ -466,6 +486,18 @@ class skills {
             $id = $DB->insert_record('tool_skills_userpoints', $record);
         }
 
+        return $id;
+    }
+
+    /**
+     * Create a log for the user point allocation.
+     *
+     * @param allocation_method $skillobj
+     * @param int $userid
+     * @param int $points
+     * @return void
+     */
+    protected function create_user_point_award(allocation_method $skillobj, int $userid, int $points) {
         // Find the method of the course skills.
         $method = ($skillobj instanceof \tool_skills\courseskills) ? 'course' : '';
 
@@ -474,8 +506,6 @@ class skills {
 
         // Log the point awarded to users and the method.
         $this->log->add($userid, $points, $methodid, $method);
-
-        return $id;
     }
 
     /**
@@ -509,7 +539,7 @@ class skills {
         // Start the database transaction.
         $transaction = $DB->start_delegated_transaction();
 
-        if (isset($formdata->id) && $DB->record_exists('tool_skills', ['id' => $formdata->id])) {
+        if (isset($formdata->id) && $formdata->id != '' && $DB->record_exists('tool_skills', ['id' => $formdata->id])) {
             // ID of the modified skill.
             $skillid = $formdata->id;
             // Verify the identity key is exists.

@@ -33,22 +33,6 @@ $strings['skills:managecourseskills'] = 'Manage course skills';
 $string['error:skillsnotfound'] = 'Skill record not found for the given id';
 $string['error:identityexists'] = 'Given skill identity is exists, Please use unique value';
 $string['error:numeric'] = 'Value should be in numbers';
-// ...Form field strings.
-$string['key'] = 'Key';
-$string['status'] = 'Status';
-$string['status_help'] = 'Enable/Disable the skill';
-$string['disabled'] = 'Disabled';
-$string['enabled'] = 'Enabled';
-$string['availableincoursecategories'] = 'Available in course categories';
-$string['availableincoursecategories_help'] = '';
-$string['skilltitle'] = 'Skill name';
-$string['skilltitle_help'] = 'Name of the skill';
-$string['identitykey'] = 'Key';
-$string['identitykey_help'] = 'Key to identity the skill, this should be unique value';
-$string['learningtime'] = 'Learning time';
-$string['learningtime_help'] = 'Time to spend in the course to complete this skill';
-$string['skillcolor'] = 'Skill color';
-$string['skillcolor_help'] = 'Color of the skill';
 // ...List page strings.
 $string['skillslist'] = 'List of skills';
 $string['skillslisthead'] = 'Manage skills';
@@ -68,16 +52,40 @@ $string['deleteskill'] = 'Are you sure! do you want to delete this skill and its
 $string['skillsnothingtodisplay'] = 'Skills are not created yet or not in use, Create a new skill using the create button';
 $string['archiveskill'] = 'Are you sure! do you want to archive this skill and its levels';
 $string['activeskillwarning'] = 'Are you sure! do you want to activate this skill and its levels';
-
-// ...Levels form fields string.
-$string['skillslevels'] = 'Levels';
+// ...Skills Form field strings.
+$string['key'] = 'Key';
+$string['description'] = 'Description';
+$string['description_help'] = 'Enter the description for admin purpose';
+$string['status'] = 'Status';
+$string['status_help'] = 'Choose the status for this skill:
+    <br>
+    <b> Enabled: </b> The skill will be added to all courses that match the course categories setting below and can be configured by teachers. <br />
+    <b> Disabled: </b> The skill will not be added to any courses and cannot be used by teachers.';
+$string['disabled'] = 'Disabled';
+$string['enabled'] = 'Enabled';
+$string['availableincoursecategories'] = 'Available in course categories';
+$string['availableincoursecategories_help'] = 'Select the categories to make this skill available to the courses in that category only. If no category is selected, the course will be available globally across all categories.';
+$string['skilltitle'] = 'Skill name';
+$string['skilltitle_help'] = 'Name of the skill';
+$string['identitykey'] = 'Key';
+$string['identitykey_help'] = 'Key to identity the skill, this should be unique value';
+$string['learningtime'] = 'Learning time';
+$string['learningtime_help'] = 'Time to spend in the course to complete this skill';
+$string['skillcolor'] = 'Skill color';
+$string['skillcolor_help'] = 'Color of the skill';
 $string['levelscount'] = 'Number of levels';
 $string['updatelevelscount'] = 'Update levels count';
-// ... Levels properties.
+// ...Levels form fields string.
+$string['skillslevels'] = 'Levels';
+$string['levelscount_help'] = 'Choose the number of levels that exist for this skill. Each level may have a specific number of points required for achievement.';
 $string['levelsname'] = 'Level #{$a} name';
+$string['levelsname_help'] = 'Enter the name for level';
 $string['levelspoint'] = 'Level #{$a} point';
+$string['levelspoint_help'] = 'Enter the number of points required to achieve Level. This field is required.';
 $string['levelscolor'] = 'Level #{$a} color';
+$string['levelscolor_help'] = 'Select a color to represent Level. This will override the general skill color for visualization purposes.';
 $string['levelsimage'] = 'Level #{$a} image';
+$string['levelsimage_help'] = 'Upload an image that depicts Level of skill. This will be used for visualization.';
 $string['levelsnohead'] = 'Level #{$a} info';
 // ...course menu strings.
 $string['courseskills'] = 'Set course skills';
@@ -88,9 +96,25 @@ $string['completionpoints'] = 'Points';
 $string['completionsetlevel'] = 'Set level';
 $string['completionforcelevel'] = 'Force level';
 $string['completionlevel'] = 'Level';
+$string['coursestatus'] = 'Assign skill to course';
+$string['coursestatus_help'] = 'Select enable to assign the skill to course, then user will receive the points/level for course completion';
+$string['uponcompletion_help'] = '<ul><li><b>Add Points:</b> Upon course completion, award the specified number of skill points. (Note: Entering negative numbers will result in a reduction of points.)</li>
+<li><b>Set Level:</b> Upon course completion, grant the points needed to reach the specified level, unless the student already has more points.</li>
+<li><b>Force Level:</b> Upon course completion, adjust the points to match the amount required for the chosen level, regardless of the student\'s prior level/points. This may lead to students having fewer points than before.</li></ul>';
+$string['completionpoints_help'] = 'Enter the number of skill points to be awarded or deducted. Use a positive number to add points and a negative number to deduct points.
+<br>Example:
+<li>Entering "50" will add 50 points.</li>
+<li>Entering "-20" will deduct 20 points.</li>';
+$string['completionlevel_help'] = 'Choose the desired skill level for this course. Upon completion, the student will receive the corresponding number of points required to achieve the selected level.';
 // ...Course skill table strings.
 $string['assignskills'] = 'Assign skills';
 $string['assignskills_desc'] = 'Customize the skills associated with this course. Activate or deactivate specific skills to align with your teaching objectives. By default, all skills are disabled. Simply enable the ones that fit your course content and goals. ';
 // ...Profile page skills result category.
 $string['skillprofilecategory'] = 'Skills earned';
 $string['earned'] = 'Earned';
+$string['pointscompletie'] = 'Points to complete this skill: {$a} ';
+// ...Privacy API strings.
+$string['userpoints'] = 'User points earned';
+$string['privacy:userpoint'] = 'User point';
+$string['privacy:awardlogs'] = 'Points awarded';
+

@@ -79,7 +79,6 @@ class user {
      */
     protected function __construct(int $userid) {
         $this->userid = $userid;
-        // $this->skills = $this->get_skill_courses();
         $this->logs = new \tool_skills\logs();
     }
 
@@ -92,33 +91,10 @@ class user {
         return $this->userid;
     }
 
-    /* protected function get_skill_courses() {
-        global $DB;
-
-        // Fetch the list of user enrolled courses.
-        $courses = enrol_get_users_courses($this->userid, true, 'id');
-        $ids = array_column($courses, 'id');
-
-        // Prepare IN condition query to get skills from the user enroled courses.
-        list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'cid');
-
-        $sql = "SELECT
-            FROM {tool_skills_courseskills} tscs
-            JOIN {tool_skills} ts ON ts.id = tscs.skill
-            JOIN (
-                SELECT * FROM {tool_skills_userpoints} WHERE userid=:userid
-            ) tsup ON tsup.skill = tscs.skill
-            WHERE tscs.status = :enabled AND tscs.courseid $insql
-        ";
-
-        $list = $DB->get_records_sql($sql, ['userid' => $this->userid, 'enabled' => 1] + $inparams);
-    } */
-
     /**
      * Get the current user skills list.
      * TODO: Not used anymore.
      *
-     * @param bool $awarded Fetch the list with awarded list.
      * @return array
      */
     public function get_user_skills() {
@@ -130,9 +106,10 @@ class user {
         // Prepare IN condition query to get skills from the user enroled courses.
         list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'cid');
 
-        $sql = "SELECT tscs.*, tscs.status as courseskillstatus, tscs.id as id
+        $sql = "SELECT tscs.*, tscs.status as courseskillstatus, tscs.id as id, up.points AS userpoints
             FROM {tool_skills_courses} tscs
             JOIN {tool_skills} ts ON ts.id = tscs.skill
+            LEFT JOIN {tool_skills_userpoints} up ON up.skill = ts.id AND up.userid = :userid
             WHERE tscs.status = :enabled AND tscs.courseid $insql";
 
         $list = $DB->get_records_sql($sql, ['userid' => $this->userid, 'enabled' => 1] + $inparams);
@@ -144,6 +121,7 @@ class user {
             $point->skillobj = skills::get($point->skill);
             // Skill courses.
             $point->skillcourse = courseskills::get($point->courseid);
+            $point->skillcourse->set_skill_instance($point->id);
 
             $point->userpoints = $DB->get_record('tool_skills_userpoints', ['skill' => $point->skill, 'userid' => $this->userid]);
             // Skill levels.
@@ -172,18 +150,13 @@ class user {
     }
 
     /**
-     * Get user points.
+     * Get user points list.
      *
+     * @param bool $withdata
      * @return array
      */
     public function get_user_points(bool $withdata=true) {
         global $DB;
-
-        // Fetch the list of user enrolled courses.
-        /* $courses = enrol_get_users_courses($this->userid, true, 'id');
-        $ids = array_column($courses, 'id');
-        // Prepare IN condition query to get skills from the user enroled courses.
-        list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'cid'); */
 
         // Prepare the skills user points list.
         $sql = "SELECT * FROM {tool_skills_userpoints} WHERE userid=:userid";
@@ -195,20 +168,24 @@ class user {
             return $list;
         }
 
-        /* // Include list of course and skills.
-        array_walk($list, function(&$point) {
-            global $DB;
-            // Skill record.
-            $point->skillobj = skills::get($point->skill);
-            // Skill courses.
-            $point->skillcourses = courseskills::get_for_skill($point->skill);
-            // Skill levels.
-            $point->levels = $DB->get_records('tool_skills_levels', ['skill' => $point->skill]);
-        });
+    }
 
-        print_object($list);exit;
+    /**
+     * Get the user points allocations for the method and methodid.
+     *
+     * @param string $method
+     * @param int $methodid
+     * @return void
+     */
+    public function get_user_award_by_method(string $method, int $methodid) {
+        global $DB;
 
-        return $list; */
+        if ($result = $DB->get_record('tool_skills_awardlogs',
+            ['userid' => $this->userid, 'method' => $method, 'methodid' => $methodid])) {
+            return $result->points;
+        }
+
+        return null;
     }
 
 

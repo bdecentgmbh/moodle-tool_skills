@@ -28,7 +28,6 @@ require(__DIR__.'/../../../../config.php');
 // Require admin library.
 require_once($CFG->libdir.'/adminlib.php');
 
-
 // Get parameters.
 $courseid = required_param('courseid', PARAM_INT);
 $skillid = optional_param('skill', null, PARAM_INT);
@@ -45,6 +44,8 @@ $action = optional_param('action', null, PARAM_ALPHAEXT);
 // Get system context.
 $context = \context_course::instance($courseid);
 
+// Login check required.
+require_login();
 // Access checks.
 require_capability('tool/skills:managecourseskills', $context);
 
@@ -89,17 +90,16 @@ $PAGE->navbar->add(get_string('mycourses', 'core'), new moodle_url('/course/inde
 $PAGE->navbar->add(format_string($course->shortname), new moodle_url('/course/view.php', ['id' => $course->id]));
 $PAGE->navbar->add(get_string('skills', 'tool_skills'),
     new moodle_url('/admin/tool/skills/manage/courselist.php', ['courseid' => $courseid]));
-// $PAGE->set_heading(theme_boost_union_get_externaladminpage_heading());
 
 // Build skills table.
 $table = new \tool_skills\table\course_skills_table($courseid);
 $table->define_baseurl($PAGE->url);
 
-// Header
+// Header.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('assignskills', 'tool_skills'));
 
-// Skills description
+// Skills description.
 echo get_string('assignskills_desc', 'tool_skills');
 
 // Create skills button to create new skill.

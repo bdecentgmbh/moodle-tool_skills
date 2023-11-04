@@ -25,9 +25,6 @@
 // Require config.
 require(__DIR__.'/../../../../config.php');
 
-// Require plugin libraries.
-// require_once($CFG->dirroot.'/theme/boost_union/locallib.php');
-
 // Require admin library.
 require_once($CFG->libdir.'/adminlib.php');
 
@@ -57,11 +54,9 @@ $PAGE->set_title(get_string('skills', 'tool_skills'));
 
 if ($id !== null && $id > 0) {
 
-    // $skill = \tool_skills\skills::get($id)->get_skill();
-    // $levelscount = $skill->levelscount;
-
     $PAGE->set_heading(get_string('editskill', 'tool_skills'));
     $PAGE->navbar->add(get_string('edit', 'tool_skills'));
+
 } else {
     $PAGE->set_heading(get_string('createskill', 'tool_skills'));
     $PAGE->navbar->add(get_string('create', 'tool_skills'));
@@ -91,7 +86,6 @@ if ($id !== null && $id > 0) {
     // Fetch the data for the menu.
     if ($record = \tool_skills\skills::get($id)->get_data()) {
 
-        // print_object($record);exit;
         // Set the menu data to the menu edit form.
         $form->set_data($record);
 

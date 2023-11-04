@@ -1,6 +1,6 @@
 /* Skills list actions links align to inline and center */
 .skill-course-actions.skill-actions a,
-#tool_skills_list .menu-item-actions a {
+#tool_skills_list .skill-item-actions a {
     display: inline-block;
     vertical-align: middle;
 }
@@ -36,3 +36,9 @@ body#page-admin-tool-skills-manage-list .nav-tabs {
     padding-left: 0;
 }
 /* E.O Filter form in table */
+
+/* Behat issue fix for auto instance */
+body.behat-site .toolskills-status-switch input.custom-control-input {
+    position: relative;
+    z-index: -1;
+}

@@ -39,9 +39,14 @@ $context = context_system::instance();
 // Access checks.
 admin_externalpage_setup('manageskills');
 
+// Create a page URL.
+$urlparams = [];
+$urlparams = ($tab == 'archive') ? ['t' => 'archive'] : [];
+$pageurl = new moodle_url('/admin/tool/skills/manage/list.php', $urlparams);
+
 // Prepare the page (to make sure that all necessary information is already set even if we just handle the actions as a start).
 $PAGE->set_context($context);
-$PAGE->set_url(new moodle_url('/admin/tool/skills/manage/list.php'));
+$PAGE->set_url($pageurl);
 $PAGE->set_cacheable(false);
 
 // Process actions.
@@ -97,7 +102,7 @@ if ($action !== null && confirm_sesskey()) {
     $transaction->allow_commit();
 
     // Redirect to the same page.
-    redirect($PAGE->url);
+    redirect($pageurl);
 }
 
 // Further prepare the page.
@@ -118,20 +123,25 @@ if ($tab == 'archive') {
 } else {
     $table = new \tool_skills\table\skills_table($context->id);
 }
-$table->define_baseurl($PAGE->url);
+
+$table->define_baseurl($pageurl);
 $table->set_filterset($filterset);
 
-// Header
+// Header.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('skillslisthead', 'tool_skills'));
 
-// Skills description
+// Skills description.
 echo get_string('skillslist_desc', 'tool_skills');
 
+// Table Tabs.
 $tabs = [];
-$tabs[] = new tabobject('active', new moodle_url($PAGE->url, ['t' => 'active']), get_string('activeskills', 'tool_skills'), '', true);
-$tabs[] = new tabobject('archive', new moodle_url($PAGE->url, ['t' => 'archive']), get_string('archiveskills', 'tool_skills'), '', true);
-
+// Active skills table tab.
+$tabs[] = new tabobject('active',
+    new moodle_url($PAGE->url, ['t' => 'active']), get_string('activeskills', 'tool_skills'), '', true);
+// Archive skills table tab.
+$tabs[] = new tabobject('archive',
+    new moodle_url($PAGE->url, ['t' => 'archive']), get_string('archiveskills', 'tool_skills'), '', true);
 
 // Create skills button to create new skill.
 $createbutton = $OUTPUT->box_start();

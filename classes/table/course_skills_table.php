@@ -51,6 +51,8 @@ class course_skills_table extends \table_sql {
 
     /**
      * Table contructor to define columns and headers.
+     *
+     * @param int $courseid Unique ID
      */
     public function __construct($courseid) {
 
@@ -96,7 +98,7 @@ class course_skills_table extends \table_sql {
         $from = '{tool_skills} s
         LEFT JOIN {tool_skills_courses} sc ON sc.skill = s.id AND sc.courseid = :courseid';
 
-        $this->set_sql($select, $from, 's.archived != 1', ['courseid' => $this->courseid]);
+        $this->set_sql($select, $from, 's.archived != 1 AND s.status <> 0', ['courseid' => $this->courseid]);
 
         parent::query_db($pagesize, $useinitialsbar);
     }
@@ -193,7 +195,8 @@ class course_skills_table extends \table_sql {
         );
 
         // Skills status switch.
-        $statusurl = new \moodle_url($listurl, array('skill' => $row->id, 'action' => ($row->coursestatus) ? 'disable' : 'enable'));
+        $statusurl = new \moodle_url($listurl, array('t' => 'archive', 'skill' => $row->id,
+            'action' => ($row->coursestatus) ? 'disable' : 'enable'));
         $statusclass = ' toolskills-status-switch ';
         $statusclass .= $row->coursestatus ? 'action-hide' : 'action-show';
         $actions[] = html_writer::link($statusurl->out(false), $checkbox, ['class' => $statusclass]);

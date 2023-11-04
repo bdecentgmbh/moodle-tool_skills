@@ -189,17 +189,9 @@ class skills_table extends \table_sql {
         $statusclass .= $row->status ? 'action-hide' : 'action-show';
         $actions[] = html_writer::link($statusurl->out(false), $checkbox, ['class' => $statusclass]);
 
-        // Delete.
-        /* $actions[] = [
-            'url' => new \moodle_url($listurl, ['action' => 'delete']),
-            'icon' => new \pix_icon('t/delete', \get_string('delete')),
-            'attributes' => array('class' => 'action-delete'),
-            'action' => new \confirm_action(get_string('deleteskill', 'tool_skills'))
-        ]; */
-
         // Archived.
         $actions[] = [
-            'url' => new \moodle_url($listurl, ['action' => 'archive']),
+            'url' => new \moodle_url($listurl, ['t' => 'archive', 'action' => 'archive']),
             'icon' => new \pix_icon('f/archive', \get_string('archive', 'tool_skills')),
             'attributes' => array('class' => 'action-archive'),
             'action' => new \confirm_action(get_string('archiveskill', 'tool_skills'))
@@ -219,7 +211,7 @@ class skills_table extends \table_sql {
                 $action['attributes']
             );
         }
-        return html_writer::div(join('', $actionshtml), 'menu-item-actions item-actions mr-0');
+        return html_writer::div(join('', $actionshtml), 'skill-item-actions item-actions mr-0');
     }
 
     /**

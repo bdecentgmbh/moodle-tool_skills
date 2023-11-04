@@ -22,7 +22,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('No direct access');
 
 use core_user\output\myprofile\tree;
 
@@ -84,28 +83,44 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
 
         $newskills = [];
         foreach ($skills as $id => $data) {
-            $skillid = $data->skill;
-            // if (in_array($newskills, array_keys($newskills))) {
+            $skillid = $data->skill; // Skill id.
             $newskills[$skillid][$id] = $data;
-            $skillslist[$skillid] = $data->skillobj;
+            $skillslist[$skillid] = $data->skillobj; // Skill instance.
         }
-
 
         foreach ($newskills as $skillid => $skills) {
 
+            $skill = $skillslist[$skillid];
+            $skillpoints = $skill->get_points_to_earnskill();
+
+            $userskillpoint = $skill->get_user_skill($USER->id, false);
+            $earnedstring = html_writer::tag('b',
+                " (" . get_string('earned', 'tool_skills') . ": " . ($userskillpoint->points ?? 0) . ")");
+            // Skill name.
             $skillstr = html_writer::tag('h5', $skillslist[$skillid]->get_name());
+            // Point to completion this skill.
+            $skillstr .= html_writer::tag('p', 'Points to complete this skill: ' . $skillpoints . $earnedstring,
+                ['class' => 'skill-'.$skill->get_data()->identitykey]);
 
             $skillstr .= html_writer::start_tag('ul'); // Start the list of skills courses.
 
             foreach ($skills as $id => $data) {
-                // Skill objects.
-                $skill = $data->skillobj;
-                $pointstoearn = $skill->get_points_to_earnskill();
-                $course = new moodle_url('/course/view.php', ['id' => $data->courseid]);
+                // Course skill object.
+                $skillcourse = $data->skillcourse;
+                $pointstoearn = $skillcourse->get_points_earned_fromcourse();
+                $courseurl = new moodle_url('/course/view.php', ['id' => $data->courseid]);
 
-                $li = html_writer::link($course, format_string($data->skillcourse->get_course()->fullname));
-                $li .=  " - " . $pointstoearn;
-                $li .= html_writer::tag('b', " (".get_string('earned', 'tool_skills') . " - " .( $data->userpoints->points ?? 0) . ")" );
+                // Points earned from this course.
+                $pointsfromcourse = $skillcourse->get_user_earned_points($USER->id);
+
+                $course = $data->skillcourse->get_course();
+                $li = html_writer::link($courseurl, format_string($course->fullname));
+
+                $coursepointstr = "Points for completion" . " : " . $pointstoearn;
+                $coursepointstr .= html_writer::tag('b',
+                    " (".get_string('earned', 'tool_skills') . ": " .( $pointsfromcourse ?? 0) . ")" );
+
+                $li .= html_writer::tag('p', $coursepointstr, ['class' => 'skills-points-'.$course->shortname]);
 
                 $skillstr .= html_writer::tag('li', $li);
             }
@@ -117,8 +132,6 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
 
             $tree->add_node($coursenode);
         }
-
-        // print_object($newskills);exit;
 
     }
     return true;

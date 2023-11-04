@@ -1,7 +1,30 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Tool skills - Course form.
+ *
+ * @package   tool_skills
+ * @copyright 2023, bdecent gmbh bdecent.de
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace tool_skills\form;
+
+defined('MOODLE_INTERNAL') || die();
 
 use tool_skills\skills;
 use tool_skills\courseskills;
@@ -10,6 +33,9 @@ use stdClass;
 
 require_once($CFG->libdir.'/formslib.php');
 
+/**
+ * Form to assign the skills to the courses.
+ */
 class course_form extends \core_form\dynamic_form {
 
     /**
@@ -25,7 +51,6 @@ class course_form extends \core_form\dynamic_form {
         $skill = $this->optional_param('skill', 0, PARAM_INT);
         $courseid = $this->optional_param('courseid', 0, PARAM_INT);
 
-        // $skillcourseid = $this->optional_param('id', 0, PARAM_INT);
         // Skill id.
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
@@ -34,7 +59,7 @@ class course_form extends \core_form\dynamic_form {
         $mform->addElement('hidden', 'skill', $skill);
         $mform->setType('skill', PARAM_INT);
 
-        // Courseid hidden field
+        // Courseid hidden field.
         $mform->addElement('hidden', 'courseid', $courseid);
         $mform->setType('courseid', PARAM_INT);
 
@@ -54,10 +79,12 @@ class course_form extends \core_form\dynamic_form {
             skills::COMPLETIONFORCELEVEL => get_string('completionforcelevel', 'tool_skills'),
         ];
         $mform->addElement('select', 'uponcompletion', get_string('uponcompletion', 'tool_skills'), $options);
+        $mform->addHelpButton('uponcompletion', 'uponcompletion', 'tool_skills');
 
         // Completion points element.
         $mform->addElement('text', 'points', get_string('completionpoints', 'tool_skills'));
         $mform->hideIf('points', 'uponcompletion', 'neq', skills::COMPLETIONPOINTS);
+        $mform->addHelpButton('points', 'completionpoints', 'tool_skills');
 
         // Completion level.
         $skill = $this->optional_param('skill', 0, PARAM_INT);
@@ -66,7 +93,7 @@ class course_form extends \core_form\dynamic_form {
         // List of levels to complete.
         $mform->addElement('select', 'level', get_string('completionlevel', 'tool_skills'), $levels);
         $mform->hideIf('level', 'uponcompletion', 'in', [skills::COMPLETIONNOTHING, skills::COMPLETIONPOINTS]);
-
+        $mform->addHelpButton('level', 'completionlevel', 'tool_skills');
     }
 
     /**
@@ -101,9 +128,7 @@ class course_form extends \core_form\dynamic_form {
         // Get the submitted content data.
         $record = (object) $this->get_data();
 
-        // $courseid = $this->optional_param('courseid', 0, PARAM_INT);
-
-        if (isset($record->id) && $DB->record_exists('tool_skills_courses', ['id' => $record->id])) {
+        if (isset($record->id) && $record->id != '' && $DB->record_exists('tool_skills_courses', ['id' => $record->id])) {
             // Level id to update.
             $skillcourseid = $record->id;
             // Time modified the level.
@@ -147,6 +172,11 @@ class course_form extends \core_form\dynamic_form {
         $this->set_data($defaults);
     }
 
+    /**
+     * Returns the URL fo the page to submit the data.
+     *
+     * @return moodle_url
+     */
     protected function get_page_url_for_dynamic_submission(): moodle_url {
         return new moodle_url('/admin/tool/skills/manage/courselist.php',
             ['courseid' => $this->optional_param('courseid', 0, PARAM_INT)]);

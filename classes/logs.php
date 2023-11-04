@@ -33,7 +33,7 @@ class logs {
      *
      * @var \tool_skills\logs
      */
-    protected static self $instance;
+    protected static $instance;
 
     /**
      * Create the instance of the tool skills logs
@@ -90,8 +90,8 @@ class logs {
     /**
      * Deletes the log for the method.
      *
+     * @param int $methodid
      * @param string $method
-     * @param string $methodid
      * @return void
      */
     public function delete_method_log(int $methodid, string $method='course') {

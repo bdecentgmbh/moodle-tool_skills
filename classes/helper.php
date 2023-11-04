@@ -1,14 +1,40 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Tool skills - Course skills helper methods.
+ *
+ * @package   tool_skills
+ * @copyright 2023, bdecent gmbh bdecent.de
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace tool_skills;
 
 use single_button;
 
+/**
+ * Skills helper defined some common purpose methods to easy access.
+ */
 class helper {
 
     /**
      * Generate the button which is displayed on top of the templates table. Helps to create templates.
      *
+     * @param string $tab Currently selected tab of the skills list. (active or archive)
      * @param bool $filtered Is the table result is filtered.
      * @return string The HTML contents to display the create templates button.
      */
@@ -35,21 +61,6 @@ class helper {
         $filter = new \tool_skills_table_filter(null, ['t' => $tab]);
         $button .= \html_writer::tag('div', $filter->render(), ['id' => 'tool-skills-filterform', 'class' => 'hide']);
         $button .= \html_writer::end_div();
-
-        // Sort button for the table. Sort y the reference.
-       /*  $tdir = optional_param('tdir', null, PARAM_INT);
-        $tdir = ($tdir == SORT_ASC) ? SORT_DESC : SORT_ASC;
-        $dirimage = ($tdir == SORT_ASC) ? '<i class="fa fa-sort-amount-up"></i>' : $OUTPUT->pix_icon('t/sort_by', 'Sortby');
-
-        $manageurl = new \moodle_url('/admin/tool/skills/manage/list.php', [
-            'tsort' => 'reference', 'tdir' => $tdir
-        ]);
-        $tempcount = $DB->count_records('tool_skills');
-        if (!empty($tempcount)) {
-            $button .= \html_writer::link($manageurl->out(false), $dirimage.get_string('sort'), [
-                'class' => 'sort-toolskills btn btn-primary ml-2'
-            ]);
-        } */
 
         return $button;
     }

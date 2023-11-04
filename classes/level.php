@@ -1,4 +1,26 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Tool skills - Manage levels for the skills.
+ *
+ * @package   tool_skills
+ * @copyright 2023, bdecent gmbh bdecent.de
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace tool_skills;
 
@@ -9,7 +31,7 @@ use html_writer;
 use moodle_url;
 
 /**
- * Level manage instance, doing manage of skills tasks.
+ * Level manage instance, fetch points and other data.
  */
 class level extends skills {
 
@@ -19,28 +41,28 @@ class level extends skills {
      *
      * @var int
      */
-    protected int $levelid;
+    protected $levelid;
 
     /**
      * level db record.
      *
      * @var stdClass
      */
-    protected stdClass $levelrecord;
+    protected $levelrecord;
 
     /**
      * Data updated structure data of the level.
      *
      * @var stdClass
      */
-    protected stdClass $data;
+    protected $data;
 
     /**
      * Skill instance id.
      *
      * @var int
      */
-    protected int $skillid;
+    protected $skillid;
 
     /**
      * Data updated structure data of the skill.
@@ -60,7 +82,7 @@ class level extends skills {
         // Generate the skill record.
         $this->levelrecord = $this->fetch_record() ?? new stdClass;
 
-        $this->data = $this->levelrecord; // $this->update_data_structure();
+        $this->data = $this->levelrecord;
 
         $this->skillid = $this->levelrecord->skill;
 
@@ -175,7 +197,7 @@ class level extends skills {
 
             $level->skill = $skill->get_id();
 
-            if (isset($level->id) && $DB->record_exists('tool_skills_levels', ['id' => $level->id])) {
+            if (isset($level->id) && $level->id != "" && $DB->record_exists('tool_skills_levels', ['id' => $level->id])) {
                 // Level id to update.
                 $levelid = $level->id;
                 // Time modified the level.

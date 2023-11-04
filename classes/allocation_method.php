@@ -36,7 +36,7 @@ abstract class allocation_method {
      *
      * @var stdClass|null
      */
-    protected stdClass $data;
+    protected $data;
 
     /**
      * Log the skill points allocation to users.
@@ -54,8 +54,6 @@ abstract class allocation_method {
 
     /**
      * Constructor
-     *
-     * @param int $skillcourseid ID of the skill course record.
      */
     protected function __construct() {
         $this->data = new stdClass();
@@ -64,7 +62,6 @@ abstract class allocation_method {
     /**
      * Fetch the skills assigned/enabled for this allocation method.
      *
-     * @param int $courseid
      * @return array
      */
     abstract public function get_instance_skills(): array;
@@ -94,9 +91,10 @@ abstract class allocation_method {
     /**
      * Create a instance of skill for the given allocation method id.
      *
+     * @param int $instanceid ID of the allocation method record
      * @return void
      */
-    protected function set_skill_instance(int $instanceid) {
+    public function set_skill_instance(int $instanceid) {
 
         $this->instanceid = $instanceid;
     }

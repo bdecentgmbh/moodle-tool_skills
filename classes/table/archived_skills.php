@@ -124,7 +124,6 @@ class archived_skills extends \table_sql {
 
         $categories = json_decode($categories);
         $list = core_course_category::get_many($categories);
-        // $list = array_map(fn(&$cate) => $cate->get_formatted_name(), $list);
 
         array_walk($list, function(&$cate) {
             $cate = $cate->get_formatted_name();
@@ -154,7 +153,7 @@ class archived_skills extends \table_sql {
         return userdate($row->timearchived);
     }
 
-   /**
+    /**
      * Actions to manage the skill row. Like edit, change status, archive and delete.
      *
      * @param stdClass $row
@@ -179,7 +178,7 @@ class archived_skills extends \table_sql {
 
         // Delete.
         $actions[] = [
-            'url' => new \moodle_url($listurl, ['action' => 'delete']),
+            'url' => new \moodle_url($listurl, ['action' => 'delete', 't' => 'archive']),
             'icon' => new \pix_icon('t/delete', \get_string('delete')),
             'attributes' => array('class' => 'action-delete'),
             'action' => new \confirm_action(get_string('deleteskill', 'tool_skills'))
@@ -207,6 +206,6 @@ class archived_skills extends \table_sql {
                 $action['attributes']
             );
         }
-        return \html_writer::div(join('', $actionshtml), 'menu-item-actions item-actions mr-0');
+        return \html_writer::div(join('', $actionshtml), 'skill-item-actions item-actions mr-0');
     }
 }

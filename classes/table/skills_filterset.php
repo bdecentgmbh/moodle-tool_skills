@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Automation filter set class.
+ * Skills filter set class.
  *
- * @package   mod_pulse
+ * @package   tool_skills
  * @copyright 2023, bdecent gmbh bdecent.de
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -31,9 +31,9 @@ use core_table\local\filter\integer_filter;
 use core_table\local\filter\string_filter;
 
 /**
- * Automation table filterset.
+ * Skills table filterset.
  *
- * @package   mod_pulse
+ * @package   tool_skills
  * @copyright 2023, bdecent gmbh bdecent.de
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

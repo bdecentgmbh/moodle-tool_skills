@@ -32,7 +32,7 @@ require_once($CFG->dirroot.'/lib/form/text.php');
 /**
  * Form element for color picker
  *
- * @package   theme_boost_union
+ * @package   tool_skills
  * @copyright 2023 bdecent GmbH <https://bdecent.de>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -88,8 +88,7 @@ class moodlequickform_toolskills_colorpicker extends MoodleQuickForm_text implem
             pickerDiv.classList.add('admin_colourpicker', 'clearfix');
             pickerDiv.innerHTML = '$iconoutput'; // Add loading icon.
             element.parentNode.prepend(pickerDiv);
-            element.parentNode.style.flexDirection = 'column'; // Helps to align the config text when
-                                                               // theme_boost_union is not the active theme.
+            element.parentNode.style.flexDirection = 'column';
 
             // Init color picker utility.
             M.util.init_colour_picker(Y, '$id');
