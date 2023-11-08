@@ -103,6 +103,12 @@ class user {
         // Fetch the list of user enrolled courses.
         $courses = enrol_get_users_courses($this->userid, true, 'id');
         $ids = array_column($courses, 'id');
+
+        // User not assigned to any course then not skills to earn.
+        if (empty($ids)) {
+            return [];
+        }
+
         // Prepare IN condition query to get skills from the user enroled courses.
         list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'cid');
 
