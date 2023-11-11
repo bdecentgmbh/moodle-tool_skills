@@ -192,7 +192,7 @@ class skills_table extends \table_sql {
         // Archived.
         $actions[] = [
             'url' => new \moodle_url($listurl, ['t' => 'archive', 'action' => 'archive']),
-            'icon' => new \pix_icon('f/archive', \get_string('archive', 'tool_skills')),
+            'icon' => new \pix_icon('f/archive', \get_string('archive', 'tool_skills'), 'tool_skills'),
             'attributes' => array('class' => 'action-archive'),
             'action' => new \confirm_action(get_string('archiveskill', 'tool_skills'))
         ];

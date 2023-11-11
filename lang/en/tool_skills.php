@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die('No direct access');
 
-$string['pluginname'] = 'Skill award';
+$string['pluginname'] = 'Skills';
 $string['skills'] = 'Skills';
 // ...Skills capabilities.
 $string['skills:manage'] = 'Manage skills';
@@ -77,6 +77,7 @@ $string['levelscount'] = 'Number of levels';
 $string['updatelevelscount'] = 'Update levels count';
 // ...Levels form fields string.
 $string['skillslevels'] = 'Levels';
+$string['skillslevel'] = 'Level';
 $string['levelscount_help'] = 'Choose the number of levels that exist for this skill. Each level may have a specific number of points required for achievement.';
 $string['levelsname'] = 'Level #{$a} name';
 $string['levelsname_help'] = 'Enter the name for level';
@@ -117,4 +118,18 @@ $string['pointscompletie'] = 'Points to complete this skill: {$a} ';
 $string['userpoints'] = 'User points earned';
 $string['privacy:userpoint'] = 'User point';
 $string['privacy:awardlogs'] = 'Points awarded';
+
+$string['privacy:metadata:userpoints:userid'] = 'User ID associated with earned points';
+$string['privacy:metadata:userpoints:skill'] = 'ID of the skill associated with points';
+$string['privacy:metadata:userpoints:points'] = 'Points earned by the user for the skill';
+$string['privacy:metadata:userpoints:timecreated'] = 'Time when points were initially earned';
+$string['privacy:metadata:userpoints:timemodified'] = 'Time when points were modified';
+$string['privacy:metadata:userpoints'] = 'Metadata for points earned by the user for skills';
+$string['privacy:metadata:awardlogs:userid'] = 'User ID for points awarded';
+$string['privacy:metadata:awardlogs:points'] = 'Points awarded for the skill to the user';
+$string['privacy:metadata:awardlogs:methodid'] = 'ID of the method record detailing how points were earned';
+$string['privacy:metadata:awardlogs:method'] = 'Method by which the user earned points (course or activity)';
+$string['privacy:metadata:awardlogs:timecreated'] = 'Time when awards were logged';
+$string['privacy:metadata:awardlogs'] = 'Metadata for logs recording user points awarded for each method';
+$string['privacy:metadata:userpointsexplanation'] = 'The skills store the points users earned for the skill and log the method by which they earned it, either through course completion or activity completion.';
 

@@ -95,12 +95,21 @@ class course_skills_table extends \table_sql {
         // Set the query values to fetch skills.
         $select = 's.*,
             sc.status as coursestatus, sc.uponcompletion, sc.courseid, sc.id as skillcourseid, sc.points, sc.level';
+
         $from = '{tool_skills} s
         LEFT JOIN {tool_skills_courses} sc ON sc.skill = s.id AND sc.courseid = :courseid';
 
         $this->set_sql($select, $from, 's.archived != 1 AND s.status <> 0', ['courseid' => $this->courseid]);
 
         parent::query_db($pagesize, $useinitialsbar);
+
+        $categoryid = get_course($this->courseid)->category;
+
+        $this->rawdata = array_filter($this->rawdata, function($row) use ($categoryid) {
+            $json = $row->categories ? json_decode($row->categories) : [];
+            // Categories in the skill should be empty or its must contain the currrent course categoryid.
+            return empty($json) || in_array($categoryid, $json);
+        });
     }
 
     /**

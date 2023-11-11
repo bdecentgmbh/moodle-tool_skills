@@ -136,3 +136,15 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
     }
     return true;
 }
+
+
+/**
+ * Get icon mapping for font-awesome.
+ * @return string[]
+ */
+function tool_skills_get_fontawesome_icon_map() {
+    return [
+        'tool_skills:f/archive' => 'fa-archive',
+        'tool_skills:f/active' => 'fa-undo',
+    ];
+}

@@ -42,7 +42,7 @@ $capabilities = array(
         'riskbitmask' => RISK_XSS | RISK_CONFIG,
         'archetypes' => array(
             'manager' => CAP_ALLOW,
-            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
         ),
     ),
 );

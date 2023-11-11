@@ -141,6 +141,10 @@ class provider implements
         $context = $userlist->get_context();
         $course = $DB->get_record('course', ['id' => $context->instanceid]);
 
+        if (empty($userlist->count())) {
+            return false;
+        }
+
         list($userinsql, $userinparams) = $DB->get_in_or_equal($userlist->get_userids(), SQL_PARAMS_NAMED);
 
         $params = $userinparams;

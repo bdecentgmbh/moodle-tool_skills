@@ -187,7 +187,7 @@ class archived_skills extends \table_sql {
         // Unarchive the skills.
         $actions[] = [
             'url' => new \moodle_url($listurl, ['action' => 'active']),
-            'icon' => new \pix_icon('t/unlocked', \get_string('active', 'tool_skills')),
+            'icon' => new \pix_icon('f/active', \get_string('active', 'tool_skills'), 'tool_skills'),
             'attributes' => array('class' => 'action-active'),
             'action' => new \confirm_action(get_string('activeskillwarning', 'tool_skills'))
         ];

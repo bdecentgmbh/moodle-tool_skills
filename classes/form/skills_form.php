@@ -174,6 +174,14 @@ class skills_form extends \moodleform {
             $mform->addElement('filemanager', "levels[$i][image]", get_string('levelsimage', 'tool_skills', $i));
             $mform->addHelpButton("levels[$i][image]", 'levelsimage', 'tool_skills');
 
+            // Set the default values for the level 0.
+            if ($i == 0  && !$mform->getElementValue("levels[$i][name]")) {
+                $mform->setDefaults([
+                    "levels[$i][name]" => get_string('skillslevel', 'tool_skills') . ' ' . $i,
+                    "levels[$i][points]" => '0'
+                ]);
+            }
+
         }
         // Action buttons.
         $this->add_action_buttons();

@@ -39,18 +39,23 @@ class helper {
      * @return string The HTML contents to display the create templates button.
      */
     public static function skills_buttons($tab, $filtered=false) {
-        global $OUTPUT, $DB, $CFG;
+        global $OUTPUT, $PAGE, $CFG;
 
         require_once($CFG->dirroot. '/admin/tool/skills/locallib.php');
 
-        // Setup create template button on page.
-        $caption = get_string('createskill', 'tool_skills');
-        $editurl = new \moodle_url('/admin/tool/skills/manage/edit.php', array('sesskey' => sesskey()));
+        $button = '';
 
-        // IN Moodle 4.2, primary button param depreceted.
-        $primary = defined('single_button::BUTTON_PRIMARY') ? single_button::BUTTON_PRIMARY : true;
-        $button = new single_button($editurl, $caption, 'get', $primary);
-        $button = $OUTPUT->render($button);
+        // Users with manageskills capability to create a new skill.
+        if (has_capability('tool/skills:manage', $PAGE->context)) {
+            // Setup create template button on page.
+            $caption = get_string('createskill', 'tool_skills');
+            $editurl = new \moodle_url('/admin/tool/skills/manage/edit.php', array('sesskey' => sesskey()));
+
+            // IN Moodle 4.2, primary button param depreceted.
+            $primary = defined('single_button::BUTTON_PRIMARY') ? single_button::BUTTON_PRIMARY : true;
+            $singlebutton = new single_button($editurl, $caption, 'get', $primary);
+            $button .= $OUTPUT->render($singlebutton);
+        }
 
         // Filter form.
         $button .= \html_writer::start_div('filter-form-container');
