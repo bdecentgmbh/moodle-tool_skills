@@ -37,7 +37,7 @@ function tool_skills_extend_navigation_course(navigation_node $navigation, stdCl
     global $PAGE;
 
     $addnode = $context->contextlevel === CONTEXT_COURSE;
-    $addnode = $addnode && has_capability('tool/skills:managecourseskills', $context); // TODO: Custom capability.
+    $addnode = $addnode && has_capability('tool/skills:managecourseskills', $context);
     if ($addnode) {
         $id = $context->instanceid;
         $url = new moodle_url('/admin/tool/skills/manage/courselist.php', [
@@ -48,8 +48,12 @@ function tool_skills_extend_navigation_course(navigation_node $navigation, stdCl
         $node->set_force_into_more_menu(false);
         $node->set_show_in_secondary_navigation(true);
         $node->key = 'manage-tool-skills';
-        $navigation->add_node($node, 'gradebooksetup');
 
+        if (empty($navigation->get_children_key_list())) {
+            $navigation->add_node($node, null);
+        } else {
+            $navigation->add_node($node, 'gradebooksetup');
+        }
     }
 }
 
@@ -79,6 +83,14 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
 
     if ($iscurrentuser) {
         $systemcontext = \context_system::instance();
+
+        if (has_capability('tool/skills:manage', $systemcontext)) {
+            $link = new moodle_url('/admin/tool/skills/manage/list.php');
+            $skillstr = html_writer::link($link, get_string('skills:manage', 'tool_skills'));
+            $coursenode = new core_user\output\myprofile\node('toolskills', 'manageskills', $skillstr, null, null);
+            $tree->add_node($coursenode);
+        }
+
         $skills = \tool_skills\user::get($USER->id)->get_user_skills();
 
         $newskills = [];
@@ -99,7 +111,7 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
             // Skill name.
             $skillstr = html_writer::tag('h5', $skillslist[$skillid]->get_name());
             // Point to completion this skill.
-            $skillstr .= html_writer::tag('p', 'Points to complete this skill: ' . $skillpoints . $earnedstring,
+            $skillstr .= html_writer::tag('p', get_string('pointscomplete', 'tool_skills', $skillpoints . $earnedstring),
                 ['class' => 'skill-'.$skill->get_data()->identitykey]);
 
             $skillstr .= html_writer::start_tag('ul'); // Start the list of skills courses.
@@ -116,7 +128,7 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
                 $course = $data->skillcourse->get_course();
                 $li = html_writer::link($courseurl, format_string($course->fullname));
 
-                $coursepointstr = "Points for completion" . " : " . $pointstoearn;
+                $coursepointstr = get_string('pointsforcompletion', 'tool_skills') . " : " . $pointstoearn;
                 $coursepointstr .= html_writer::tag('b',
                     " (".get_string('earned', 'tool_skills') . ": " .( $pointsfromcourse ?? 0) . ")" );
 
@@ -127,8 +139,11 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
 
             $skillstr .= html_writer::end_tag('ul'); // End the skill list.
 
+            $report = new \moodle_url('/admin/tool/skills/manage/usersreport.php', ['id' => $skillid]);
+            $skillstr .= html_writer::link($report, get_string('usersreport', 'tool_skills'));
+
             $coursenode = new core_user\output\myprofile\node('toolskills', "skill_".$skill->get_data()->id,
-                $skillstr, null, null);
+                '', null, null, $skillstr, null, 'toolskill-courses-points');
 
             $tree->add_node($coursenode);
         }

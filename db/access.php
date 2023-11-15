@@ -45,4 +45,15 @@ $capabilities = array(
             'editingteacher' => CAP_ALLOW,
         ),
     ),
+
+    'tool/skills:viewotherspoints' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'riskbitmask' => RISK_XSS | RISK_CONFIG,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW,
+            'user' => CAP_ALLOW
+        ),
+    ),
+
 );

@@ -42,3 +42,11 @@ body.behat-site .toolskills-status-switch input.custom-control-input {
     position: relative;
     z-index: -1;
 }
+
+#page-admin-tool-skills-manage-usersreport .table-dynamic {
+    padding-top: 40px;
+}
+
+#page-user-profile li.contentnode.toolskill-courses-points {
+    padding-top: 20px;
+}

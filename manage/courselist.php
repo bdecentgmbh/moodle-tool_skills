@@ -27,6 +27,7 @@ require(__DIR__.'/../../../../config.php');
 
 // Require admin library.
 require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->libdir.'/tablelib.php');
 
 // Get parameters.
 $courseid = required_param('courseid', PARAM_INT);

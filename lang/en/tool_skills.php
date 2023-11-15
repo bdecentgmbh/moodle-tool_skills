@@ -29,6 +29,7 @@ $string['skills'] = 'Skills';
 // ...Skills capabilities.
 $string['skills:manage'] = 'Manage skills';
 $string['skills:managecourseskills'] = 'Manage course skills';
+$string['skills:viewotherspoints'] = 'View others points';
 // ...error strings.
 $string['error:skillsnotfound'] = 'Skill record not found for the given id';
 $string['error:identityexists'] = 'Given skill identity is exists, Please use unique value';
@@ -113,7 +114,12 @@ $string['assignskills_desc'] = 'Customize the skills associated with this course
 // ...Profile page skills result category.
 $string['skillprofilecategory'] = 'Skills earned';
 $string['earned'] = 'Earned';
-$string['pointscompletie'] = 'Points to complete this skill: {$a} ';
+$string['pointsearned'] = 'Points earned';
+$string['pointscomplete'] = 'Points to complete this skill: {$a} ';
+$string['pointsforcompletion'] = 'Points for completion';
+$string['usersreport'] = 'View users points for this skill';
+$string['skillpoints'] = '{$a} - users points';
+$string['skillsotherspoint_desc'] = 'This table displays the points earned by other users in this skill. It provides an overview of the achievements and progress of peers within the same skill category';
 // ...Privacy API strings.
 $string['userpoints'] = 'User points earned';
 $string['privacy:userpoint'] = 'User point';

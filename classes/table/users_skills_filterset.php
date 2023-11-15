@@ -15,18 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tool skills - Plugin informations defined.
+ * Filterset
  *
  * @package   tool_skills
- * @copyright 2023 bdecent GmbH <https://bdecent.de>
+ * @copyright 2023, bdecent gmbh bdecent.de
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('No direct access');
+declare(strict_types=1);
 
-$plugin->version = 2023102504;
-$plugin->requires  = 2021051700;        // Requires this Moodle version.
-$plugin->component = 'tool_skills'; // Full name of the plugin (used for diagnostics).
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release = '1.0';
-$plugin->supported = [400, 402];
+namespace tool_skills\table;
+
+use core_table\local\filter\boolean_filter;
+use core_table\local\filter\filterset;
+use core_table\local\filter\integer_filter;
+use core_table\local\filter\string_filter;
+
+/**
+ * Participants table filterset.
+ */
+class users_skills_filterset extends filterset {
+
+}

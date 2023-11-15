@@ -27,6 +27,8 @@ require(__DIR__.'/../../../../config.php');
 
 // Require admin library.
 require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->libdir.'/tablelib.php');
+
 
 // Get parameters.
 $action = optional_param('action', null, PARAM_ALPHAEXT);
@@ -37,7 +39,8 @@ $tab = optional_param('t', 'active', PARAM_ALPHA);
 $context = context_system::instance();
 
 // Access checks.
-admin_externalpage_setup('manageskills');
+require_login();
+require_capability('tool/skills:manage', $context);
 
 // Create a page URL.
 $urlparams = [];
@@ -48,6 +51,13 @@ $pageurl = new moodle_url('/admin/tool/skills/manage/list.php', $urlparams);
 $PAGE->set_context($context);
 $PAGE->set_url($pageurl);
 $PAGE->set_cacheable(false);
+
+// Further prepare the page.
+$PAGE->set_heading(get_string('skillslisthead', 'tool_skills'));
+
+// Setup the breadcrumb.
+$PAGE->navbar->add(get_string('tools', 'admin'), new moodle_url('/admin/category.php', array('category' => 'tool')));
+$PAGE->navbar->add(get_string('pluginname', 'tool_skills'), $pageurl);
 
 // Process actions.
 if ($action !== null && confirm_sesskey()) {
@@ -129,7 +139,6 @@ $table->set_filterset($filterset);
 
 // Header.
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('skillslisthead', 'tool_skills'));
 
 // Skills description.
 echo get_string('skillslist_desc', 'tool_skills');
