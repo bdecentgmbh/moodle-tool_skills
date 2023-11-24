@@ -51,8 +51,7 @@ $capabilities = array(
         'contextlevel' => CONTEXT_SYSTEM,
         'riskbitmask' => RISK_XSS | RISK_CONFIG,
         'archetypes' => array(
-            'manager' => CAP_ALLOW,
-            'user' => CAP_ALLOW
+            'manager' => CAP_ALLOW
         ),
     ),
 
