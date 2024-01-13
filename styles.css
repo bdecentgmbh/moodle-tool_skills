@@ -50,3 +50,6 @@ body.behat-site .toolskills-status-switch input.custom-control-input {
 #page-user-profile li.contentnode.toolskill-courses-points {
     padding-top: 20px;
 }
+body.module-skills .activity-header {
+    display: none;
+}

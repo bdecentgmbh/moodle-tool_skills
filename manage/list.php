@@ -56,7 +56,7 @@ $PAGE->set_cacheable(false);
 $PAGE->set_heading(get_string('skillslisthead', 'tool_skills'));
 
 // Setup the breadcrumb.
-$PAGE->navbar->add(get_string('tools', 'admin'), new moodle_url('/admin/category.php', array('category' => 'tool')));
+$PAGE->navbar->add(get_string('tools', 'admin'), new moodle_url('/admin/category.php', ['category' => 'tool']));
 $PAGE->navbar->add(get_string('pluginname', 'tool_skills'), $pageurl);
 
 // Process actions.

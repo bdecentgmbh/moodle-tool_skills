@@ -104,10 +104,11 @@ echo $OUTPUT->heading(get_string('assignskills', 'tool_skills'));
 echo get_string('assignskills_desc', 'tool_skills');
 
 // Create skills button to create new skill.
+$createbutton = '';
 if (has_capability('tool/skills:manage', \context_system::instance())) {
-    $createbutton = $OUTPUT->box_start();
+    $createbutton .= $OUTPUT->box_start();
     $createbutton .= $OUTPUT->single_button(
-            new \moodle_url('/admin/tool/skills/manage/edit.php', array('sesskey' => sesskey())),
+            new \moodle_url('/admin/tool/skills/manage/edit.php', ['sesskey' => sesskey()]),
             get_string('createskill', 'tool_skills'), 'get');
     $createbutton .= $OUTPUT->box_end();
 }

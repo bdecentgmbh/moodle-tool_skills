@@ -24,9 +24,13 @@
 
 namespace tool_skills;
 
+defined('MOODLE_INTERNAL') || die();
+
 use completion_info;
 use moodle_exception;
 use stdClass;
+
+require_once($CFG->dirroot.'/admin/tool/skills/lib.php');
 
 /**
  * Manage the skills for courses. Trigger skills to assign point for users.
@@ -60,7 +64,7 @@ class courseskills extends \tool_skills\allocation_method {
     }
 
     /**
-     * Create the retunr the clas instance for this skillcourse id.
+     * Create the return the clas instance for this skillcourse id.
      *
      * @param int $courseid
      * @return self
@@ -70,7 +74,7 @@ class courseskills extends \tool_skills\allocation_method {
     }
 
     /**
-     * Create the retunr the clas instance for this skillcourse id.
+     * Fetch to the skills course data .
      *
      * @param int $skillid
      * @return self
@@ -105,6 +109,7 @@ class courseskills extends \tool_skills\allocation_method {
         return array_map(fn($sk) => skills::get($sk->skill), $skills);
     }
 
+
     /**
      * Remove the course skills records.
      *
@@ -114,6 +119,8 @@ class courseskills extends \tool_skills\allocation_method {
         global $DB;
 
         $DB->delete_records('tool_skills_courses', ['courseid' => $this->courseid]);
+
+        \tool_skills\helper::extend_addons_remove_course_instance($this->courseid);
 
         $this->get_logs()->delete_method_log($this->courseid, 'course');
     }
@@ -193,7 +200,7 @@ class courseskills extends \tool_skills\allocation_method {
      * @return void
      */
     public function manage_course_completions(int $userid) {
-        global $CFG;
+        global $CFG, $DB;
 
         require_once($CFG->dirroot . '/lib/completionlib.php');
 
@@ -204,12 +211,36 @@ class courseskills extends \tool_skills\allocation_method {
             // Get course skills records.
             $skills = $this->get_instance_skills();
             foreach ($skills as $skillcourseid => $skill) {
+
                 // Create a skill course record instance for this skill.
                 $this->set_skill_instance($skillcourseid);
-                $skill->assign_skills($this, $userid);
+                // Get the data.
+                $csdata = $this->build_data();
+
+                // Start the database transaction.
+                $transaction = $DB->start_delegated_transaction();
+
+                switch ($csdata->uponcompletion) {
+
+                    case skills::COMPLETIONFORCELEVEL:
+                        $skill->force_level($this, $csdata->level, $userid);
+                        break;
+
+                    case skills::COMPLETIONSETLEVEL:
+                        $skill->moveto_level($this, $csdata->level, $userid);
+                        break;
+
+                    case skills::COMPLETIONPOINTS:
+                        $skill->increase_points($this, $csdata->points, $userid);
+                        break;
+                }
+
+                // End the database transaction.
+                $transaction->allow_commit();
             }
         }
     }
+
 
     /**
      * Manage users completion.

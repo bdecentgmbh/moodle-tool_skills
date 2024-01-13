@@ -98,7 +98,7 @@ class user {
      * @return array
      */
     public function get_user_skills() {
-        global $DB;
+        global $DB, $CFG;
 
         // Fetch the list of user enrolled courses.
         $courses = enrol_get_users_courses($this->userid, true, 'id');
@@ -116,7 +116,7 @@ class user {
             FROM {tool_skills_courses} tscs
             JOIN {tool_skills} ts ON ts.id = tscs.skill
             LEFT JOIN {tool_skills_userpoints} up ON up.skill = ts.id AND up.userid = :userid
-            WHERE tscs.status = :enabled AND tscs.courseid $insql";
+            WHERE tscs.status = :enabled AND ts.status = 1 AND ts.archived = 0 AND tscs.courseid $insql";
 
         $list = $DB->get_records_sql($sql, ['userid' => $this->userid, 'enabled' => 1] + $inparams);
 
@@ -128,6 +128,9 @@ class user {
             // Skill courses.
             $point->skillcourse = courseskills::get($point->courseid);
             $point->skillcourse->set_skill_instance($point->id);
+
+            // Extend addons to inlcude its skill data.
+            \tool_skills\helper::extend_addons_add_userskills_data($point);
 
             $point->userpoints = $DB->get_record('tool_skills_userpoints', ['skill' => $point->skill, 'userid' => $this->userid]);
             // Skill levels.
@@ -194,5 +197,37 @@ class user {
         return null;
     }
 
+    /**
+     * Get user proficiency level.
+     *
+     * @param int $skillid
+     * @param int $points
+     * @return string
+     */
+    public function get_user_proficency_level(int $skillid, int $points) {
+
+        $skill = skills::get($skillid);
+        $levels = $skill->get_levels();
+        foreach ($levels as $level) {
+            if ($points >= $level->points) {
+                $proficiencylevel = $level->name;
+            }
+        }
+
+        return $proficiencylevel ?? '';
+    }
+
+    /**
+     * Get the user percentage in the skill.
+     *
+     * @param int $skillid Skill ID
+     * @param int $points.
+     * @return string
+     */
+    public function get_user_percentage(int $skillid, $points) {
+        $skillpoint = skills::get($skillid)->get_points_to_earnskill();
+        $percentage = ($points / $skillpoint) * 100;
+        return ((int) $percentage) . '%';
+    }
 
 }

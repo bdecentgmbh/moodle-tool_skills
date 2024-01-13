@@ -49,7 +49,7 @@ class helper {
         if (has_capability('tool/skills:manage', $PAGE->context)) {
             // Setup create template button on page.
             $caption = get_string('createskill', 'tool_skills');
-            $editurl = new \moodle_url('/admin/tool/skills/manage/edit.php', array('sesskey' => sesskey()));
+            $editurl = new \moodle_url('/admin/tool/skills/manage/edit.php', ['sesskey' => sesskey()]);
 
             // IN Moodle 4.2, primary button param depreceted.
             $primary = defined('single_button::BUTTON_PRIMARY') ? single_button::BUTTON_PRIMARY : true;
@@ -61,13 +61,125 @@ class helper {
         $button .= \html_writer::start_div('filter-form-container');
         $button .= \html_writer::link('javascript:void(0)', $OUTPUT->pix_icon('i/filter', 'Filter'), [
             'id' => 'tool-skills-filter',
-            'class' => 'sort-toolskills btn btn-primary ml-2 ' . ($filtered ? 'filtered' : '')
+            'class' => 'sort-toolskills btn btn-primary ml-2 ' . ($filtered ? 'filtered' : ''),
         ]);
         $filter = new \tool_skills_table_filter(null, ['t' => $tab]);
         $button .= \html_writer::tag('div', $filter->render(), ['id' => 'tool-skills-filterform', 'class' => 'hide']);
         $button .= \html_writer::end_div();
 
         return $button;
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public static function get_skills_list() {
+        global $DB;
+        // List of skills available.
+        $skills = $DB->get_records('tool_skills', []);
+        array_walk($skills, function(&$skill) {
+            $skill = new skills($skill->id);
+        });
+
+        return $skills;
+    }
+
+    /**
+     * Get addon extend method.
+     *
+     * @param string $method
+     * @return array
+     */
+    public static function get_addon_extend_method($method) {
+        $addon = new \tool_skills\plugininfo\skilladdon();
+        $methods = $addon->get_plugins_base($method);
+        return $methods;
+    }
+
+    /**
+     * Extend the remove skills addon.
+     *
+     * @param int $skillid Id of the skill.
+     * @return void
+     */
+    public static function extend_addons_remove_skills(int $skillid) {
+        // Extend the method from sub plugins.
+        $methods = self::get_addon_extend_method('remove_skills');
+        foreach ($methods as $method) {
+            // Trigger the skill id.
+            $method->remove_skills($skillid);
+        }
+
+    }
+
+
+    /**
+     * Remove course instance.
+     *
+     * @param int $courseid Course ID.
+     * @return void
+     */
+    public static function extend_addons_remove_course_instance(int $courseid) {
+        // Extend the method from sub plugins.
+        $methods = self::get_addon_extend_method('remove_course_instance');
+        foreach ($methods as $method) {
+            // Trigger the skill id.
+            $method->remove_course_instance($courseid);
+        }
+    }
+
+    /**
+     * Add the activity method user skills data .
+     *
+     * @param int $point
+     * @return void
+     */
+    public static function extend_addons_add_userskills_data(&$point) {
+        // Extend the method from sub plugins.
+        $methods = self::get_addon_extend_method('add_userskills_data');
+        foreach ($methods as $method) {
+            // Trigger the skill id.
+            $method->add_userskills_data($point);
+        }
+    }
+
+    /**
+     * Add to the user points content in profile page.
+     *
+     * @param int $skillstr Course ID.
+     * @param stdclass $data Data.
+     * @return void
+     */
+    public static function extend_addons_add_user_points_content(&$skillstr, $data) {
+        // Extend the method from sub plugins.
+        $methods = self::get_addon_extend_method('add_user_points_content');
+        foreach ($methods as $method) {
+            // Trigger the skill id.
+            $method->add_user_points_content($skillstr, $data);
+        }
+    }
+
+    /**
+     * Add the activity method user skills data .
+     *
+     * @param \tool_skills\allocation_method $skillobj
+     * @return string
+     */
+    public static function extend_addons_get_allocation_method($skillobj) {
+        // Extend the method from sub plugins.
+        $methods = self::get_addon_extend_method('get_allocation_method');
+        foreach ($methods as $method) {
+            // Trigger the skill id.
+            $result = $method->get_allocation_method($skillobj);
+
+            // Find the allocation method, break the check.
+            if ($result) {
+                break;
+            }
+        }
+        return $result ?? '';
     }
 
 }

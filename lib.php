@@ -68,7 +68,7 @@ function tool_skills_extend_navigation_course(navigation_node $navigation, stdCl
  * @return bool
  */
 function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $course) {
-    global $USER;
+    global $USER, $DB;
 
     // Get the learningtools category.
     if (!array_key_exists('toolskills', $tree->__get('categories'))) {
@@ -101,7 +101,6 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
         }
 
         foreach ($newskills as $skillid => $skills) {
-
             $skill = $skillslist[$skillid];
             $skillpoints = $skill->get_points_to_earnskill();
 
@@ -135,16 +134,19 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
                 $li .= html_writer::tag('p', $coursepointstr, ['class' => 'skills-points-'.$course->shortname]);
 
                 $skillstr .= html_writer::tag('li', $li);
+
+                \tool_skills\helper::extend_addons_add_user_points_content($skillstr, $data);
             }
 
             $skillstr .= html_writer::end_tag('ul'); // End the skill list.
 
-            $report = new \moodle_url('/admin/tool/skills/manage/usersreport.php', ['id' => $skillid]);
-            $skillstr .= html_writer::link($report, get_string('usersreport', 'tool_skills'));
+            if (has_capability('tool/skills:viewotherspoints', $systemcontext)) {
+                $report = new \moodle_url('/admin/tool/skills/manage/usersreport.php', ['id' => $skillid]);
+                $skillstr .= html_writer::link($report, get_string('usersreport', 'tool_skills'));
+            }
 
             $coursenode = new core_user\output\myprofile\node('toolskills', "skill_".$skill->get_data()->id,
-                '', null, null, $skillstr, null, 'toolskill-courses-points');
-
+                    '', null, null, $skillstr, null, 'toolskill-courses-points');
             $tree->add_node($coursenode);
         }
 

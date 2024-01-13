@@ -15,18 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tool skills - Plugin informations defined.
+ * List of available subplugins used in tool skills.
  *
- * @package   tool_skills
- * @copyright 2023 bdecent GmbH <https://bdecent.de>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_skills
+ * @copyright  2023 bdecent GmbH <https://bdecent.de>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2024012000;
-$plugin->requires  = 2021051700;        // Requires this Moodle version.
-$plugin->component = 'tool_skills'; // Full name of the plugin (used for diagnostics).
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release = '1.1';
-$plugin->supported = [400, 403];
+$subplugins = [
+    'skilladdon' => 'admin/tool/skills/addon',
+];

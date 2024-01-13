@@ -32,7 +32,7 @@ require_once($CFG->libdir.'/adminlib.php');
 $id = optional_param('id', null, PARAM_INT);
 
 // Get system context.
-$context = context_system::instance();
+$context = \context_system::instance();
 
 // Access checks.
 require_login();
@@ -44,10 +44,10 @@ $listurl = new moodle_url('/admin/tool/skills/manage/list.php');
 
 // Prepare the page.
 $PAGE->set_context($context);
-$PAGE->set_url(new moodle_url('/admin/tool/skills/manage/edit.php', array('id' => $id, 'sesskey' => sesskey())));
+$PAGE->set_url(new moodle_url('/admin/tool/skills/manage/edit.php', ['id' => $id, 'sesskey' => sesskey()]));
 $PAGE->set_cacheable(false);
 
-$PAGE->navbar->add(get_string('tools', 'admin'), new moodle_url('/admin/category.php', array('category' => 'tool')));
+$PAGE->navbar->add(get_string('tools', 'admin'), new moodle_url('/admin/category.php', ['category' => 'tool']));
 $PAGE->navbar->add(get_string('pluginname', 'tool_skills'), $listurl);
 
 $PAGE->set_title(get_string('skills', 'tool_skills'));
@@ -65,7 +65,7 @@ if ($id !== null && $id > 0) {
 
 
 // Init form.
-$form = new \tool_skills\form\skills_form(null, array('id' => $id));
+$form = new \tool_skills\form\skills_form(null, ['id' => $id]);
 
 // If the form was submitted.
 if ($data = $form->get_data()) {

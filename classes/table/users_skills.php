@@ -126,6 +126,6 @@ class users_skills extends \table_sql implements dynamic_table {
     public function col_fullname($data) {
         global $OUTPUT;
 
-        return $OUTPUT->user_picture($data, array('size' => 35, 'includefullname' => true));
+        return $OUTPUT->user_picture($data, ['size' => 35, 'includefullname' => true]);
     }
 }

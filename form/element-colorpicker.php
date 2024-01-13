@@ -58,7 +58,7 @@ class moodlequickform_toolskills_colorpicker extends MoodleQuickForm_text implem
         if (empty($class)) {
             $class = '';
         }
-        $this->updateAttributes(array('class' => $class.' tool-skills-form-colour-picker '));
+        $this->updateAttributes(['class' => $class.' tool-skills-form-colour-picker ']);
     }
 
     /**

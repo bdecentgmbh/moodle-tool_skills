@@ -75,6 +75,7 @@ class archived_skills extends \table_sql {
         global $DB;
 
         $condition = 'archived = 1';
+
         // Filter the category.
         if ($this->filterset->has_filter('category')) {
             $values = $this->filterset->get_filter('category')->get_filter_values();
@@ -90,16 +91,6 @@ class archived_skills extends \table_sql {
     }
 
     /**
-     * Name of the skill column. Format the string to support multilingual.
-     *
-     * @param stdClass $row
-     * @return string
-     */
-    public function col_name(stdClass $row) : string {
-        return format_string($row->name);
-    }
-
-    /**
      * Description of the skill.
      *
      * @param stdClass $row
@@ -107,6 +98,16 @@ class archived_skills extends \table_sql {
      */
     public function col_description(stdClass $row) : string {
         return format_text($row->description, FORMAT_HTML, ['overflow' => false]);
+    }
+
+    /**
+     * Name of the skill column. Format the string to support multilingual.
+     *
+     * @param stdClass $row
+     * @return string
+     */
+    public function col_name(stdClass $row) : string {
+        return format_string($row->name);
     }
 
     /**
@@ -165,13 +166,13 @@ class archived_skills extends \table_sql {
         // Base url to edit the skills.
         $baseurl = new \moodle_url('/admin/tool/skills/manage/edit.php', [
             'id' => $row->id,
-            'sesskey' => \sesskey()
+            'sesskey' => \sesskey(),
         ]);
 
         // Skills List URL.
         $listurl = new \moodle_url('/admin/tool/skills/manage/list.php', [
             'id' => $row->id,
-            'sesskey' => \sesskey()
+            'sesskey' => \sesskey(),
         ]);
 
         $actions = [];
@@ -180,16 +181,16 @@ class archived_skills extends \table_sql {
         $actions[] = [
             'url' => new \moodle_url($listurl, ['action' => 'delete', 't' => 'archive']),
             'icon' => new \pix_icon('t/delete', \get_string('delete')),
-            'attributes' => array('class' => 'action-delete'),
-            'action' => new \confirm_action(get_string('deleteskill', 'tool_skills'))
+            'attributes' => ['class' => 'action-delete'],
+            'action' => new \confirm_action(get_string('deleteskill', 'tool_skills')),
         ];
 
         // Unarchive the skills.
         $actions[] = [
             'url' => new \moodle_url($listurl, ['action' => 'active']),
             'icon' => new \pix_icon('f/active', \get_string('active', 'tool_skills'), 'tool_skills'),
-            'attributes' => array('class' => 'action-active'),
-            'action' => new \confirm_action(get_string('activeskillwarning', 'tool_skills'))
+            'attributes' => ['class' => 'action-active'],
+            'action' => new \confirm_action(get_string('activeskillwarning', 'tool_skills')),
         ];
 
         $actionshtml = [];
@@ -203,7 +204,7 @@ class archived_skills extends \table_sql {
                 $action['url'],
                 $action['icon'],
                 ($action['action'] ?? null),
-                $action['attributes']
+                $action['attributes'],
             );
         }
         return \html_writer::div(join('', $actionshtml), 'skill-item-actions item-actions mr-0');

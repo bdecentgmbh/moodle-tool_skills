@@ -31,7 +31,7 @@ require_once($CFG->libdir.'/formslib.php');
 
 use context_system;
 use html_writer;
-use \tool_skills\skills;
+use tool_skills\skills;
 
 /**
  * Skills create/edit form.
@@ -178,7 +178,7 @@ class skills_form extends \moodleform {
             if ($i == 0  && !$mform->getElementValue("levels[$i][name]")) {
                 $mform->setDefaults([
                     "levels[$i][name]" => get_string('skillslevel', 'tool_skills') . ' ' . $i,
-                    "levels[$i][points]" => '0'
+                    "levels[$i][points]" => '0',
                 ]);
             }
 
@@ -233,7 +233,7 @@ class skills_form extends \moodleform {
         $defaultvalues = (object) $defaultvalues;
 
         $filemanagers = [
-            'image' => 'image'
+            'image' => 'image',
         ];
 
         // Levels count.
@@ -282,7 +282,7 @@ class skills_form extends \moodleform {
         $data = (object) $data;
 
         $filemanagers = [
-            'image' => 'image'
+            'image' => 'image',
         ];
 
         $levelscount = $data->levelscount;
@@ -321,7 +321,7 @@ class skills_form extends \moodleform {
             'subdirs' => true,
             'maxfiles' => 1,
             'maxbytes' => 1000000,
-            'context' => $context ?: $PAGE->context
+            'context' => $context ?: $PAGE->context,
         ];
     }
 

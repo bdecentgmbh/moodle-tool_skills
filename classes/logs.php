@@ -52,6 +52,7 @@ class logs {
     /**
      * Add the allocated user points and method of allocation to the logs.
      *
+     * @param int $skillid ID of the skill
      * @param int $userid ID of the user earned the point
      * @param int $points Points the user earned, Contains negative points.
      * @param int $methodid Method id. ID of the table.
@@ -59,19 +60,27 @@ class logs {
      * @param int $status Type of the points awarded. 1 for increase, 0 for negative points.
      * @return int ID of the logs inserted ID.
      */
-    public function add(int $userid, int $points, int $methodid, string $method, int $status=1) {
+    public function add(int $skillid, int $userid, int $points, int $methodid, string $method, int $status=1) {
         global $DB;
 
-        $record = [
-            'userid'      => $userid,
-            'points'      => $points,
-            'methodid'    => $methodid,
-            'method'      => $method,
-            'status'      => $status,
-            'timecreated' => time()
-        ];
-
-        return $DB->insert_record('tool_skills_awardlogs', $record);
+        if ($record = $DB->get_record('tool_skills_awardlogs', ['userid' => $userid,
+            'method' => $method,
+            'methodid' => $methodid,
+            ])) {
+            $record->points  = $points;
+            $DB->update_record('tool_skills_awardlogs', $record);
+        } else {
+            $record = [
+                'skill'       => $skillid,
+                'userid'      => $userid,
+                'points'      => $points,
+                'methodid'    => $methodid,
+                'method'      => $method,
+                'status'      => $status,
+                'timecreated' => time(),
+            ];
+            return $DB->insert_record('tool_skills_awardlogs', $record);
+        }
     }
 
     /**
