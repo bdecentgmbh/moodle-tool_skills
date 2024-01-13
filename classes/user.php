@@ -221,7 +221,7 @@ class user {
      * Get the user percentage in the skill.
      *
      * @param int $skillid Skill ID
-     * @param int $points.
+     * @param int $points Point
      * @return string
      */
     public function get_user_percentage(int $skillid, $points) {
