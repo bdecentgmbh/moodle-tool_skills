@@ -64,7 +64,7 @@ class courseskills extends \tool_skills\allocation_method {
     }
 
     /**
-     * Create the return the clas instance for this skillcourse id.
+     * Create the retun the clas instance for this skillcourse id.
      *
      * @param int $courseid
      * @return self
