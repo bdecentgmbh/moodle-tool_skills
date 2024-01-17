@@ -79,15 +79,15 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
     And I click on "Save changes" "button"
     And I should see "Begineer" in the "tool_skills_list" "table"
     And I click on ".skill-item-actions .action-archive" "css_element" in the "begineer" "table_row"
-    And I should see "Are you sure! do you want to archive this skill and its levels" in the ".confirmation-dialogue" "css_element"
-    And I click on "Yes" "button" in the ".confirmation-dialogue" "css_element"
+    And I should see "archive" message confirmation
+    And I navigate to confirmation
     And I should see "Begineer" in the "tool_skills_archived_list" "table"
     And I click on "Active skills" "link"
     Then I should see "Skills are not created yet or not in use"
     And I click on "Archived skills" "link"
     And I click on ".skill-item-actions .action-active" "css_element" in the "begineer" "table_row"
-    And I should see "Are you sure! do you want to activate this skill and its levels" in the ".confirmation-dialogue" "css_element"
-    And I click on "Yes" "button" in the ".confirmation-dialogue" "css_element"
+    And I should see "activate" message confirmation
+    And I navigate to confirmation
     And I should see "Begineer" in the "tool_skills_list" "table"
 
   @javascript
@@ -100,11 +100,11 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
       | Level #0 point  | 10       |
     And I should see "Begineer" in the "tool_skills_list" "table"
     And I click on ".skill-item-actions .action-archive" "css_element" in the "begineer" "table_row"
-    And I click on "Yes" "button" in the ".confirmation-dialogue" "css_element"
+    And I navigate to confirmation
     And I click on "Archived skills" "link"
     And I click on ".skill-item-actions .action-delete" "css_element" in the "begineer" "table_row"
-    And I should see "Are you sure! do you want to delete this skill and its levels" in the ".confirmation-dialogue" "css_element"
-    And I click on "Yes" "button" in the ".confirmation-dialogue" "css_element"
+    And I should see "delete" message confirmation
+    And I navigate to confirmation
     Then I should not see "Begineer" in the "#region-main" "css_element"
     And I create skill with the following fields to these values:
       | Skill name      | Critical thinker |
@@ -117,11 +117,11 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
     Then I should see "Critical thinker"
     And I navigate to skills
     And I click on ".skill-item-actions .action-archive" "css_element" in the "critical-thinker" "table_row"
-    And I click on "Yes" "button" in the ".confirmation-dialogue" "css_element"
+    And I navigate to confirmation
     And I click on "Archived skills" "link"
     And I click on ".skill-item-actions .action-delete" "css_element" in the "critical-thinker" "table_row"
-    And I should see "Are you sure! do you want to delete this skill and its levels" in the ".confirmation-dialogue" "css_element"
-    And I click on "Yes" "button" in the ".confirmation-dialogue" "css_element"
+    And I should see "delete" message confirmation
+    And I navigate to confirmation
     Then I am on "Course 1" course homepage
     And I click on "More" "link" in the ".secondary-navigation" "css_element"
     And I click on "Manage skills" "link"
