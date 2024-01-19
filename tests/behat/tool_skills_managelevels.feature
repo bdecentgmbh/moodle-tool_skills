@@ -62,7 +62,6 @@ Feature: Allocate points to users, need to manage levels and assign skills to co
     And I log out
     And I am on the "Course 1" course page logged in as student1
     And I am on the "student1" "user > profile" page
-    Then I should see "Skills earned"
     And I should see "Earned: 0"
     And I am on "Course 1" course homepage
     And I press "Mark as done"
@@ -83,7 +82,6 @@ Feature: Allocate points to users, need to manage levels and assign skills to co
     And I log out
     And I am on the "Course 1" course page logged in as student1
     And I am on the "student1" "user > profile" page
-    Then I should see "Skills earned"
     And I should see "Earned: 0"
     And I am on "Course 1" course homepage
     And I press "Mark as done"

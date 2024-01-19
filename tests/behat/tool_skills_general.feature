@@ -145,8 +145,7 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
       | Level #3 name | Level 3 |
     And I press "Save changes"
     Then I am on "Course 1" course homepage
-    And I click on "More" "link" in the ".secondary-navigation" "css_element"
-    And I click on "Manage skills" "link"
+    And I navigate to "Manage skills" in current page administration
     And I should see "Begineer"
     And I click on ".skill-course-actions .action-edit" "css_element"
     And I should see "Set course skills" in the ".modal-header" "css_element"
