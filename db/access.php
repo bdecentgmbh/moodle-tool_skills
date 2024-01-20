@@ -36,13 +36,14 @@ $capabilities = [
         ],
     ],
 
-    'tool/skills:managecourseskills' => [
+    'tool/skills:managecourseskillslist' => [
         'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
+        'contextlevel' => CONTEXT_COURSE,
         'riskbitmask' => RISK_XSS | RISK_CONFIG,
         'archetypes' => [
-            'manager' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
         ],
     ],
 

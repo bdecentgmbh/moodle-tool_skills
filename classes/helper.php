@@ -80,10 +80,34 @@ class helper {
         // List of skills available.
         $skills = $DB->get_records('tool_skills', []);
         array_walk($skills, function(&$skill) {
-            $skill = new skills($skill->id);
+            $skill = \tool_skills\skills::get($skill->id);
         });
 
         return $skills;
+    }
+
+    /**
+     * Get the list of completed skills of the user.
+     *
+     * @param int $userid
+     * @return array
+     */
+    public static function get_user_completedskills(int $userid) {
+        global $DB;
+        // List of skills available.
+        $skills = \tool_skills\user::get($userid)->get_user_skills();
+
+        foreach ($skills as $skill) {
+            $skillpoint = $skill->skillobj->get_points_to_earnskill();
+            $points = $skill->userpoints->points;
+            $percentage = ($points / $skillpoint) * 100;
+
+            if ($percentage >= 100) {
+                $completed[] = $skill->id;
+            }
+        }
+
+        return array_unique($completed);
     }
 
     /**

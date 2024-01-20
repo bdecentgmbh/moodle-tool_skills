@@ -37,7 +37,7 @@ function tool_skills_extend_navigation_course(navigation_node $navigation, stdCl
     global $PAGE;
 
     $addnode = $context->contextlevel === CONTEXT_COURSE;
-    $addnode = $addnode && has_capability('tool/skills:managecourseskills', $context);
+    $addnode = $addnode && has_capability('tool/skills:managecourseskillslist', $context);
     if ($addnode) {
         $id = $context->instanceid;
         $url = new moodle_url('/admin/tool/skills/manage/courselist.php', [
@@ -52,7 +52,7 @@ function tool_skills_extend_navigation_course(navigation_node $navigation, stdCl
         if (empty($navigation->get_children_key_list())) {
             $navigation->add_node($node, null);
         } else {
-            $navigation->add_node($node, 'gradebooksetup');
+            $navigation->add_node($node, 'coursereports');
         }
     }
 }

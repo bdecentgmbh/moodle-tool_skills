@@ -31,6 +31,7 @@ function xmldb_tool_skills_upgrade($oldversion) {
     global $CFG, $DB;
 
     $dbman = $DB->get_manager();
+
     if ($oldversion < 2023102505) {
         $table = new xmldb_table('tool_skills_awardlogs');
         $field = new xmldb_field('skill', XMLDB_TYPE_INTEGER, 18, null, null, null, null, 'id');
@@ -40,5 +41,6 @@ function xmldb_tool_skills_upgrade($oldversion) {
         }
         upgrade_plugin_savepoint(true, 2023102505, 'tool', 'skills');
     }
+
     return true;
 }

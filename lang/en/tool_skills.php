@@ -28,7 +28,7 @@ $string['pluginname'] = 'Skills';
 $string['skills'] = 'Skills';
 // ...Skills capabilities.
 $string['skills:manage'] = 'Manage skills';
-$string['skills:managecourseskills'] = 'Manage course skills';
+$string['skills:managecourseskillslist'] = 'Manage course skills';
 $string['skills:viewotherspoints'] = 'View others points';
 // ...error strings.
 $string['error:skillsnotfound'] = 'Skill record not found for the given id';
