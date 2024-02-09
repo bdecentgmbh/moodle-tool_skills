@@ -233,7 +233,7 @@ class skills_form extends \moodleform {
         $defaultvalues = (object) $defaultvalues;
 
         $filemanagers = [
-            'image' => 'image',
+            'image' => 'levelimage',
         ];
 
         // Levels count.
@@ -242,13 +242,11 @@ class skills_form extends \moodleform {
         // Prepare the file manager fields to store images.
         foreach ($filemanagers as $configname => $filearea) {
             // For all levels in this skills.
-            for ($i = 1; $i <= $levelscount; $i++) {
+            for ($i = 0; $i <= $levelscount; $i++) {
 
                 if (empty($defaultvalues->levels[$i])) {
                     continue;
                 }
-                // Fileare for this level.
-                $filearea .= '_' . $i;
                 // Draft item id.
                 $draftitemid = file_get_submitted_draft_itemid($filearea);
                 // Use the level id as item id.
@@ -263,6 +261,7 @@ class skills_form extends \moodleform {
                 $defaultvalues->levels[$i][$configname] = $draftitemid;
             }
         }
+
     }
 
     /**
@@ -282,7 +281,7 @@ class skills_form extends \moodleform {
         $data = (object) $data;
 
         $filemanagers = [
-            'image' => 'image',
+            'image' => 'levelimage',
         ];
 
         $levelscount = $data->levelscount;
@@ -290,16 +289,16 @@ class skills_form extends \moodleform {
         // Prepare the file manager fields to store images.
         foreach ($filemanagers as $configname => $filearea) {
 
-            for ($i = 1; $i <= $levelscount; $i++) {
+            for ($i = 0; $i <= $levelscount; $i++) {
 
                 if (empty($data->levels[$i])) {
                     continue;
                 }
 
+                // Level id used as item id.
                 $levelid = $data->levels[$i]['id'] ?: 0;
-                // Now save the files in correct part of the File API.
-                $filearea .= '_' . $i;
 
+                // Now save the files in correct part of the File API.
                 file_save_draft_area_files(
                     $data->levels[$i][$configname], $context->id, 'tool_skills',
                     $filearea, $levelid, $this->get_editor_options($context)

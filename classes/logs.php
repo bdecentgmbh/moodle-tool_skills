@@ -22,6 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_skills;
+use moodle_exception;
 
 /**
  * Maintain the user log of points allocations.
@@ -50,6 +51,24 @@ class logs {
     }
 
     /**
+     * Get function.
+     *
+     * @return void
+     */
+    public function get_log(int $skillid, int $userid, int $methodid, string $method, int $status=1) {
+        global $DB;
+
+        if ($log = $DB->get_record('tool_skills_awardlogs', ['skill' => $skillid, 'userid' => $userid,
+        'method' => $method, 'methodid' => $methodid, ])) {
+            return $log;
+        } else {
+            throw new moodle_exception('skillawardnotfound', 'tool_skills');
+        }
+
+        return false;
+    }
+
+    /**
      * Add the allocated user points and method of allocation to the logs.
      *
      * @param int $skillid ID of the skill
@@ -63,23 +82,18 @@ class logs {
     public function add(int $skillid, int $userid, int $points, int $methodid, string $method, int $status=1) {
         global $DB;
 
-        if ($record = $DB->get_record('tool_skills_awardlogs', ['userid' => $userid,
-            'method' => $method,
-            'methodid' => $methodid,
-            ])) {
-            $record->points  = $points;
-            $DB->update_record('tool_skills_awardlogs', $record);
-        } else {
-            $record = [
-                'skill'       => $skillid,
-                'userid'      => $userid,
-                'points'      => $points,
-                'methodid'    => $methodid,
-                'method'      => $method,
-                'status'      => $status,
-                'timecreated' => time(),
-            ];
-            return $DB->insert_record('tool_skills_awardlogs', $record);
+        if (!$DB->record_exists('tool_skills_awardlogs', ['skill' => $skillid, 'userid' => $userid,
+            'method' => $method, 'methodid' => $methodid, ])) {
+                $record = [
+                    'skill'       => $skillid,
+                    'userid'      => $userid,
+                    'points'      => $points,
+                    'methodid'    => $methodid,
+                    'method'      => $method,
+                    'status'      => $status,
+                    'timecreated' => time(),
+                ];
+                return $DB->insert_record('tool_skills_awardlogs', $record);
         }
     }
 

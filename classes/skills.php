@@ -304,12 +304,12 @@ class skills {
 
         $levels = $this->get_levels(); // List of levels, available in the skill.
 
-        $pointstocomplete = 0;
-        foreach ($levels as $levelid => $level) {
-            $pointstocomplete += $level->points; // Increase the level points to find the max skill point.
+        if (!empty($levels)) {
+            $levelpoints = array_column($levels, 'points');
+            $pointstocomplete = max($levelpoints);
         }
 
-        return $pointstocomplete;
+        return $pointstocomplete ?? 0;
     }
 
     /**

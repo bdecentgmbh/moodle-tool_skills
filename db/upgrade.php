@@ -38,8 +38,29 @@ function xmldb_tool_skills_upgrade($oldversion) {
         // Conditionally launch add field timecreated.
         if ($dbman->table_exists($table) && !$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
+
         }
         upgrade_plugin_savepoint(true, 2023102505, 'tool', 'skills');
+    }
+
+    if ($oldversion < 2024019004) {
+
+        $table = new xmldb_table('tool_skills_awardlogs');
+        $field = new xmldb_field('skill', XMLDB_TYPE_INTEGER, 18, null, null, null, null, 'id');
+        // Conditionally launch add field timecreated.
+        if ($dbman->table_exists($table) && $dbman->field_exists($table, $field)) {
+
+            $logs = $DB->get_records('tool_skills_awardlogs', ['method' => 'course']);
+            $skills = $DB->get_records('tool_skills_courses', []);
+
+            foreach ($logs as $log) {
+                if (isset($skills[$log->methodid])) {
+                    $skill = $skills[$log->methodid]->skill;
+                    $DB->update_record('tool_skills_awardlogs', ['id' => $log->id, 'skill' => $skill]);
+                }
+            }
+        }
+        upgrade_plugin_savepoint(true, 2024019004, 'tool', 'skills');
     }
 
     return true;

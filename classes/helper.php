@@ -97,17 +97,46 @@ class helper {
         // List of skills available.
         $skills = \tool_skills\user::get($userid)->get_user_skills();
 
+        $completed = [];
         foreach ($skills as $skill) {
             $skillpoint = $skill->skillobj->get_points_to_earnskill();
-            $points = $skill->userpoints->points;
+            if ($skillpoint <= 0) {
+                continue;
+            }
+
+            $points = $skill->userpoints->points ?? 0;
             $percentage = ($points / $skillpoint) * 100;
 
             if ($percentage >= 100) {
-                $completed[] = $skill->id;
+                $completed[] = $skill->skill;
             }
         }
 
-        return array_unique($completed);
+        return !empty($completed) ? array_unique($completed) : [];
+    }
+
+    /**
+     * Calculate the skills total points assigned for the given courses.
+     *
+     * @param array $courseids
+     * @return int
+     */
+    public static function get_courses_skill_points(array $courseids) {
+        global $DB;
+
+        list($insql, $inparams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'skp');
+
+        $sql = "SELECT tsl.skill, MAX(tsl.points) AS skillpoints
+        FROM {tool_skills_levels} tsl
+        JOIN {tool_skills_courses} tsc ON tsc.skill = tsl.skill
+        WHERE tsc.status = 1 AND tsc.courseid $insql
+        GROUP BY tsl.skill";
+
+        $skills = $DB->get_records_sql($sql, $inparams);
+
+        $skillpoints = array_sum(array_column($skills, 'skillpoints'));
+
+        return $skillpoints;
     }
 
     /**
