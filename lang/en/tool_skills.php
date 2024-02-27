@@ -28,7 +28,7 @@ $string['pluginname'] = 'Skills';
 $string['skills'] = 'Skills';
 // ...Skills capabilities.
 $string['skills:manage'] = 'Manage skills';
-$string['skills:managecourseskills'] = 'Manage course skills';
+$string['skills:managecourseskillslist'] = 'Manage course skills';
 $string['skills:viewotherspoints'] = 'View others points';
 // ...error strings.
 $string['error:skillsnotfound'] = 'Skill record not found for the given id';
@@ -108,6 +108,12 @@ $string['completionpoints_help'] = 'Enter the number of skill points to be award
 <li>Entering "50" will add 50 points.</li>
 <li>Entering "-20" will deduct 20 points.</li>';
 $string['completionlevel_help'] = 'Choose the desired skill level for this course. Upon completion, the student will receive the corresponding number of points required to achieve the selected level.';
+// ...Course module string.
+$string['uponmodcompletion'] = 'Upon activity completion';
+$string['uponmodcompletion_help'] = '<ul><li><b>Add Points:</b> Upon course module completion, award the specified number of skill points. (Note: Entering negative numbers will result in a reduction of points.)</li><li><b>Add Points By Grade:</b> Upon course module completion,  adds as many points as the grade achieved in the activity.</li>
+<li><b>Set Level:</b> Upon course module completion, grant the points needed to reach the specified level, unless the student already has more points.</li>
+<li><b>Force Level:</b> Upon course module completion, adjust the points to match the amount required for the chosen level, regardless of the student\'s prior level/points. This may lead to students having fewer points than before.</li></ul>';
+$string['completionpointsgrade'] = 'Points by grade';
 // ...Course skill table strings.
 $string['assignskills'] = 'Assign skills';
 $string['assignskills_desc'] = 'Customize the skills associated with this course. Activate or deactivate specific skills to align with your teaching objectives. By default, all skills are disabled. Simply enable the ones that fit your course content and goals. ';
@@ -121,7 +127,7 @@ $string['usersreport'] = 'View users points for this skill';
 $string['skillpoints'] = '{$a} - users points';
 $string['skillsotherspoint_desc'] = 'This table displays the points earned by other users in this skill. It provides an overview of the achievements and progress of peers within the same skill category';
 // ...Privacy API strings.
-$string['userpoints'] = 'User points earned';
+$string['userpoints'] = 'User earned points';
 $string['privacy:userpoint'] = 'User point';
 $string['privacy:awardlogs'] = 'Points awarded';
 
@@ -139,3 +145,36 @@ $string['privacy:metadata:awardlogs:timecreated'] = 'Time when awards were logge
 $string['privacy:metadata:awardlogs'] = 'Metadata for logs recording user points awarded for each method';
 $string['privacy:metadata:userpointsexplanation'] = 'The skills store the points users earned for the skill and log the method by which they earned it, either through course completion or activity completion.';
 
+// ...Reports source builder.
+$string['formtab'] = 'Skills';
+$string['maximum'] = 'Maximum';
+$string['skillsrpeort'] = 'Skills';
+$string['skillstats'] = 'Skill statistics';
+$string['coursesused'] = 'Courses using the skill';
+$string['skillusers'] = 'Users that have any points for skill';
+$string['skillproficients'] = 'Users that are proficient in this skill';
+$string['userskillentity'] = 'User skill';
+$string['timemodified'] = 'Time modified';
+$string['activitiesentity'] = 'Activities';
+$string['modname'] = 'Mod name';
+$string['modcompletionstatus'] = 'Completion status';
+
+$string['activitiestatsentity'] = 'Activity completion';
+$string['incomplete'] = 'In complete';
+$string['complete'] = 'Complete';
+$string['complete_pass'] = 'Passed';
+$string['complete_fail'] = 'Failed';
+$string['activityname'] = 'Activity name';
+$string['entitycategory'] = 'Category';
+$string['categoryname'] = 'Category name';
+$string['categoryidnumber'] = 'Category idnumber';
+$string['coursecount'] = 'Number of courses';
+$string['categoryvisiblity'] = 'Category visibility';
+$string['depth'] = 'Depth';
+$string['path'] = 'Category path';
+$string['conditionassignedusers'] = 'Relative role users';
+$string['conditionusercohort'] = 'Users in same cohort';
+$string['skillsdatasource'] = 'Skills';
+$string['userproficiency'] = 'Proficiency';
+$string['userpercentage'] = 'Percentage';
+$string['grade'] = 'Grade';

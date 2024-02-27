@@ -73,6 +73,7 @@
     <TABLE NAME="tool_skills_awardlogs" COMMENT="Manage the logs of the skills awarded to users">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="skill" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="9" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="points" TYPE="int" LENGTH="9" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="methodid" TYPE="int" LENGTH="9" NOTNULL="true" SEQUENCE="false"/>

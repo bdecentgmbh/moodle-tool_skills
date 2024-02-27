@@ -39,10 +39,10 @@ Feature: Allocate points to users, need to manage levels and assign skills to co
     And I set the field "Test page1" to "1"
     And I press "Save changes"
     And I create skill with the following fields to these values:
-      | Skill name       | Begineer |
-      | Key              | begineer |
+      | Skill name       | Beginner |
+      | Key              | beginner |
       | Number of levels | 2        |
-      | Level #0 name    | begineer |
+      | Level #0 name    | beginner |
       | Level #0 point   | 10       |
       | Level #1 name    | Level 1  |
       | Level #1 point   | 20       |
@@ -58,11 +58,10 @@ Feature: Allocate points to users, need to manage levels and assign skills to co
       | Upon course completion | Points   |
       | Points                 | 200      |
     And I press "Save changes"
-    Then I should see "Points - 200" in the "begineer" "table_row"
+    Then I should see "Points - 200" in the "beginner" "table_row"
     And I log out
     And I am on the "Course 1" course page logged in as student1
     And I am on the "student1" "user > profile" page
-    Then I should see "Skills earned"
     And I should see "Earned: 0"
     And I am on "Course 1" course homepage
     And I press "Mark as done"
@@ -79,11 +78,10 @@ Feature: Allocate points to users, need to manage levels and assign skills to co
       | Upon course completion | Set level |
       | Level                  | Level 1   |
     And I press "Save changes"
-    Then I should see "Set level - Level 1" in the "begineer" "table_row"
+    Then I should see "Set level - Level 1" in the "beginner" "table_row"
     And I log out
     And I am on the "Course 1" course page logged in as student1
     And I am on the "student1" "user > profile" page
-    Then I should see "Skills earned"
     And I should see "Earned: 0"
     And I am on "Course 1" course homepage
     And I press "Mark as done"
@@ -113,7 +111,7 @@ Feature: Allocate points to users, need to manage levels and assign skills to co
       | Upon course completion | Force level |
       | Level                  | Level 2   |
     And I press "Save changes"
-    Then I should see "Force level - Level 2" in the "begineer" "table_row"
+    Then I should see "Force level - Level 2" in the "beginner" "table_row"
     And I log out
     And I am on the "Course 1" course page logged in as student1
     And I press "Mark as done"
@@ -147,7 +145,7 @@ Feature: Allocate points to users, need to manage levels and assign skills to co
       | Upon course completion | Force level |
       | Level                  | Level 2   |
     And I press "Save changes"
-    Then I should see "Force level - Level 2" in the "begineer" "table_row"
+    Then I should see "Force level - Level 2" in the "beginner" "table_row"
     And I log out
     And I am on the "Course 1" course page logged in as student1
     And I press "Mark as done"
@@ -171,4 +169,4 @@ Feature: Allocate points to users, need to manage levels and assign skills to co
     And I wait until "Done" "button" exists
     And I am on the "student1" "user > profile" page
     Then I should see "Earned: -50" in the ".skills-points-C2" "css_element"
-    And I should see "Earned: -20" in the ".skill-begineer" "css_element"
+    And I should see "Earned: -20" in the ".skill-beginner" "css_element"

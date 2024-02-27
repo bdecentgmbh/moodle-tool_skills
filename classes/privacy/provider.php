@@ -27,10 +27,10 @@ use stdClass;
 use context;
 
 use core_privacy\local\metadata\collection;
-use \core_privacy\local\request\contextlist;
-use \core_privacy\local\request\userlist;
-use \core_privacy\local\request\approved_userlist;
-use \core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\contextlist;
+use core_privacy\local\request\userlist;
+use core_privacy\local\request\approved_userlist;
+use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\helper;
 use core_privacy\local\request\transform;
 use core_privacy\local\request\writer;
@@ -57,7 +57,7 @@ class provider implements
             'skill' => 'privacy:metadata:userpoints:skill',
             'points' => 'privacy:metadata:userpoints:points',
             'timecreated' => 'privacy:metadata:userpoints:timecreated',
-            'timemodified' => 'privacy:metadata:userpoints:timemodified'
+            'timemodified' => 'privacy:metadata:userpoints:timemodified',
         ];
         $collection->add_database_table('tool_skills_userpoints', $userpointsmetadata, 'privacy:metadata:userpoints');
 
@@ -67,7 +67,7 @@ class provider implements
             'points' => 'privacy:metadata:awardlogs:points',
             'methodid' => 'privacy:metadata:awardlogs:methodid',
             'method' => 'privacy:metadata:awardlogs:method',
-            'timecreated' => 'privacy:metadata:awardlogs:timecreated'
+            'timecreated' => 'privacy:metadata:awardlogs:timecreated',
         ];
         $collection->add_database_table('tool_skills_awardlogs', $awardlogsmetadata, 'privacy:metadata:awardlogs');
 
@@ -191,7 +191,7 @@ class provider implements
             return;
         }
 
-        $courses = $DB->get_records('tool_skills_courses', array('courseid' => $course->id));
+        $courses = $DB->get_records('tool_skills_courses', ['courseid' => $course->id]);
         foreach ($courses as $skillcourse) {
             $log = $DB->get_record('tool_skills_awardlogs', ['methodid' => $skillcourse->id, 'method' => 'course']);
             $points = $DB->get_record('tool_skill_userpoints', ['skill' => $log->skill, 'userid' => $log->userid]);

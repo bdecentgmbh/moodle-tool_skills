@@ -49,7 +49,7 @@ class helper {
         if (has_capability('tool/skills:manage', $PAGE->context)) {
             // Setup create template button on page.
             $caption = get_string('createskill', 'tool_skills');
-            $editurl = new \moodle_url('/admin/tool/skills/manage/edit.php', array('sesskey' => sesskey()));
+            $editurl = new \moodle_url('/admin/tool/skills/manage/edit.php', ['sesskey' => sesskey()]);
 
             // IN Moodle 4.2, primary button param depreceted.
             $primary = defined('single_button::BUTTON_PRIMARY') ? single_button::BUTTON_PRIMARY : true;
@@ -61,13 +61,178 @@ class helper {
         $button .= \html_writer::start_div('filter-form-container');
         $button .= \html_writer::link('javascript:void(0)', $OUTPUT->pix_icon('i/filter', 'Filter'), [
             'id' => 'tool-skills-filter',
-            'class' => 'sort-toolskills btn btn-primary ml-2 ' . ($filtered ? 'filtered' : '')
+            'class' => 'sort-toolskills btn btn-primary ml-2 ' . ($filtered ? 'filtered' : ''),
         ]);
         $filter = new \tool_skills_table_filter(null, ['t' => $tab]);
         $button .= \html_writer::tag('div', $filter->render(), ['id' => 'tool-skills-filterform', 'class' => 'hide']);
         $button .= \html_writer::end_div();
 
         return $button;
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public static function get_skills_list() {
+        global $DB;
+        // List of skills available.
+        $skills = $DB->get_records('tool_skills', []);
+        array_walk($skills, function(&$skill) {
+            $skill = \tool_skills\skills::get($skill->id);
+        });
+
+        return $skills;
+    }
+
+    /**
+     * Get the list of completed skills of the user.
+     *
+     * @param int $userid
+     * @return array
+     */
+    public static function get_user_completedskills(int $userid) {
+        global $DB;
+        // List of skills available.
+        $skills = \tool_skills\user::get($userid)->get_user_skills();
+
+        $completed = [];
+        foreach ($skills as $skill) {
+            $skillpoint = $skill->skillobj->get_points_to_earnskill();
+            if ($skillpoint <= 0) {
+                continue;
+            }
+
+            $points = $skill->userpoints->points ?? 0;
+            $percentage = ($points / $skillpoint) * 100;
+
+            if ($percentage >= 100) {
+                $completed[] = $skill->skill;
+            }
+        }
+
+        return !empty($completed) ? array_unique($completed) : [];
+    }
+
+    /**
+     * Calculate the skills total points assigned for the given courses.
+     *
+     * @param array $courseids
+     * @return int
+     */
+    public static function get_courses_skill_points(array $courseids) {
+        global $DB;
+
+        list($insql, $inparams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'skp');
+
+        $sql = "SELECT tsl.skill, MAX(tsl.points) AS skillpoints
+        FROM {tool_skills_levels} tsl
+        JOIN {tool_skills_courses} tsc ON tsc.skill = tsl.skill
+        WHERE tsc.status = 1 AND tsc.courseid $insql
+        GROUP BY tsl.skill";
+
+        $skills = $DB->get_records_sql($sql, $inparams);
+
+        $skillpoints = array_sum(array_column($skills, 'skillpoints'));
+
+        return $skillpoints;
+    }
+
+    /**
+     * Get addon extend method.
+     *
+     * @param string $method
+     * @return array
+     */
+    public static function get_addon_extend_method($method) {
+        $addon = new \tool_skills\plugininfo\skilladdon();
+        $methods = $addon->get_plugins_base($method);
+        return $methods;
+    }
+
+    /**
+     * Extend the remove skills addon.
+     *
+     * @param int $skillid Id of the skill.
+     * @return void
+     */
+    public static function extend_addons_remove_skills(int $skillid) {
+        // Extend the method from sub plugins.
+        $methods = self::get_addon_extend_method('remove_skills');
+        foreach ($methods as $method) {
+            // Trigger the skill id.
+            $method->remove_skills($skillid);
+        }
+
+    }
+
+
+    /**
+     * Remove course instance.
+     *
+     * @param int $courseid Course ID.
+     * @return void
+     */
+    public static function extend_addons_remove_course_instance(int $courseid) {
+        // Extend the method from sub plugins.
+        $methods = self::get_addon_extend_method('remove_course_instance');
+        foreach ($methods as $method) {
+            // Trigger the skill id.
+            $method->remove_course_instance($courseid);
+        }
+    }
+
+    /**
+     * Add the activity method user skills data .
+     *
+     * @param int $point
+     * @return void
+     */
+    public static function extend_addons_add_userskills_data(&$point) {
+        // Extend the method from sub plugins.
+        $methods = self::get_addon_extend_method('add_userskills_data');
+        foreach ($methods as $method) {
+            // Trigger the skill id.
+            $method->add_userskills_data($point);
+        }
+    }
+
+    /**
+     * Add to the user points content in profile page.
+     *
+     * @param int $skillstr Course ID.
+     * @param stdclass $data Data.
+     * @return void
+     */
+    public static function extend_addons_add_user_points_content(&$skillstr, $data) {
+        // Extend the method from sub plugins.
+        $methods = self::get_addon_extend_method('add_user_points_content');
+        foreach ($methods as $method) {
+            // Trigger the skill id.
+            $method->add_user_points_content($skillstr, $data);
+        }
+    }
+
+    /**
+     * Add the activity method user skills data .
+     *
+     * @param \tool_skills\allocation_method $skillobj
+     * @return string
+     */
+    public static function extend_addons_get_allocation_method($skillobj) {
+        // Extend the method from sub plugins.
+        $methods = self::get_addon_extend_method('get_allocation_method');
+        foreach ($methods as $method) {
+            // Trigger the skill id.
+            $result = $method->get_allocation_method($skillobj);
+
+            // Find the allocation method, break the check.
+            if ($result) {
+                break;
+            }
+        }
+        return $result ?? '';
     }
 
 }

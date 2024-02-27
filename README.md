@@ -19,7 +19,7 @@ See http://docs.moodle.org/en/Installing_plugins for details on installing Moodl
 
 Admins or users with the capability tool/skills:manage (by default given to managers) need to create skills under Site Administration > Plugins > Tools > Skills and make them available either globally or for specific course categories. 
 
-Teachers (or users with the capability tool/skills:managecourseskills) can then manage skills in their course from the "Manage skills" page which is found in the secondary navigation of the course. From there, teachers can then enable specific skills and configure how many points students earn upon completion of the course.
+Teachers (or users with the capability tool/skills:managecourseskillslist) can then manage skills in their course from the "Manage skills" page which is found in the secondary navigation of the course. From there, teachers can then enable specific skills and configure how many points students earn upon completion of the course.
 
 # Documentation
 

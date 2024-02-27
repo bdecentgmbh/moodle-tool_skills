@@ -24,35 +24,36 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
+$capabilities = [
 
     // Capability to manage skills.
-    'tool/skills:manage' => array(
+    'tool/skills:manage' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'riskbitmask' => RISK_XSS | RISK_CONFIG,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        ),
-    ),
-
-    'tool/skills:managecourseskills' => array(
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'riskbitmask' => RISK_XSS | RISK_CONFIG,
-        'archetypes' => array(
+        'archetypes' => [
             'manager' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-        ),
-    ),
+        ],
+    ],
 
-    'tool/skills:viewotherspoints' => array(
+    'tool/skills:managecourseskillslist' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'riskbitmask' => RISK_XSS | RISK_CONFIG,
+        'archetypes' => [
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+
+    'tool/skills:viewotherspoints' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'riskbitmask' => RISK_XSS | RISK_CONFIG,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        ),
-    ),
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
 
-);
+];

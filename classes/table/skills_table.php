@@ -158,13 +158,13 @@ class skills_table extends \table_sql {
         // Base url to edit the skills.
         $baseurl = new \moodle_url('/admin/tool/skills/manage/edit.php', [
             'id' => $row->id,
-            'sesskey' => \sesskey()
+            'sesskey' => \sesskey(),
         ]);
 
         // Skills List URL.
         $listurl = new \moodle_url('/admin/tool/skills/manage/list.php', [
             'id' => $row->id,
-            'sesskey' => \sesskey()
+            'sesskey' => \sesskey(),
         ]);
 
         $actions = [];
@@ -173,7 +173,7 @@ class skills_table extends \table_sql {
         $actions[] = [
             'url' => $baseurl,
             'icon' => new \pix_icon('t/edit', \get_string('edit')),
-            'attributes' => array('class' => 'action-edit')
+            'attributes' => ['class' => 'action-edit'],
         ];
 
         // Show/Hide.
@@ -184,7 +184,7 @@ class skills_table extends \table_sql {
             ) . html_writer::tag('span', '', ['class' => 'custom-control-label']),
             'custom-control custom-switch'
         );
-        $statusurl = new \moodle_url($listurl, array('action' => ($row->status) ? 'disable' : 'enable'));
+        $statusurl = new \moodle_url($listurl, ['action' => ($row->status) ? 'disable' : 'enable']);
         $statusclass = ' toolskills-status-switch ';
         $statusclass .= $row->status ? 'action-hide' : 'action-show';
         $actions[] = html_writer::link($statusurl->out(false), $checkbox, ['class' => $statusclass]);
@@ -193,8 +193,8 @@ class skills_table extends \table_sql {
         $actions[] = [
             'url' => new \moodle_url($listurl, ['t' => 'archive', 'action' => 'archive']),
             'icon' => new \pix_icon('f/archive', \get_string('archive', 'tool_skills'), 'tool_skills'),
-            'attributes' => array('class' => 'action-archive'),
-            'action' => new \confirm_action(get_string('archiveskill', 'tool_skills'))
+            'attributes' => ['class' => 'action-archive'],
+            'action' => new \confirm_action(get_string('archiveskill', 'tool_skills')),
         ];
 
         $actionshtml = [];
@@ -208,7 +208,7 @@ class skills_table extends \table_sql {
                 $action['url'],
                 $action['icon'],
                 ($action['action'] ?? null),
-                $action['attributes']
+                $action['attributes'],
             );
         }
         return html_writer::div(join('', $actionshtml), 'skill-item-actions item-actions mr-0');
@@ -225,13 +225,13 @@ class skills_table extends \table_sql {
         $temp = (object) [
             'legacyseturl' => (new moodle_url('/admin/tool/skills/manage/list.php', [
                 'id' => $row->id,
-                'sesskey' => sesskey()
+                'sesskey' => sesskey(),
                 ]))->out(false),
             'pagecontextid' => $PAGE->context->id,
             'pageurl' => $PAGE->url,
             'sesskey' => sesskey(),
             'checked' => $row->status,
-            'id' => $row->id
+            'id' => $row->id,
         ];
         return $OUTPUT->render_from_template('tool_skills/status_switch', $temp);
     }

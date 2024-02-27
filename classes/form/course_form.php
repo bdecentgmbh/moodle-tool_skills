@@ -97,6 +97,15 @@ class course_form extends \core_form\dynamic_form {
     }
 
     /**
+     * Check the access for the submit data to this form.
+     *
+     * @return bool
+     */
+    protected function check_access_for_dynamic_submission(): void {
+        // TODO: Validatation of user capability goes here.
+    }
+
+    /**
      * Get the context of this form used.
      *
      * @return \context
@@ -106,15 +115,6 @@ class course_form extends \core_form\dynamic_form {
         $courseid = $this->optional_param('courseid', 0, PARAM_INT);
 
         return $courseid ? \context_course::instance($courseid) : \context_system::instance();
-    }
-
-    /**
-     * Check the access for the submit data to this form.
-     *
-     * @return bool
-     */
-    protected function check_access_for_dynamic_submission(): void {
-        // TODO: Validatation of user capability goes here.
     }
 
     /**

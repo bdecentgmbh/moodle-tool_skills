@@ -48,7 +48,7 @@ $context = \context_course::instance($courseid);
 // Login check required.
 require_login();
 // Access checks.
-require_capability('tool/skills:managecourseskills', $context);
+require_capability('tool/skills:managecourseskillslist', $context);
 
 // Prepare the page (to make sure that all necessary information is already set even if we just handle the actions as a start).
 $PAGE->set_context($context);
@@ -104,10 +104,11 @@ echo $OUTPUT->heading(get_string('assignskills', 'tool_skills'));
 echo get_string('assignskills_desc', 'tool_skills');
 
 // Create skills button to create new skill.
+$createbutton = '';
 if (has_capability('tool/skills:manage', \context_system::instance())) {
-    $createbutton = $OUTPUT->box_start();
+    $createbutton .= $OUTPUT->box_start();
     $createbutton .= $OUTPUT->single_button(
-            new \moodle_url('/admin/tool/skills/manage/edit.php', array('sesskey' => sesskey())),
+            new \moodle_url('/admin/tool/skills/manage/edit.php', ['sesskey' => sesskey()]),
             get_string('createskill', 'tool_skills'), 'get');
     $createbutton .= $OUTPUT->box_end();
 }

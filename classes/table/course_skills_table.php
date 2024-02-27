@@ -176,13 +176,13 @@ class course_skills_table extends \table_sql {
         $baseurl = new \moodle_url('/admin/tool/skills/manage/editcourse.php', [
             'skill' => $row->id,
             'courseid' => $row->courseid ?: $this->courseid,
-            'sesskey' => \sesskey()
+            'sesskey' => \sesskey(),
         ]);
 
         // Skills List URL.
         $listurl = new \moodle_url('/admin/tool/skills/manage/courselist.php', [
             'courseid' => $row->courseid ?: $this->courseid,
-            'sesskey' => \sesskey()
+            'sesskey' => \sesskey(),
         ]);
 
         $actions = [];
@@ -191,7 +191,7 @@ class course_skills_table extends \table_sql {
         $actions[] = [
             'url' => $baseurl,
             'icon' => new \pix_icon('t/edit', \get_string('edit')),
-            'attributes' => array('class' => 'action-edit', 'data-target' => "toolskill-edit", "data-skillid" => $row->id)
+            'attributes' => ['class' => 'action-edit', 'data-target' => "toolskill-edit", "data-skillid" => $row->id],
         ];
 
         // Show/Hide.
@@ -204,8 +204,9 @@ class course_skills_table extends \table_sql {
         );
 
         // Skills status switch.
-        $statusurl = new \moodle_url($listurl, array('t' => 'archive', 'skill' => $row->id,
-            'action' => ($row->coursestatus) ? 'disable' : 'enable'));
+        $statusurl = new \moodle_url($listurl, ['t' => 'archive', 'skill' => $row->id,
+            'action' => ($row->coursestatus) ? 'disable' : 'enable',
+        ]);
         $statusclass = ' toolskills-status-switch ';
         $statusclass .= $row->coursestatus ? 'action-hide' : 'action-show';
         $actions[] = html_writer::link($statusurl->out(false), $checkbox, ['class' => $statusclass]);
@@ -221,7 +222,7 @@ class course_skills_table extends \table_sql {
                 $action['url'],
                 $action['icon'],
                 ($action['action'] ?? null),
-                $action['attributes']
+                $action['attributes'],
             );
         }
         return html_writer::div(join('', $actionshtml), 'skill-course-actions skill-actions mr-0');
@@ -238,13 +239,13 @@ class course_skills_table extends \table_sql {
         $temp = (object) [
             'legacyseturl' => (new moodle_url('/admin/tool/skills/manage/courselist.php', [
                 'id' => $row->id,
-                'sesskey' => sesskey()
+                'sesskey' => sesskey(),
             ]))->out(false),
             'pagecontextid' => $PAGE->context->id,
             'pageurl' => $PAGE->url,
             'sesskey' => sesskey(),
             'checked' => $row->coursestatus,
-            'id' => $row->skillcourseid
+            'id' => $row->skillcourseid,
         ];
         return $OUTPUT->render_from_template('tool_skills/status_switch', $temp);
     }
