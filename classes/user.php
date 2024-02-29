@@ -148,16 +148,13 @@ class user {
     public function remove_user_skillpoints() {
         global $DB;
 
-        // Fetch the list of user points record withdata skill data.
-        $skills = $this->get_user_points(false);
-        // List of skill ids.
-        $skillids = array_column($skills, 'id');
-        // Delete user points.
-        $DB->delete_records('tool_skills_userpoints', ['id' => $skillids]);
-        // Delete the user points log.
-        $this->logs->delete_user_log($this->userid);
+        if ($DB->delete_records('tool_skills_userpoints', ['userid' => $this->userid])) {
+            $this->logs->delete_user_log($this->userid);
+            return true;
+        }
+        return false;
     }
-
+    
     /**
      * Get user points list.
      *
