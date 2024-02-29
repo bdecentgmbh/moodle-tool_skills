@@ -154,7 +154,7 @@ class user {
         }
         return false;
     }
-    
+
     /**
      * Get user points list.
      *
