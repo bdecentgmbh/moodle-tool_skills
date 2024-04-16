@@ -29,7 +29,6 @@ defined('MOODLE_INTERNAL') || die();
 // Require forms library.
 require_once($CFG->libdir.'/formslib.php');
 
-use context_system;
 use html_writer;
 use tool_skills\skills;
 
@@ -51,13 +50,6 @@ class skills_form extends \moodleform {
         // Current skill id to edit.
         $mform->addElement('hidden', 'id', 0);
         $mform->setType('id', PARAM_INT);
-
-        require_once($CFG->dirroot.'/admin/tool/skills/form/element-colorpicker.php');
-        \MoodleQuickForm::registerElementType(
-            'tool_skills_colorpicker',
-            $CFG->dirroot.'/admin/tool/skills/form/element-colorpicker.php',
-            'moodlequickform_toolskills_colorpicker'
-        );
 
         // General section.
         $mform->addElement('header', 'general', get_string('general', 'core'));
@@ -95,11 +87,6 @@ class skills_form extends \moodleform {
         $mform->setDefault('learningtime', 90 * DAYSECS);
         $mform->addHelpButton('learningtime', 'learningtime', 'tool_skills');
 
-        // Skill color element.
-        $mform->addElement('tool_skills_colorpicker', 'color', get_string('skillcolor', 'tool_skills'));
-        $mform->addHelpButton('color', 'skillcolor', 'tool_skills');
-        $mform->setType('color', PARAM_TEXT);
-
         // Add the Available in Course Categories element.
         $categories = \core_course_category::make_categories_list();
         $cate = $mform->addElement('autocomplete', 'categories', get_string('availableincoursecategories', 'tool_skills'),
@@ -126,7 +113,6 @@ class skills_form extends \moodleform {
         );
     }
 
-
     /**
      * Definied the levels form fields to attach with form after the forms are defined,
      * Levels are created based on the number of levels.
@@ -142,37 +128,32 @@ class skills_form extends \moodleform {
         for ($i = 0; $i <= $levelscount; $i++) {
 
             // Static heading.
-            $mform->addElement('static', "level[$i]", html_writer::tag('h5', get_string('levelsnohead', 'tool_skills', $i)));
+            $name = ($i == 0) ? get_string('baselevelheading', 'tool_skills') : get_string('levelsnohead', 'tool_skills', $i);
+            $mform->addElement('static', "level[$i]", html_writer::tag('h5', $name));
 
             $mform->addElement('hidden', "levels[$i][id]");
             $mform->setType("levels[$i][id]", PARAM_INT);
 
             // Level name.
-            $mform->addElement('text', "levels[$i][name]", get_string('levelsname', 'tool_skills', $i), '');
+            $name = ($i == 0) ? get_string('baselevelname', 'tool_skills') : get_string('levelsname', 'tool_skills', $i);
+            $mform->addElement('text', "levels[$i][name]", $name, '');
             $mform->setType("levels[$i][name]", PARAM_TEXT);
             $mform->addRule("levels[$i][name]", get_string('required'), 'required', '', 'client');
-            $mform->addHelpButton("levels[$i][name]", 'levelsname', 'tool_skills');
+            $mform->addHelpButton("levels[$i][name]", (($i == 0) ? 'baselevelname' : 'levelsname'), 'tool_skills');
 
             // Level points.
-            $mform->addElement('text', "levels[$i][points]", get_string('levelspoint', 'tool_skills', $i), '');
+            $name = ($i == 0) ? get_string('baselevelpoint', 'tool_skills') : get_string('levelspoint', 'tool_skills', $i);
+            $mform->addElement('text', "levels[$i][points]", $name, '');
             $mform->setType("levels[$i][points]", PARAM_INT);
             $mform->addRule("levels[$i][points]", get_string('required'), 'required', '', 'client');
             $mform->addRule("levels[$i][points]", get_string('error:numeric', 'tool_skills'), 'numeric', '', 'client');
-            $mform->addHelpButton("levels[$i][points]", 'levelspoint', 'tool_skills');
+            $mform->addHelpButton("levels[$i][points]", (($i == 0) ? 'baselevelpoint' : 'levelspoint'), 'tool_skills');
 
             // Set the default point for this level.
             if ($mform->getElementValue("levels[$i][points]") === null) {
                 $leveldefaultpoint = $i * 10; // Find the default point.
                 $mform->setDefault("levels[$i][points]", $leveldefaultpoint);
             }
-            // Level color.
-            $mform->addElement('tool_skills_colorpicker', "levels[$i][color]", get_string('levelscolor', 'tool_skills', $i), '');
-            $mform->setType("levels[$i][color]", PARAM_TEXT);
-            $mform->addHelpButton("levels[$i][color]", 'levelscolor', 'tool_skills');
-
-            // Level image.
-            $mform->addElement('filemanager', "levels[$i][image]", get_string('levelsimage', 'tool_skills', $i));
-            $mform->addHelpButton("levels[$i][image]", 'levelsimage', 'tool_skills');
 
             // Set the default values for the level 0.
             if ($i == 0  && !$mform->getElementValue("levels[$i][name]")) {
@@ -185,126 +166,6 @@ class skills_form extends \moodleform {
         }
         // Action buttons.
         $this->add_action_buttons();
-    }
-
-    /**
-     * Load in existing data as form defaults. Usually new entry defaults are stored directly in
-     * form definition (new entry form); this function is used to load in data where values
-     * already exist and data is being edited (edit entry form).
-     *
-     * note: $slashed param removed
-     *
-     * @param stdClass|array $defaultvalues object or array of default values
-     */
-    public function set_data($defaultvalues) {
-
-        $this->data_preprocessing($defaultvalues); // Include to store the files.
-
-        parent::set_data($defaultvalues);
-    }
-
-    /**
-     * Return submitted data if properly submitted or returns NULL if validation fails or
-     * if there is no submitted data.
-     *
-     * Do not override this method, override data_postprocessing() instead.
-     *
-     * @return object submitted data; NULL if not valid or not submitted or cancelled
-     */
-    public function get_data() {
-        $data = parent::get_data();
-        if ($data) {
-            $this->data_postprocessing($data);
-        }
-        return $data;
-    }
-
-    /**
-     * Process the skills module data before set the default.
-     *
-     * @param  mixed $defaultvalues default values
-     * @return void
-     */
-    public function data_preprocessing(&$defaultvalues) {
-        // System context.
-        $context = context_system::instance();
-
-        // Convert to object, file manager methods require the objects.
-        $defaultvalues = (object) $defaultvalues;
-
-        $filemanagers = [
-            'image' => 'levelimage',
-        ];
-
-        // Levels count.
-        $levelscount = $defaultvalues->levelscount;
-
-        // Prepare the file manager fields to store images.
-        foreach ($filemanagers as $configname => $filearea) {
-            // For all levels in this skills.
-            for ($i = 0; $i <= $levelscount; $i++) {
-
-                if (empty($defaultvalues->levels[$i])) {
-                    continue;
-                }
-                // Draft item id.
-                $draftitemid = file_get_submitted_draft_itemid($filearea);
-                // Use the level id as item id.
-                $levelid = $defaultvalues->levels[$i]['id'] ?? 0;
-                // Store the draft files to area files.
-                file_prepare_draft_area(
-                    $draftitemid, $context->id, 'tool_skills', $filearea, $levelid, [
-                        'subdirs' => 0,
-                        'accepted_types' => ['web_image'],
-                    ]
-                );
-                $defaultvalues->levels[$i][$configname] = $draftitemid;
-            }
-        }
-
-    }
-
-    /**
-     * Prepare the data after form was submited.
-     *
-     * Store all the editor files and update the structure and the file urls with placeholders.
-     * It used the ludemy block instance id (ludemyid) as item id and uses the local_ludemy as component.
-     * Also use the name of the editor as filearea.
-     *
-     * @param  mixed $data submitted data
-     * @return void
-     */
-    public function data_postprocessing(&$data) {
-
-        $context = context_system::instance();
-        // Prepare the editor to support files.
-        $data = (object) $data;
-
-        $filemanagers = [
-            'image' => 'levelimage',
-        ];
-
-        $levelscount = $data->levelscount;
-
-        // Prepare the file manager fields to store images.
-        foreach ($filemanagers as $configname => $filearea) {
-
-            for ($i = 0; $i <= $levelscount; $i++) {
-
-                if (empty($data->levels[$i])) {
-                    continue;
-                }
-
-                // Level id used as item id.
-                $levelid = $data->levels[$i]['id'] ?: 0;
-
-                // Now save the files in correct part of the File API.
-                file_save_draft_area_files(
-                    $data->levels[$i][$configname], $context->id, 'tool_skills',
-                    $filearea, $levelid, $this->get_editor_options($context)
-                );
-            }
-        }
     }
 
     /**

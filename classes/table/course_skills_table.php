@@ -118,7 +118,7 @@ class course_skills_table extends \table_sql {
      * @param stdClass $row
      * @return string
      */
-    public function col_name(stdClass $row) : string {
+    public function col_name(stdClass $row): string {
         return format_string($row->name);
     }
 
@@ -128,8 +128,8 @@ class course_skills_table extends \table_sql {
      * @param stdClass $row
      * @return string
      */
-    public function col_description(stdClass $row) : string {
-        return format_text($row->description, FORMAT_HTML, ['overflow' => false]);
+    public function col_description(stdClass $row): string {
+        return format_text($row->description, FORMAT_HTML, ['overflowdiv' => false]);
     }
 
     /**
@@ -138,7 +138,7 @@ class course_skills_table extends \table_sql {
      * @param stdClass $row
      * @return string
      */
-    public function col_uponcompletion(stdClass $row) : string {
+    public function col_uponcompletion(stdClass $row): string {
 
         $completion = $row->uponcompletion ?? 0;
 
@@ -169,7 +169,7 @@ class course_skills_table extends \table_sql {
      * @param stdClass $row
      * @return string
      */
-    public function col_actions(stdClass $row) : string {
+    public function col_actions(stdClass $row): string {
         global $OUTPUT;
 
         // Base url to edit the skills.

@@ -93,7 +93,6 @@ class user {
 
     /**
      * Get the current user skills list.
-     * TODO: Not used anymore.
      *
      * @return array
      */

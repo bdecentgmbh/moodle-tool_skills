@@ -96,8 +96,8 @@ class archived_skills extends \table_sql {
      * @param stdClass $row
      * @return string
      */
-    public function col_description(stdClass $row) : string {
-        return format_text($row->description, FORMAT_HTML, ['overflow' => false]);
+    public function col_description(stdClass $row): string {
+        return format_text($row->description, FORMAT_HTML, ['overflowdiv' => false]);
     }
 
     /**
@@ -106,7 +106,7 @@ class archived_skills extends \table_sql {
      * @param stdClass $row
      * @return string
      */
-    public function col_name(stdClass $row) : string {
+    public function col_name(stdClass $row): string {
         return format_string($row->name);
     }
 
@@ -116,7 +116,7 @@ class archived_skills extends \table_sql {
      * @param stdClass $row
      * @return string
      */
-    public function col_categories(stdClass $row) : string {
+    public function col_categories(stdClass $row): string {
 
         $categories = $row->categories ?? [];
         if (empty($categories)) {
@@ -139,7 +139,7 @@ class archived_skills extends \table_sql {
      * @param stdClass $row
      * @return string
      */
-    public function col_timecreated(stdClass $row) :string {
+    public function col_timecreated(stdClass $row): string {
         return userdate($row->timecreated);
     }
 
@@ -150,7 +150,7 @@ class archived_skills extends \table_sql {
      * @param stdClass $row
      * @return string
      */
-    public function col_timearchived(stdClass $row) :string {
+    public function col_timearchived(stdClass $row): string {
         return userdate($row->timearchived);
     }
 
@@ -160,7 +160,7 @@ class archived_skills extends \table_sql {
      * @param stdClass $row
      * @return string
      */
-    public function col_actions(stdClass $row) : string {
+    public function col_actions(stdClass $row): string {
         global $OUTPUT;
 
         // Base url to edit the skills.

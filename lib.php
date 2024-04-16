@@ -100,6 +100,14 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
             $skillslist[$skillid] = $data->skillobj; // Skill instance.
         }
 
+        // Upon completion.
+        $options = [
+            \tool_skills\skills::COMPLETIONNOTHING => get_string('completionnothingresult', 'tool_skills'),
+            \tool_skills\skills::COMPLETIONPOINTS => get_string('completionpointsresult', 'tool_skills'),
+            \tool_skills\skills::COMPLETIONSETLEVEL => get_string('completionsetlevelresult', 'tool_skills'),
+            \tool_skills\skills::COMPLETIONFORCELEVEL => get_string('completionforcelevelresult', 'tool_skills'),
+        ];
+
         foreach ($newskills as $skillid => $skills) {
             $skill = $skillslist[$skillid];
             $skillpoints = $skill->get_points_to_earnskill();
@@ -116,6 +124,7 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
             $skillstr .= html_writer::start_tag('ul'); // Start the list of skills courses.
 
             foreach ($skills as $id => $data) {
+
                 // Course skill object.
                 $skillcourse = $data->skillcourse;
                 $pointstoearn = $skillcourse->get_points_earned_fromcourse();
@@ -127,11 +136,29 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
                 $course = $data->skillcourse->get_course();
                 $li = html_writer::link($courseurl, format_string($course->fullname));
 
-                $coursepointstr = get_string('pointsforcompletion', 'tool_skills') . " : " . $pointstoearn;
-                $coursepointstr .= html_writer::tag('b',
+                // Generate the expected result of the course completion.
+                $pointstr = get_string('uponcompletionresult', 'tool_skills') . ": ";
+                if (isset($options[$data->uponcompletion])) {
+                    $pointstr .= $options[$data->uponcompletion];
+
+                    // Upon compeltion of course user will reached the levels.
+                    $resultstring = '';
+                    if (in_array($data->uponcompletion, [\tool_skills\skills::COMPLETIONSETLEVEL,
+                        tool_skills\skills::COMPLETIONFORCELEVEL])) {
+                        $resultstring = isset($data->levels[$data->level]) ? format_string($data->levels[$data->level]->name) : '';
+
+                    } else if ($data->uponcompletion == \tool_skills\skills::COMPLETIONPOINTS) { // Points.
+                        $resultstring = $data->points;
+                    }
+                    $resultstring .= '<br>';
+                    $pointstr .= html_writer::tag('span', $resultstring, ['class' => 'course-completion-result']);
+                }
+
+                $pointstr .= get_string('pointsforcompletion', 'tool_skills') . " : " . $pointstoearn;
+                $pointstr .= html_writer::tag('b',
                     " (".get_string('earned', 'tool_skills') . ": " .( $pointsfromcourse ?? 0) . ")" );
 
-                $li .= html_writer::tag('p', $coursepointstr, ['class' => 'skills-points-'.$course->shortname]);
+                $li .= html_writer::tag('p', $pointstr, ['class' => 'skills-points-'.$course->shortname]);
 
                 $skillstr .= html_writer::tag('li', $li);
 
@@ -179,7 +206,7 @@ function tool_skills_get_fontawesome_icon_map() {
  * @param array $options additional options affecting the file serving
  * @return bool false if the file was not found, just send the file otherwise and do not return anything
  */
-function tool_skills_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+function tool_skills_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=[]) {
 
     if ($context->contextlevel != CONTEXT_SYSTEM) {
         return false;

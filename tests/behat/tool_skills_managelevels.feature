@@ -42,8 +42,8 @@ Feature: Allocate points to users, need to manage levels and assign skills to co
       | Skill name       | Beginner |
       | Key              | beginner |
       | Number of levels | 2        |
-      | Level #0 name    | beginner |
-      | Level #0 point   | 10       |
+      | Base level name    | beginner |
+      | Base level point   | 10       |
       | Level #1 name    | Level 1  |
       | Level #1 point   | 20       |
       | Level #2 name    | Level 2  |

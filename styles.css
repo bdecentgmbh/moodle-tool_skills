@@ -53,3 +53,7 @@ body.behat-site .toolskills-status-switch input.custom-control-input {
 body.module-skills .activity-header {
     display: none;
 }
+/* Profile page user completion result. */
+#page-user-profile li.contentnode.toolskill-courses-points span.course-completion-result {
+    font-weight: 600;
+}

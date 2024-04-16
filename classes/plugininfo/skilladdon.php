@@ -28,6 +28,7 @@ namespace tool_skills\plugininfo;
  * Skilladdon is subplugin of tool_skills.
  */
 class skilladdon extends \core\plugininfo\base {
+
     /**
      * Returns the information about plugin availability
      *

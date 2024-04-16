@@ -23,8 +23,8 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
     And I set the following fields to these values:
       | Skill name      | Beginner |
       | Key             | beginner |
-      | Level #0 name   | beginner |
-      | Level #0 point  | 10       |
+      | Base level name   | beginner |
+      | Base level point  | 10       |
     And I click on "Save changes" "button"
     And I should see "Beginner" in the "tool_skills_list" "table"
 
@@ -34,8 +34,8 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
     And I create skill with the following fields to these values:
       | Skill name      | Beginner |
       | Key             | beginner |
-      | Level #0 name   | beginner |
-      | Level #0 point  | 10       |
+      | Base level name   | beginner |
+      | Base level point  | 10       |
     And ".skill-item-actions .custom-control-input:checked" "css_element" should exist in the "beginner" "table_row"
     Then I am on "Course 1" course homepage
     And I click on "More" "link" in the ".secondary-navigation" "css_element"
@@ -55,8 +55,8 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
     And I create skill with the following fields to these values:
       | Skill name      | Beginner |
       | Key             | beginner |
-      | Level #0 name   | beginner |
-      | Level #0 point  | 10       |
+      | Base level name   | beginner |
+      | Base level point  | 10       |
     Then I should see "Beginner"
     And ".skill-item-actions .action-edit" "css_element" should exist in the "beginner" "table_row"
     And I click on ".skill-item-actions .action-edit" "css_element" in the "beginner" "table_row"
@@ -74,8 +74,8 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
     And I set the following fields to these values:
       | Skill name      | Beginner |
       | Key             | beginner |
-      | Level #0 name   | beginner |
-      | Level #0 point  | 10       |
+      | Base level name   | beginner |
+      | Base level point  | 10       |
     And I click on "Save changes" "button"
     And I should see "Beginner" in the "tool_skills_list" "table"
     And I click on ".skill-item-actions .action-archive" "css_element" in the "beginner" "table_row"
@@ -96,8 +96,8 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
     And I create skill with the following fields to these values:
       | Skill name      | Beginner |
       | Key             | beginner |
-      | Level #0 name   | beginner |
-      | Level #0 point  | 10       |
+      | Base level name   | beginner |
+      | Base level point  | 10       |
     And I should see "Beginner" in the "tool_skills_list" "table"
     And I click on ".skill-item-actions .action-archive" "css_element" in the "beginner" "table_row"
     And I navigate to confirmation
@@ -109,8 +109,8 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
     And I create skill with the following fields to these values:
       | Skill name      | Critical thinker |
       | Key             | critical-thinker |
-      | Level #0 name   | beginner |
-      | Level #0 point  | 20       |
+      | Base level name   | beginner |
+      | Base level point  | 20       |
     Then I am on "Course 1" course homepage
     And I click on "More" "link" in the ".secondary-navigation" "css_element"
     And I click on "Manage skills" "link"
@@ -133,8 +133,8 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
     And I create skill with the following fields to these values:
       | Skill name      | Beginner |
       | Key             | beginner |
-      | Level #0 name   | beginner |
-      | Level #0 point  | 10       |
+      | Base level name   | beginner |
+      | Base level point  | 10       |
     Then I should see "Beginner"
     And ".skill-item-actions .action-edit" "css_element" should exist in the "beginner" "table_row"
     And I click on ".skill-item-actions .action-edit" "css_element"

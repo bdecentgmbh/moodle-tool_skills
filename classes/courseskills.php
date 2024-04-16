@@ -69,7 +69,7 @@ class courseskills extends \tool_skills\allocation_method {
      * @param int $courseid
      * @return self
      */
-    public static function get(int $courseid) : self {
+    public static function get(int $courseid): self {
         return new self($courseid);
     }
 
@@ -79,7 +79,7 @@ class courseskills extends \tool_skills\allocation_method {
      * @param int $skillid
      * @return self
      */
-    public static function get_for_skill(int $skillid) : array {
+    public static function get_for_skill(int $skillid): array {
         global $DB;
 
         $courses = $DB->get_records('tool_skills_courses', ['skill' => $skillid]);
@@ -92,23 +92,47 @@ class courseskills extends \tool_skills\allocation_method {
      *
      * @return stdClass Course record data.
      */
-    public function get_course() : stdClass {
+    public function get_course(): stdClass {
         return get_course($this->courseid);
     }
 
     /**
      * Fetch the skills assigned/enabled for this course.
      *
+     * @param int $skillid Id of the skill.
      * @return array
      */
-    public function get_instance_skills(): array {
+    public function get_instance_skills($skillid=null): array {
         global $DB;
 
-        $skills = $DB->get_records('tool_skills_courses', ['courseid' => $this->courseid, 'status' => 1]);
+        $condition = ['courseid' => $this->courseid, 'status' => 1];
+        if ($skillid !== null) {
+            $condition['skill'] = $skillid;
+        }
+
+        $skills = $DB->get_records('tool_skills_courses', $condition);
 
         return array_map(fn($sk) => skills::get($sk->skill), $skills);
     }
 
+    /**
+     * Fetch the skills assigned/enabled for this course.
+     *
+     * @param int $skillid Id of the skill.
+     * @return array
+     */
+    public function get_instance_disabled_skills($skillid=null): array {
+        global $DB;
+
+        $condition = ['courseid' => $this->courseid, 'status' => 0];
+        if ($skillid !== null) {
+            $condition['skill'] = $skillid;
+        }
+
+        $skills = $DB->get_records('tool_skills_courses', $condition);
+
+        return array_map(fn($sk) => skills::get($sk->skill), $skills);
+    }
 
     /**
      * Remove the course skills records.
@@ -197,9 +221,11 @@ class courseskills extends \tool_skills\allocation_method {
      * Trigger the skills to update the user points based on the upon completion option for this skill added in courses.
      *
      * @param int $userid
+     * @param array $skills
+     * @param bool|null $status
      * @return void
      */
-    public function manage_course_completions(int $userid) {
+    public function manage_course_completions(int $userid, array $skills=[], bool $status=null) {
         global $CFG, $DB;
 
         require_once($CFG->dirroot . '/lib/completionlib.php');
@@ -209,54 +235,156 @@ class courseskills extends \tool_skills\allocation_method {
         // User completes the course, allocate the points for the levels for the enabled skills.
         if ($coursecompletion) {
             // Get course skills records.
-            $skills = $this->get_instance_skills();
-            foreach ($skills as $skillcourseid => $skill) {
-
-                // Create a skill course record instance for this skill.
-                $this->set_skill_instance($skillcourseid);
-                // Get the data.
-                $csdata = $this->build_data();
-
-                // Start the database transaction.
-                $transaction = $DB->start_delegated_transaction();
-
-                switch ($csdata->uponcompletion) {
-
-                    case skills::COMPLETIONFORCELEVEL:
-                        $skill->force_level($this, $csdata->level, $userid);
-                        break;
-
-                    case skills::COMPLETIONSETLEVEL:
-                        $skill->moveto_level($this, $csdata->level, $userid);
-                        break;
-
-                    case skills::COMPLETIONPOINTS:
-                        $skill->increase_points($this, $csdata->points, $userid);
-                        break;
+            if ($status === null || $status == 1) {
+                $skills = $skills ?: $this->get_instance_skills();
+                foreach ($skills as $skillcourseid => $skill) {
+                    $this->manage_user_skill_points($skill, $userid, $skillcourseid);
                 }
+            }
 
-                // End the database transaction.
-                $transaction->allow_commit();
+            // Disable user points award if the instance is disabled.
+            $disabledskills = $this->get_instance_disabled_skills();
+            if ($status !== null && $status === 0 && $skills) {
+                $disabledskills = $skills;
+            }
+
+            if (!empty($disabledskills)) {
+                foreach ($disabledskills as $skillcourseid => $skill) {
+                    $this->disable_user_skill_points($skill, $userid, $skillcourseid);
+                }
             }
         }
     }
 
-
     /**
-     * Manage users completion.
+     * Manage the points award to the user for a skill.
+     *
+     * @param tool_skills\skills $skill
+     * @param int $userid
+     * @param int $skillcourseid
      *
      * @return void
      */
-    public function manage_users_completion() {
+    protected function manage_user_skill_points($skill, $userid, $skillcourseid) {
+        global $DB;
+
+        // Create a skill course record instance for this skill.
+        $this->set_skill_instance($skillcourseid);
+        // Get the data.
+        $csdata = $this->build_data();
+        // Start the database transaction.
+        $transaction = $DB->start_delegated_transaction();
+        $updateskill = true; // Update the course skills until it doesn't already awarded.
+
+        if ($record = $DB->get_record('tool_skills_awardlogs', ['userid' => $userid, 'skill' => $csdata->skill,
+            'methodid' => $csdata->id, 'method' => 'course',
+            ])) {
+
+            // Course points user will earned upon the course completion.
+            $coursepoints = $this->get_points_earned_fromcourse();
+            $currentpoints = $record->points; // Previous points user earned stored in the log.
+            $updateskill = false; // No need to update the points until the course skill is updated in its points.
+
+            if ($coursepoints != $currentpoints) {
+
+                $updateskill = true; // Verified the course skill points updated, then update the user points.
+                $skillpoint = $skill->get_user_skill($userid)->points;
+                $skillpoint -= $currentpoints; // Remove the previously awarded course skill points.
+
+                // Update the skill point for the user.
+                $skill->set_userskill_points($userid, $skillpoint);
+            }
+        }
+
+        if ($updateskill) {
+
+            switch ($csdata->uponcompletion) {
+
+                case skills::COMPLETIONFORCELEVEL:
+                    $skill->force_level($this, $csdata->level, $userid);
+                    break;
+
+                case skills::COMPLETIONSETLEVEL:
+                    $skill->moveto_level($this, $csdata->level, $userid);
+                    break;
+
+                case skills::COMPLETIONPOINTS:
+                    $skill->increase_points($this, $csdata->points, $userid);
+                    break;
+
+                case skills::COMPLETIONNOTHING:
+                    $skill->create_user_point_award($this, $userid, 0);
+                    break;
+            }
+        }
+        // End the database transaction.
+        $transaction->allow_commit();
+    }
+
+    /**
+     * Remove the user earned points for this course from the skill points.
+     *
+     * @param tool_skills\skills $skill
+     * @param int $userid
+     * @param int $skillcourseid Course skill instance id (skill_courses table id).
+     * @return void
+     */
+    protected function disable_user_skill_points($skill, $userid, $skillcourseid) {
+        global $DB;
+
+        // Create a skill course record instance for this skill.
+        $this->set_skill_instance($skillcourseid);
+        // Get the data.
+        $csdata = $this->build_data();
+        // Start the database transaction.
+        $transaction = $DB->start_delegated_transaction();
+
+        if ($record = $DB->get_record('tool_skills_awardlogs', ['userid' => $userid, 'skill' => $csdata->skill,
+            'methodid' => $csdata->id, 'method' => 'course'])) {
+
+            $currentpoints = $record->points; // Previous points user earned stored in the log.
+            $skillpoint = $skill->get_user_skill($userid)->points;
+            $skillpoint -= $currentpoints; // Remove the previously awarded course skill points.
+            // Update the skill point for the user.
+            $skill->set_userskill_points($userid, $skillpoint);
+            // Update the log of points earned from this instance to 0.
+            $skill->create_user_point_award($this, $userid, 0);
+        }
+
+        // End the database transaction.
+        $transaction->allow_commit();
+
+    }
+
+    /**
+     * Manage the user completion actions, award or reduce the updated/completed courses result for the enrolled users.
+     *
+     * @param int $skillid
+     * @param bool $status
+     *
+     * @return void
+     */
+    public function manage_users_completion(int $skillid=null, bool $status=null) {
         global $CFG;
 
         require_once($CFG->dirroot . '/lib/enrollib.php');
         $context = \context_course::instance($this->courseid);
 
+        $skills = [];
+        if ($skillid) {
+            $skills = $this->get_instance_skills($skillid); // Fetch the enabled skills.
+        }
+
+        // If the given skill is not enabled, then fetch the disabled skills.
+        if ($skillid && empty($skills)) {
+            $skills = $this->get_instance_disabled_skills($skillid);
+            $status = 0;
+        }
+
         // Enrolled users.
         $enrolledusers = get_enrolled_users($context);
         foreach ($enrolledusers as $user) {
-            $this->manage_course_completions($user->id);
+            $this->manage_course_completions($user->id, $skills, $status);
         }
     }
 
