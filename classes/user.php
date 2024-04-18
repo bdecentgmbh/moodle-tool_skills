@@ -185,8 +185,9 @@ class user {
     public function get_user_award_by_method(string $method, int $methodid) {
         global $DB;
 
-        if ($result = $DB->get_record('tool_skills_awardlogs',
-            ['userid' => $this->userid, 'method' => $method, 'methodid' => $methodid])) {
+        $condition = ['userid' => $this->userid, 'method' => $method, 'methodid' => $methodid];
+
+        if ($result = $DB->get_record('tool_skills_awardlogs', $condition, "*", IGNORE_MULTIPLE)) {
             return $result->points;
         }
 
