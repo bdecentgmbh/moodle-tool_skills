@@ -22,6 +22,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// phpcs:disable moodle.Files.LangFilesOrdering.UnexpectedComment
+// phpcs:disable moodle.Files.LangFilesOrdering.IncorrectOrder
+
 defined('MOODLE_INTERNAL') || die('No direct access');
 
 $string['pluginname'] = 'Skills';
@@ -178,3 +181,4 @@ $string['skillsdatasource'] = 'Skills';
 $string['userproficiency'] = 'Proficiency';
 $string['userpercentage'] = 'Percentage';
 $string['grade'] = 'Grade';
+$string['subplugintype_skilladdon_plural'] = 'Skill addons';

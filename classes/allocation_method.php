@@ -119,7 +119,7 @@ abstract class allocation_method {
      *
      * @return \tool_skills\logs
      */
-    public function get_logs() : \tool_skills\logs {
+    public function get_logs(): \tool_skills\logs {
 
         if ($this->logs == null) {
             $this->logs = new \tool_skills\logs();

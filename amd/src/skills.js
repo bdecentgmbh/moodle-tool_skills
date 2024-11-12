@@ -44,7 +44,6 @@ define(['jquery', 'core/modal_factory', 'core/str', 'core_form/modalform'], func
             });
         }
 
-
         addActionListiners() {
 
             var self = this;

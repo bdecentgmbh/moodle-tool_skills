@@ -69,7 +69,7 @@ class courseskills extends \tool_skills\allocation_method {
      * @param int $courseid
      * @return self
      */
-    public static function get(int $courseid) : self {
+    public static function get(int $courseid): self {
         return new self($courseid);
     }
 
@@ -79,7 +79,7 @@ class courseskills extends \tool_skills\allocation_method {
      * @param int $skillid
      * @return self
      */
-    public static function get_for_skill(int $skillid) : array {
+    public static function get_for_skill(int $skillid): array {
         global $DB;
 
         $courses = $DB->get_records('tool_skills_courses', ['skill' => $skillid]);
@@ -92,7 +92,7 @@ class courseskills extends \tool_skills\allocation_method {
      *
      * @return stdClass Course record data.
      */
-    public function get_course() : stdClass {
+    public function get_course(): stdClass {
         return get_course($this->courseid);
     }
 

@@ -83,7 +83,7 @@ class provider implements
      * @param  int         $userid    The user to search.
      * @return contextlist $contextlist The list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid(int $userid) : contextlist {
+    public static function get_contexts_for_userid(int $userid): contextlist {
         $contextlist = new \core_privacy\local\request\contextlist();
         // User completions.
         $sql = "SELECT ctx.id
@@ -238,7 +238,7 @@ class provider implements
             get_string('privacy:awardlogs', 'tool_skills'),
             array_filter(
                 $userpoints,
-                function(stdClass $point) use ($contextlist) : bool {
+                function(stdClass $point) use ($contextlist): bool {
                     return $point->userid == $contextlist->get_user()->id;
                 }
             ),
@@ -299,7 +299,7 @@ class provider implements
     private static function group_by_property(array $classes, string $property): array {
         return array_reduce(
             $classes,
-            function (array $classes, stdClass $class) use ($property) : array {
+            function (array $classes, stdClass $class) use ($property): array {
                 $classes[$class->{$property}][] = $class;
                 return $classes;
             },

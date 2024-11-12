@@ -141,7 +141,7 @@ class skills {
      *
      * @return stdClass Skill record.
      */
-    public function get_skill_record() : stdClass {
+    public function get_skill_record(): stdClass {
         return $this->skillrecord;
     }
 
@@ -150,7 +150,7 @@ class skills {
      *
      * @return int
      */
-    public function get_id() : int {
+    public function get_id(): int {
         return $this->data->id;
     }
 
@@ -159,7 +159,7 @@ class skills {
      *
      * @return stdClass
      */
-    public function get_data() : stdClass {
+    public function get_data(): stdClass {
         return $this->data;
     }
 
@@ -168,7 +168,7 @@ class skills {
      *
      * @return string
      */
-    public function get_name() : string {
+    public function get_name(): string {
         return format_string($this->data->name);
     }
 
@@ -177,7 +177,7 @@ class skills {
      *
      * @return stdClass|bool
      */
-    protected function fetch_skill_record() : ?stdClass {
+    protected function fetch_skill_record(): ?stdClass {
         global $DB;
 
         if ($skill = $DB->get_record('tool_skills', ['id' => $this->skillid])) {
@@ -194,7 +194,7 @@ class skills {
      *
      * @return stdClass
      */
-    protected function update_data_structure() : stdClass {
+    protected function update_data_structure(): stdClass {
 
         // Clone the skill record.
         $data = clone $this->skillrecord;
@@ -317,7 +317,7 @@ class skills {
      *
      * @return void
      */
-    protected function fetch_levels() : void {
+    protected function fetch_levels(): void {
         global $DB;
 
         $this->levels = $DB->get_records('tool_skills_levels', ['skill' => $this->skillid]);
@@ -328,7 +328,7 @@ class skills {
      *
      * @return array
      */
-    public function get_levels() : array {
+    public function get_levels(): array {
 
         if (empty($this->levels)) {
             $this->fetch_levels();
@@ -342,7 +342,7 @@ class skills {
      *
      * @return int
      */
-    public function get_levels_count() : int {
+    public function get_levels_count(): int {
         global $DB;
 
         return count($this->get_levels());
@@ -451,7 +451,7 @@ class skills {
      * @param int $points
      * @return int
      */
-    public function set_userskill_points(int $userid, int $points) : int {
+    public function set_userskill_points(int $userid, int $points): int {
         global $DB;
 
         $record = ['skill' => $this->skillid, 'userid' => $userid];
@@ -525,7 +525,7 @@ class skills {
      *
      * @param int $skillid
      */
-    public static function get(int $skillid) : \tool_skills\skills {
+    public static function get(int $skillid): \tool_skills\skills {
         // Create the instance for this skill and return.
         return new self($skillid);
     }
@@ -543,7 +543,7 @@ class skills {
         // Verfiy the current user has capability to manage skills.
         require_capability('tool/skills:manage', context_system::instance());
 
-        // TODO: Try catch.
+        // TODO MDL-0: Try catch.
 
         $record = clone $formdata;
         $record->categories = json_encode($record->categories);
