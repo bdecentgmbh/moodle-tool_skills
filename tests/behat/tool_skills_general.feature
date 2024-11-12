@@ -18,7 +18,7 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
     When I log in as "admin"
     And I navigate to skills
     And I should see "Active skills" in the "#region-main .nav-tabs .nav-item" "css_element"
-    And I should see "Skills are not created yet or not in use"
+    And I should see "No skills created yet or not in use"
     And I click on "Create skill" "button"
     And I set the following fields to these values:
       | Skill name      | Beginner |
@@ -83,7 +83,7 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
     And I navigate to confirmation
     And I should see "Beginner" in the "tool_skills_archived_list" "table"
     And I click on "Active skills" "link"
-    Then I should see "Skills are not created yet or not in use"
+    Then I should see "No skills created yet or not in use"
     And I click on "Archived skills" "link"
     And I click on ".skill-item-actions .action-active" "css_element" in the "beginner" "table_row"
     And I should see "activate" message confirmation
