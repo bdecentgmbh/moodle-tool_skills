@@ -22,6 +22,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// phpcs:disable moodle.Files.LangFilesOrdering.UnexpectedComment
+// phpcs:disable moodle.Files.LangFilesOrdering.IncorrectOrder
+
 defined('MOODLE_INTERNAL') || die('No direct access');
 
 $string['pluginname'] = 'Skills';
@@ -32,12 +35,12 @@ $string['skills:managecourseskillslist'] = 'Manage course skills';
 $string['skills:viewotherspoints'] = 'View others points';
 // ...error strings.
 $string['error:skillsnotfound'] = 'Skill record not found for the given id';
-$string['error:identityexists'] = 'Given skill identity is exists, Please use unique value';
+$string['error:identityexists'] = 'Given skill identity already exists. Please use a unique value.';
 $string['error:numeric'] = 'Value should be in numbers';
 // ...List page strings.
 $string['skillslist'] = 'List of skills';
 $string['skillslisthead'] = 'Manage skills';
-$string['skillslist_desc'] = 'Create a new skill and edit exsiting skills';
+$string['skillslist_desc'] = 'Create a new skill and edit existing skills';
 $string['createskill'] = 'Create skill';
 $string['create'] = 'Create';
 $string['editskill'] = 'Edit skill';
@@ -49,10 +52,10 @@ $string['active'] = 'Active';
 $string['timearchived'] = 'Archived time';
 // ...Delete message.
 $string['skillsdeleted'] = 'Skills deleted';
-$string['deleteskill'] = 'Are you sure! do you want to delete this skill and its levels';
-$string['skillsnothingtodisplay'] = 'Skills are not created yet or not in use, Create a new skill using the create button';
-$string['archiveskill'] = 'Are you sure! do you want to archive this skill and its levels';
-$string['activeskillwarning'] = 'Are you sure! do you want to activate this skill and its levels';
+$string['deleteskill'] = 'Are you sure you want to delete this skill and its levels?';
+$string['skillsnothingtodisplay'] = 'No skills created yet or not in use. Create a new skill using the create button';
+$string['archiveskill'] = 'Are you sure you want to archive this skill and its levels?';
+$string['activeskillwarning'] = 'Are you sure you want to activate this skill and its levels?';
 // ...Skills Form field strings.
 $string['key'] = 'Key';
 $string['description'] = 'Description';
@@ -69,7 +72,7 @@ $string['availableincoursecategories_help'] = 'Select the categories to make thi
 $string['skilltitle'] = 'Skill name';
 $string['skilltitle_help'] = 'Name of the skill';
 $string['identitykey'] = 'Key';
-$string['identitykey_help'] = 'Key to identity the skill, this should be unique value';
+$string['identitykey_help'] = 'Key to identify the skill; this should be a unique value';
 $string['learningtime'] = 'Learning time';
 $string['learningtime_help'] = 'Time to spend in the course to complete this skill';
 $string['skillcolor'] = 'Skill color';
@@ -99,7 +102,7 @@ $string['completionsetlevel'] = 'Set level';
 $string['completionforcelevel'] = 'Force level';
 $string['completionlevel'] = 'Level';
 $string['coursestatus'] = 'Assign skill to course';
-$string['coursestatus_help'] = 'Select enable to assign the skill to course, then user will receive the points/level for course completion';
+$string['coursestatus_help'] = 'Select \'enable\' to assign the skill to the course. The user will then receive points/levels upon course completion.';
 $string['uponcompletion_help'] = '<ul><li><b>Add Points:</b> Upon course completion, award the specified number of skill points. (Note: Entering negative numbers will result in a reduction of points.)</li>
 <li><b>Set Level:</b> Upon course completion, grant the points needed to reach the specified level, unless the student already has more points.</li>
 <li><b>Force Level:</b> Upon course completion, adjust the points to match the amount required for the chosen level, regardless of the student\'s prior level/points. This may lead to students having fewer points than before.</li></ul>';
@@ -160,7 +163,7 @@ $string['modname'] = 'Mod name';
 $string['modcompletionstatus'] = 'Completion status';
 
 $string['activitiestatsentity'] = 'Activity completion';
-$string['incomplete'] = 'In complete';
+$string['incomplete'] = 'Incomplete';
 $string['complete'] = 'Complete';
 $string['complete_pass'] = 'Passed';
 $string['complete_fail'] = 'Failed';
@@ -169,7 +172,7 @@ $string['entitycategory'] = 'Category';
 $string['categoryname'] = 'Category name';
 $string['categoryidnumber'] = 'Category idnumber';
 $string['coursecount'] = 'Number of courses';
-$string['categoryvisiblity'] = 'Category visibility';
+$string['categoryvisibility'] = 'Category visibility';
 $string['depth'] = 'Depth';
 $string['path'] = 'Category path';
 $string['conditionassignedusers'] = 'Relative role users';
@@ -178,3 +181,4 @@ $string['skillsdatasource'] = 'Skills';
 $string['userproficiency'] = 'Proficiency';
 $string['userpercentage'] = 'Percentage';
 $string['grade'] = 'Grade';
+$string['subplugintype_skilladdon_plural'] = 'Skill addons';

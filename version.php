@@ -24,9 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version = 2024019004;
+$plugin->version = 2024111200;
 $plugin->requires  = 2021051700;        // Requires this Moodle version.
 $plugin->component = 'tool_skills'; // Full name of the plugin (used for diagnostics).
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->release = '1.1';
-$plugin->supported = [400, 403];
+$plugin->supported = [400, 405];

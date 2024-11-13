@@ -102,7 +102,7 @@ class course_form extends \core_form\dynamic_form {
      * @return bool
      */
     protected function check_access_for_dynamic_submission(): void {
-        // TODO: Validatation of user capability goes here.
+        // TODO MDL-0: Validatation of user capability goes here.
     }
 
     /**
@@ -190,7 +190,7 @@ class course_form extends \core_form\dynamic_form {
      * @param bool $status
      * @return void
      */
-    public static function update_status(int $skillid, int $courseid, bool $status) : void {
+    public static function update_status(int $skillid, int $courseid, bool $status): void {
         global $DB;
 
         $record = new stdClass;
