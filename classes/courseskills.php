@@ -225,7 +225,7 @@ class courseskills extends \tool_skills\allocation_method {
      * @param bool|null $status
      * @return void
      */
-    public function manage_course_completions(int $userid, array $skills=[], bool $status=null) {
+    public function manage_course_completions(int $userid, array $skills, bool|null $status) {
         global $CFG, $DB;
 
         require_once($CFG->dirroot . '/lib/completionlib.php');
@@ -364,7 +364,7 @@ class courseskills extends \tool_skills\allocation_method {
      *
      * @return void
      */
-    public function manage_users_completion(int $skillid=null, bool $status=null) {
+    public function manage_users_completion(int $skillid, bool $status) {
         global $CFG;
 
         require_once($CFG->dirroot . '/lib/enrollib.php');

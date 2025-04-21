@@ -47,7 +47,7 @@ class observer {
         $relateduserid = $data['relateduserid']; // Completed user id.
 
         // Manage the upon completion options for various skills assigned in this course.
-        courseskills::get($courseid)->manage_course_completions($relateduserid);
+        courseskills::get($courseid)->manage_course_completions($relateduserid, [], null);
     }
 
     /**
