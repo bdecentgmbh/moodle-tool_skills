@@ -207,6 +207,6 @@ class archived_skills extends \table_sql {
                 $action['attributes'],
             );
         }
-        return \html_writer::div(join('', $actionshtml), 'skill-item-actions item-actions mr-0');
+        return \html_writer::div(join('', $actionshtml), 'skill-item-actions item-actions');
     }
 }

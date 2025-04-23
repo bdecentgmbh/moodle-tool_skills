@@ -61,7 +61,7 @@ class helper {
         $button .= \html_writer::start_div('filter-form-container');
         $button .= \html_writer::link('javascript:void(0)', $OUTPUT->pix_icon('i/filter', 'Filter'), [
             'id' => 'tool-skills-filter',
-            'class' => 'sort-toolskills btn btn-primary ml-2 ' . ($filtered ? 'filtered' : ''),
+            'class' => 'sort-toolskills btn btn-primary' . ($filtered ? 'filtered' : ''),
         ]);
         $filter = new \tool_skills_table_filter(null, ['t' => $tab]);
         $button .= \html_writer::tag('div', $filter->render(), ['id' => 'tool-skills-filterform', 'class' => 'hide']);
