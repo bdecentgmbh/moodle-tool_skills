@@ -94,7 +94,7 @@ class level extends skills {
      *
      * @return stdClass Level record.
      */
-    public function get_level_record() : stdClass {
+    public function get_level_record(): stdClass {
         return $this->levelrecord;
     }
 
@@ -103,7 +103,7 @@ class level extends skills {
      *
      * @return stdClass
      */
-    public function get_data() : stdClass {
+    public function get_data(): stdClass {
         return $this->data;
     }
 
@@ -112,7 +112,7 @@ class level extends skills {
      *
      * @return stdClass|bool
      */
-    protected function fetch_record() : ?stdClass {
+    protected function fetch_record(): ?stdClass {
         global $DB;
 
         if ($skill = $DB->get_record('tool_skills_levels', ['id' => $this->levelid])) {
@@ -161,7 +161,7 @@ class level extends skills {
      *
      * @param int $levelid
      */
-    public static function get(int $levelid) : \tool_skills\level {
+    public static function get(int $levelid): \tool_skills\level {
         // Create the instance for this skill and return.
         return new self($levelid);
     }

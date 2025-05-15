@@ -128,4 +128,13 @@ class users_skills extends \table_sql implements dynamic_table {
 
         return $OUTPUT->user_picture($data, ['size' => 35, 'includefullname' => true]);
     }
+
+    /**
+     * Verify the user has the capability to view the table.
+     *
+     * @return bool
+     */
+    public function has_capability(): bool {
+        return has_capability('tool/skills:viewotherspoints', $this->get_context());
+    }
 }

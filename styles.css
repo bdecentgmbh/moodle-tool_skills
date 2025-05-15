@@ -3,7 +3,15 @@
 #tool_skills_list .skill-item-actions a {
     display: inline-block;
     vertical-align: middle;
+    position: relative;
+    z-index: 0;
 }
+.skill-actions .toolskills-status-switch .form-switch .form-check-input,
+.item-actions .toolskills-status-switch .form-switch .form-check-input {
+    position: absolute;
+    z-index: -1;
+}
+
 /* Make the skills tab marning top */
 body#page-admin-tool-skills-manage-list .nav-tabs {
     margin-top: 30px;
@@ -52,4 +60,8 @@ body.behat-site .toolskills-status-switch input.custom-control-input {
 }
 body.module-skills .activity-header {
     display: none;
+}
+/* Profile page user completion result. */
+#page-user-profile li.contentnode.toolskill-courses-points span.course-completion-result {
+    font-weight: 600;
 }

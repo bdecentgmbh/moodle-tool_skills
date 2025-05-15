@@ -1,5 +1,5 @@
 {
     "plugintypes": {
-      "skilladdon": "admin/tool/skills/addon"
+        "skilladdon": "admin/tool/skills/addon"
     }
-  }
+}

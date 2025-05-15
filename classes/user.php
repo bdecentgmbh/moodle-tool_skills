@@ -93,7 +93,6 @@ class user {
 
     /**
      * Get the current user skills list.
-     * TODO: Not used anymore.
      *
      * @return array
      */
@@ -148,14 +147,11 @@ class user {
     public function remove_user_skillpoints() {
         global $DB;
 
-        // Fetch the list of user points record withdata skill data.
-        $skills = $this->get_user_points(false);
-        // List of skill ids.
-        $skillids = array_column($skills, 'id');
-        // Delete user points.
-        $DB->delete_records('tool_skills_userpoints', ['id' => $skillids]);
-        // Delete the user points log.
-        $this->logs->delete_user_log($this->userid);
+        if ($DB->delete_records('tool_skills_userpoints', ['userid' => $this->userid])) {
+            $this->logs->delete_user_log($this->userid);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -189,8 +185,9 @@ class user {
     public function get_user_award_by_method(string $method, int $methodid) {
         global $DB;
 
-        if ($result = $DB->get_record('tool_skills_awardlogs',
-            ['userid' => $this->userid, 'method' => $method, 'methodid' => $methodid])) {
+        $condition = ['userid' => $this->userid, 'method' => $method, 'methodid' => $methodid];
+
+        if ($result = $DB->get_record('tool_skills_awardlogs', $condition, "*", IGNORE_MULTIPLE)) {
             return $result->points;
         }
 

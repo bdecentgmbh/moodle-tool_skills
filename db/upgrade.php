@@ -32,7 +32,7 @@ function xmldb_tool_skills_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 2023102505) {
+    if ($oldversion < 2024020700) {
         $table = new xmldb_table('tool_skills_awardlogs');
         $field = new xmldb_field('skill', XMLDB_TYPE_INTEGER, 18, null, null, null, null, 'id');
         // Conditionally launch add field timecreated.
@@ -40,10 +40,10 @@ function xmldb_tool_skills_upgrade($oldversion) {
             $dbman->add_field($table, $field);
 
         }
-        upgrade_plugin_savepoint(true, 2023102505, 'tool', 'skills');
+        upgrade_plugin_savepoint(true, 2024020700, 'tool', 'skills');
     }
 
-    if ($oldversion < 2024019004) {
+    if ($oldversion < 2024020802) {
 
         $table = new xmldb_table('tool_skills_awardlogs');
         $field = new xmldb_field('skill', XMLDB_TYPE_INTEGER, 18, null, null, null, null, 'id');
@@ -60,7 +60,7 @@ function xmldb_tool_skills_upgrade($oldversion) {
                 }
             }
         }
-        upgrade_plugin_savepoint(true, 2024019004, 'tool', 'skills');
+        upgrade_plugin_savepoint(true, 2024020802, 'tool', 'skills');
     }
 
     return true;

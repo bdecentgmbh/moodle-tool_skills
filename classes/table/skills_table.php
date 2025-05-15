@@ -102,7 +102,7 @@ class skills_table extends \table_sql {
      * @param stdClass $row
      * @return string
      */
-    public function col_name(stdClass $row) : string {
+    public function col_name(stdClass $row): string {
         return format_string($row->name);
     }
 
@@ -112,8 +112,8 @@ class skills_table extends \table_sql {
      * @param stdClass $row
      * @return string
      */
-    public function col_description(stdClass $row) : string {
-        return format_text($row->description, FORMAT_HTML, ['overflow' => false]);
+    public function col_description(stdClass $row): string {
+        return format_text($row->description, FORMAT_HTML, ['overflowdiv' => false]);
     }
 
     /**
@@ -122,7 +122,7 @@ class skills_table extends \table_sql {
      * @param stdClass $row
      * @return string
      */
-    public function col_categories(stdClass $row) : string {
+    public function col_categories(stdClass $row): string {
 
         $categories = $row->categories ?? [];
         if (empty($categories)) {
@@ -142,7 +142,7 @@ class skills_table extends \table_sql {
      * @param stdClass $row
      * @return string
      */
-    public function col_timecreated(stdClass $row) : string {
+    public function col_timecreated(stdClass $row): string {
         return userdate($row->timecreated);
     }
 
@@ -152,8 +152,8 @@ class skills_table extends \table_sql {
      * @param stdClass $row
      * @return string
      */
-    public function col_actions(stdClass $row) : string {
-        global $OUTPUT;
+    public function col_actions(stdClass $row): string {
+        global $OUTPUT, $CFG;
 
         // Base url to edit the skills.
         $baseurl = new \moodle_url('/admin/tool/skills/manage/edit.php', [
@@ -177,12 +177,15 @@ class skills_table extends \table_sql {
         ];
 
         // Show/Hide.
+        $inputclass = $CFG->branch >= 500 ? 'form-check-input' : 'custom-control-input';
+        $labelclass = $CFG->branch >= 500 ? 'form-check-label' : 'custom-control-label';
+        $switchclass = $CFG->branch >= 500 ? 'form-check form-switch' : 'custom-control custom-switch';
         $checked = ($row->status) ? ['checked' => 'checked'] : [];
         $checkbox = html_writer::div(
             html_writer::empty_tag('input',
-                ['type' => 'checkbox', 'class' => 'custom-control-input'] + $checked
-            ) . html_writer::tag('span', '', ['class' => 'custom-control-label']),
-            'custom-control custom-switch'
+                ['type' => 'checkbox', 'class' => $inputclass] + $checked
+            ) . html_writer::tag('span', '', ['class' => $labelclass]),
+            $switchclass
         );
         $statusurl = new \moodle_url($listurl, ['action' => ($row->status) ? 'disable' : 'enable']);
         $statusclass = ' toolskills-status-switch ';
@@ -211,29 +214,7 @@ class skills_table extends \table_sql {
                 $action['attributes'],
             );
         }
-        return html_writer::div(join('', $actionshtml), 'skill-item-actions item-actions mr-0');
-    }
-
-    /**
-     * Create a navbar switch for toggling editing mode.
-     * @param stdclass $row
-     * @return string Html containing the edit switch
-     */
-    public function edit_switch($row) {
-        global $PAGE, $OUTPUT;
-
-        $temp = (object) [
-            'legacyseturl' => (new moodle_url('/admin/tool/skills/manage/list.php', [
-                'id' => $row->id,
-                'sesskey' => sesskey(),
-                ]))->out(false),
-            'pagecontextid' => $PAGE->context->id,
-            'pageurl' => $PAGE->url,
-            'sesskey' => sesskey(),
-            'checked' => $row->status,
-            'id' => $row->id,
-        ];
-        return $OUTPUT->render_from_template('tool_skills/status_switch', $temp);
+        return html_writer::div(join('', $actionshtml), 'skill-item-actions item-actions');
     }
 
     /**
