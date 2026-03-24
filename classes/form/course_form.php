@@ -70,13 +70,19 @@ class course_form extends \core_form\dynamic_form {
         $mform->addElement('select', 'status', get_string('status', 'tool_skills'), $statusoptions);
         $mform->addHelpButton('status', 'status', 'tool_skills');
 
+        // Completion level — fetch first so we can conditionally show level-based options.
+        $skill = $this->optional_param('skill', 0, PARAM_INT);
+        $levels = $DB->get_records_menu('tool_skills_levels', ['skill' => $skill], '', 'id, name');
+
         // Upon completion.
         $options = [
             skills::COMPLETIONNOTHING => get_string('completionnothing', 'tool_skills'),
             skills::COMPLETIONPOINTS => get_string('completionpoints', 'tool_skills'),
-            skills::COMPLETIONSETLEVEL => get_string('completionsetlevel', 'tool_skills'),
-            skills::COMPLETIONFORCELEVEL => get_string('completionforcelevel', 'tool_skills'),
         ];
+        if (!empty($levels)) {
+            $options[skills::COMPLETIONSETLEVEL] = get_string('completionsetlevel', 'tool_skills');
+            $options[skills::COMPLETIONFORCELEVEL] = get_string('completionforcelevel', 'tool_skills');
+        }
         $mform->addElement('select', 'uponcompletion', get_string('uponcompletion', 'tool_skills'), $options);
         $mform->addHelpButton('uponcompletion', 'uponcompletion', 'tool_skills');
 
@@ -84,10 +90,6 @@ class course_form extends \core_form\dynamic_form {
         $mform->addElement('text', 'points', get_string('completionpoints', 'tool_skills'));
         $mform->hideIf('points', 'uponcompletion', 'neq', skills::COMPLETIONPOINTS);
         $mform->addHelpButton('points', 'completionpoints', 'tool_skills');
-
-        // Completion level.
-        $skill = $this->optional_param('skill', 0, PARAM_INT);
-        $levels = $DB->get_records_menu('tool_skills_levels', ['skill' => $skill], '', 'id, name');
 
         // List of levels to complete.
         $mform->addElement('select', 'level', get_string('completionlevel', 'tool_skills'), $levels);

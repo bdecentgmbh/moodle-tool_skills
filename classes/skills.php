@@ -578,7 +578,12 @@ class skills {
             // Get the updated skill instance.
             $skill = self::get($skillid);
 
-            \tool_skills\level::manage_level_instance($skill, $formdata->levels);
+            if (empty($formdata->levelscount)) {
+                // No levels selected — remove any existing levels for this skill.
+                \tool_skills\level::remove_skill_levels($skillid);
+            } else {
+                \tool_skills\level::manage_level_instance($skill, $formdata->levels ?? []);
+            }
         }
 
         // Allow the query changes to the DB.
