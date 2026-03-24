@@ -1,3 +1,5 @@
+[![Moodle Plugin CI](https://github.com/bdecentgmbh/moodle-tool_skills/actions/workflows/moodle-ci.yml/badge.svg)](https://github.com/bdecentgmbh/moodle-tool_skills/actions/workflows/moodle-ci.yml)
+
 # Skills
 
 Moodle admin tool plugin to manage skills
