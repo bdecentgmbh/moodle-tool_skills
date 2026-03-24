@@ -103,6 +103,7 @@ class skills_form extends \moodleform {
         // Levels count selection element.
         $options = [0 => get_string('nolevels', 'tool_skills')] + array_combine(range(1, 10), range(1, 10));
         $mform->addElement('select', 'levelscount', get_string('levelscount', 'tool_skills'), $options);
+        $mform->setDefault('levelscount', 1);
         $mform->addHelpButton('levelscount', 'levelscount', 'tool_skills');
 
         $mform->registerNoSubmitButton('updatelevelscount');
