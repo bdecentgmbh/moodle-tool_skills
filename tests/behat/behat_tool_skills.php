@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(__DIR__.'/../../../../../lib/behat/behat_base.php');
+require_once(__DIR__ . '/../../../../../lib/behat/behat_base.php');
 
 use Behat\Gherkin\Node\{TableNode, PyStringNode};
 
@@ -34,8 +34,6 @@ use Behat\Gherkin\Node\{TableNode, PyStringNode};
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_tool_skills extends behat_base {
-
-
     /**
      * Open the skills listing page.
      *
@@ -43,8 +41,10 @@ class behat_tool_skills extends behat_base {
      *
      */
     public function i_navigate_to_skills() {
-        $this->execute('behat_navigation::i_navigate_to_in_site_administration',
-            ["Plugins > Admin tools > Skills"]);
+        $this->execute(
+            'behat_navigation::i_navigate_to_in_site_administration',
+            ["Plugins > Admin tools > Skills"]
+        );
     }
 
     /**
@@ -68,8 +68,10 @@ class behat_tool_skills extends behat_base {
      */
     public function i_create_skill_with_the_following_fields_to_these_values(TableNode $data) {
 
-        $this->execute('behat_navigation::i_navigate_to_in_site_administration',
-            ["Plugins > Admin tools > Skills"]);
+        $this->execute(
+            'behat_navigation::i_navigate_to_in_site_administration',
+            ["Plugins > Admin tools > Skills"]
+        );
         $this->execute("behat_general::i_click_on", ["Create skill", "button"]);
         $this->execute('behat_forms::i_set_the_following_fields_to_these_values', [$data]);
         $this->execute("behat_general::i_click_on", ["Save changes", "button"]);
@@ -105,5 +107,4 @@ class behat_tool_skills extends behat_base {
             $cssclass, "css_element",
         ]);
     }
-
 }

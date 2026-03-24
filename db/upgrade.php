@@ -38,18 +38,15 @@ function xmldb_tool_skills_upgrade($oldversion) {
         // Conditionally launch add field timecreated.
         if ($dbman->table_exists($table) && !$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
-
         }
         upgrade_plugin_savepoint(true, 2024020700, 'tool', 'skills');
     }
 
     if ($oldversion < 2024020802) {
-
         $table = new xmldb_table('tool_skills_awardlogs');
         $field = new xmldb_field('skill', XMLDB_TYPE_INTEGER, 18, null, null, null, null, 'id');
         // Conditionally launch add field timecreated.
         if ($dbman->table_exists($table) && $dbman->field_exists($table, $field)) {
-
             $logs = $DB->get_records('tool_skills_awardlogs', ['method' => 'course']);
             $skills = $DB->get_records('tool_skills_courses', []);
 
@@ -61,6 +58,14 @@ function xmldb_tool_skills_upgrade($oldversion) {
             }
         }
         upgrade_plugin_savepoint(true, 2024020802, 'tool', 'skills');
+    }
+
+    if ($oldversion < 2025042301) {
+        // Migrate levelscount from "extra levels beyond base" to "total levels".
+        // Previously, selecting N created N+1 levels (base + N extras), so levelscount stored N.
+        // Now levelscount stores the total number of levels, so increment all existing values by 1.
+        $DB->execute("UPDATE {tool_skills} SET levelscount = levelscount + 1");
+        upgrade_plugin_savepoint(true, 2025042301, 'tool', 'skills');
     }
 
     return true;

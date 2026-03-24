@@ -28,7 +28,6 @@ use moodle_exception;
  * Maintain the user log of points allocations.
  */
 class logs {
-
     /**
      * Log class isntance.
      *
@@ -60,11 +59,13 @@ class logs {
      * @param int $status Type of the points awarded. 1 for increase, 0 for negative points.
      * @return void
      */
-    public function get_log(int $skillid, int $userid, int $methodid, string $method, int $status=1) {
+    public function get_log(int $skillid, int $userid, int $methodid, string $method, int $status = 1) {
         global $DB;
 
-        if ($log = $DB->get_record('tool_skills_awardlogs', ['skill' => $skillid, 'userid' => $userid,
-        'method' => $method, 'methodid' => $methodid, ])) {
+        if (
+            $log = $DB->get_record('tool_skills_awardlogs', ['skill' => $skillid, 'userid' => $userid,
+            'method' => $method, 'methodid' => $methodid, ])
+        ) {
             return $log;
         }
         return false;
@@ -81,18 +82,18 @@ class logs {
      * @param int $status Type of the points awarded. 1 for increase, 0 for negative points.
      * @return int ID of the logs inserted ID.
      */
-    public function add(int $skillid, int $userid, int $points, int $methodid, string $method, int $status=1) {
+    public function add(int $skillid, int $userid, int $points, int $methodid, string $method, int $status = 1) {
         global $DB;
 
-        if ($record = $DB->get_record('tool_skills_awardlogs', ['skill' => $skillid, 'userid' => $userid,
-            'method' => $method, 'methodid' => $methodid, ], '*', IGNORE_MULTIPLE)) {
-
+        if (
+            $record = $DB->get_record('tool_skills_awardlogs', ['skill' => $skillid, 'userid' => $userid,
+            'method' => $method, 'methodid' => $methodid, ], '*', IGNORE_MULTIPLE)
+        ) {
             $record->points = $points;
             $record->status = $status;
             $record->timecreated = time();
             // Update the existing record log.
             return $DB->update_record('tool_skills_awardlogs', $record);
-
         } else {
             $record = [
                 'skill'       => $skillid,
@@ -127,7 +128,7 @@ class logs {
      * @param string $method
      * @return void
      */
-    public function delete_method_log(int $methodid, string $method='course') {
+    public function delete_method_log(int $methodid, string $method = 'course') {
         global $DB;
 
         $DB->delete_records('tool_skills_awardlogs', ['methodid' => $methodid, 'method' => $method]);

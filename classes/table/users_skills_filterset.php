@@ -35,5 +35,4 @@ use core_table\local\filter\string_filter;
  * Participants table filterset.
  */
 class users_skills_filterset extends filterset {
-
 }

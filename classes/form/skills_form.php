@@ -27,7 +27,7 @@ namespace tool_skills\form;
 defined('MOODLE_INTERNAL') || die();
 
 // Require forms library.
-require_once($CFG->libdir.'/formslib.php');
+require_once($CFG->libdir . '/formslib.php');
 
 use html_writer;
 use tool_skills\skills;
@@ -36,7 +36,6 @@ use tool_skills\skills;
  * Skills create/edit form.
  */
 class skills_form extends \moodleform {
-
     /**
      * Menu item create form elements defined.
      *
@@ -89,8 +88,12 @@ class skills_form extends \moodleform {
 
         // Add the Available in Course Categories element.
         $categories = \core_course_category::make_categories_list();
-        $cate = $mform->addElement('autocomplete', 'categories', get_string('availableincoursecategories', 'tool_skills'),
-                $categories);
+        $cate = $mform->addElement(
+            'autocomplete',
+            'categories',
+            get_string('availableincoursecategories', 'tool_skills'),
+            $categories
+        );
         $cate->setMultiple(true);
         $mform->addHelpButton('categories', 'availableincoursecategories', 'tool_skills');
 
@@ -98,8 +101,9 @@ class skills_form extends \moodleform {
         $mform->addElement('header', 'skilllevels', get_string('skillslevels', 'tool_skills'));
 
         // Levels count selection element.
-        $options = array_combine(range(0, 10), range(0, 10));
+        $options = [0 => get_string('nolevels', 'tool_skills')] + array_combine(range(1, 10), range(1, 10));
         $mform->addElement('select', 'levelscount', get_string('levelscount', 'tool_skills'), $options);
+        $mform->setDefault('levelscount', 1);
         $mform->addHelpButton('levelscount', 'levelscount', 'tool_skills');
 
         $mform->registerNoSubmitButton('updatelevelscount');
@@ -109,8 +113,7 @@ class skills_form extends \moodleform {
 
         $PAGE->requires->js_amd_inline("
             document.querySelector('select[name=levelscount]') !== null ? document.querySelector('select[name=levelscount]')
-                .onchange = (e) => document.querySelector('input[name=updatelevelscount]').click() : ''; "
-        );
+                .onchange = (e) => document.querySelector('input[name=updatelevelscount]').click() : ''; ");
     }
 
     /**
@@ -125,44 +128,35 @@ class skills_form extends \moodleform {
         $levelscount = $mform->getElementValue('levelscount');
         $levelscount = !empty($levelscount) ? reset($levelscount) : 0;
 
-        for ($i = 0; $i <= $levelscount; $i++) {
-
+        for ($i = 1; $i <= $levelscount; $i++) {
             // Static heading.
-            $name = ($i == 0) ? get_string('baselevelheading', 'tool_skills') : get_string('levelsnohead', 'tool_skills', $i);
-            $mform->addElement('static', "level[$i]", html_writer::tag('h5', $name));
+            $mform->addElement('static', "level[$i]", html_writer::tag('h5', get_string('levelsnohead', 'tool_skills', $i)));
 
             $mform->addElement('hidden', "levels[$i][id]");
             $mform->setType("levels[$i][id]", PARAM_INT);
 
             // Level name.
-            $name = ($i == 0) ? get_string('baselevelname', 'tool_skills') : get_string('levelsname', 'tool_skills', $i);
-            $mform->addElement('text', "levels[$i][name]", $name, '');
+            $mform->addElement('text', "levels[$i][name]", get_string('levelsname', 'tool_skills', $i), '');
             $mform->setType("levels[$i][name]", PARAM_TEXT);
             $mform->addRule("levels[$i][name]", get_string('required'), 'required', '', 'client');
-            $mform->addHelpButton("levels[$i][name]", (($i == 0) ? 'baselevelname' : 'levelsname'), 'tool_skills');
+            $mform->addHelpButton("levels[$i][name]", 'levelsname', 'tool_skills');
 
             // Level points.
-            $name = ($i == 0) ? get_string('baselevelpoint', 'tool_skills') : get_string('levelspoint', 'tool_skills', $i);
-            $mform->addElement('text', "levels[$i][points]", $name, '');
+            $mform->addElement('text', "levels[$i][points]", get_string('levelspoint', 'tool_skills', $i), '');
             $mform->setType("levels[$i][points]", PARAM_INT);
             $mform->addRule("levels[$i][points]", get_string('required'), 'required', '', 'client');
             $mform->addRule("levels[$i][points]", get_string('error:numeric', 'tool_skills'), 'numeric', '', 'client');
-            $mform->addHelpButton("levels[$i][points]", (($i == 0) ? 'baselevelpoint' : 'levelspoint'), 'tool_skills');
+            $mform->addHelpButton("levels[$i][points]", 'levelspoint', 'tool_skills');
+
+            // Set the default name for this level.
+            if (!$mform->getElementValue("levels[$i][name]")) {
+                $mform->setDefault("levels[$i][name]", get_string('leveldefaultname', 'tool_skills', $i));
+            }
 
             // Set the default point for this level.
             if ($mform->getElementValue("levels[$i][points]") === null) {
-                $leveldefaultpoint = $i * 10; // Find the default point.
-                $mform->setDefault("levels[$i][points]", $leveldefaultpoint);
+                $mform->setDefault("levels[$i][points]", ($i - 1) * 10);
             }
-
-            // Set the default values for the level 0.
-            if ($i == 0  && !$mform->getElementValue("levels[$i][name]")) {
-                $mform->setDefaults([
-                    "levels[$i][name]" => get_string('skillslevel', 'tool_skills') . ' ' . $i,
-                    "levels[$i][points]" => '0',
-                ]);
-            }
-
         }
         // Action buttons.
         $this->add_action_buttons();
@@ -174,7 +168,7 @@ class skills_form extends \moodleform {
      * @param context $context
      * @return array
      */
-    protected function get_editor_options($context=null) {
+    protected function get_editor_options($context = null) {
         global $PAGE;
 
         return [
@@ -200,7 +194,6 @@ class skills_form extends \moodleform {
         if ($data['identitykey']) {
             // Get the records with same identity key.
             if ($records = $DB->get_records('tool_skills', ['identitykey' => $data['identitykey']])) {
-
                 if (empty($data['id'])) {
                     $errors['identitykey'] = get_string('error:identityexists', 'tool_skills');
                 } else {

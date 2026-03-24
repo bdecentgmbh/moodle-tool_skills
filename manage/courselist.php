@@ -23,11 +23,11 @@
  */
 
 // Require config.
-require(__DIR__.'/../../../../config.php');
+require(__DIR__ . '/../../../../config.php');
 
 // Require admin library.
-require_once($CFG->libdir.'/adminlib.php');
-require_once($CFG->libdir.'/tablelib.php');
+require_once($CFG->libdir . '/adminlib.php');
+require_once($CFG->libdir . '/tablelib.php');
 
 // Get parameters.
 $courseid = required_param('courseid', PARAM_INT);
@@ -67,7 +67,6 @@ if ($action !== null && confirm_sesskey()) {
 
     // Perform the requested action.
     switch ($action) {
-
         case "disable":
             // Disable the skill.
             \tool_skills\form\course_form::update_status($skillid, $courseid, false);
@@ -89,8 +88,10 @@ if ($action !== null && confirm_sesskey()) {
 $PAGE->set_title(get_string('courseskills', 'tool_skills'));
 $PAGE->navbar->add(get_string('mycourses', 'core'), new moodle_url('/course/index.php'));
 $PAGE->navbar->add(format_string($course->shortname), new moodle_url('/course/view.php', ['id' => $course->id]));
-$PAGE->navbar->add(get_string('skills', 'tool_skills'),
-    new moodle_url('/admin/tool/skills/manage/courselist.php', ['courseid' => $courseid]));
+$PAGE->navbar->add(
+    get_string('skills', 'tool_skills'),
+    new moodle_url('/admin/tool/skills/manage/courselist.php', ['courseid' => $courseid])
+);
 
 // Build skills table.
 $table = new \tool_skills\table\course_skills_table($courseid);
@@ -108,25 +109,24 @@ $createbutton = '';
 if (has_capability('tool/skills:manage', \context_system::instance())) {
     $createbutton .= $OUTPUT->box_start();
     $createbutton .= $OUTPUT->single_button(
-            new \moodle_url('/admin/tool/skills/manage/edit.php', ['sesskey' => sesskey()]),
-            get_string('createskill', 'tool_skills'), 'get');
+        new \moodle_url('/admin/tool/skills/manage/edit.php', ['sesskey' => sesskey()]),
+        get_string('createskill', 'tool_skills'),
+        'get'
+    );
     $createbutton .= $OUTPUT->box_end();
 }
 
 $countmenus = $DB->count_records('tool_skills');
 if ($countmenus < 1) {
-
     $table->out(0, true);
 
     echo $createbutton;
-
 } else {
-
     echo $createbutton;
 
     $table->out(50, true);
 
-    $PAGE->requires->js_amd_inline('require(["jquery"], function($) {
+    $PAGE->requires->js_amd_inline('(function() {
 
         // Make the status toggle check and uncheck on click on status update toggle.
         var form = document.querySelectorAll(".toolskills-status-switch");
@@ -137,7 +137,7 @@ if ($countmenus < 1) {
             });
         });
 
-    })');
+    })()');
 
     $PAGE->requires->js_call_amd('tool_skills/skills', 'init', ['courseid' => $courseid]);
 }

@@ -26,7 +26,7 @@ namespace tool_skills\table;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/lib/tablelib.php');
+require_once($CFG->dirroot . '/lib/tablelib.php');
 
 use stdClass;
 use moodle_url;
@@ -38,7 +38,6 @@ use html_writer;
  * Skills list table.
  */
 class skills_table extends \table_sql {
-
     /**
      * Table contructor to define columns and headers.
      */
@@ -87,7 +86,7 @@ class skills_table extends \table_sql {
             $values = $this->filterset->get_filter('category')->get_filter_values();
             $category = isset($values[0]) ? current($values) : '';
             $condition .= ' AND ' . $DB->sql_like('categories', ':value');
-            $params = ['value' => '%"'.$category.'"%'];
+            $params = ['value' => '%"' . $category . '"%'];
         }
 
         // Set the query values to fetch skills.
@@ -182,7 +181,8 @@ class skills_table extends \table_sql {
         $switchclass = $CFG->branch >= 500 ? 'form-check form-switch' : 'custom-control custom-switch';
         $checked = ($row->status) ? ['checked' => 'checked'] : [];
         $checkbox = html_writer::div(
-            html_writer::empty_tag('input',
+            html_writer::empty_tag(
+                'input',
                 ['type' => 'checkbox', 'class' => $inputclass] + $checked
             ) . html_writer::tag('span', '', ['class' => $labelclass]),
             $switchclass

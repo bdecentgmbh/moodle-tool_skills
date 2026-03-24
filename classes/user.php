@@ -28,7 +28,6 @@ namespace tool_skills;
  * Assign the skills and points to users.
  */
 class user {
-
     /**
      * User class instance object.
      *
@@ -65,7 +64,7 @@ class user {
      */
     public static function get($userid) {
 
-        if (self::$instance == null || self::$instance->get_userid() == $userid) {
+        if (self::$instance == null || self::$instance->get_userid() != $userid) {
             self::$instance = new self($userid);
         }
 
@@ -109,7 +108,7 @@ class user {
         }
 
         // Prepare IN condition query to get skills from the user enroled courses.
-        list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'cid');
+        [$insql, $inparams] = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'cid');
 
         $sql = "SELECT tscs.*, tscs.status as courseskillstatus, tscs.id as id, up.points AS userpoints
             FROM {tool_skills_courses} tscs
@@ -120,7 +119,7 @@ class user {
         $list = $DB->get_records_sql($sql, ['userid' => $this->userid, 'enabled' => 1] + $inparams);
 
         // Include list of course and skills.
-        array_walk($list, function(&$point) {
+        array_walk($list, function (&$point) {
             global $DB;
             // Skill record.
             $point->skillobj = skills::get($point->skill);
@@ -160,7 +159,7 @@ class user {
      * @param bool $withdata
      * @return array
      */
-    public function get_user_points(bool $withdata=true) {
+    public function get_user_points(bool $withdata = true) {
         global $DB;
 
         // Prepare the skills user points list.
@@ -172,7 +171,6 @@ class user {
         if (!$withdata) {
             return $list;
         }
-
     }
 
     /**
@@ -226,5 +224,4 @@ class user {
         $percentage = ($points / $skillpoint) * 100;
         return ((int) $percentage) . '%';
     }
-
 }

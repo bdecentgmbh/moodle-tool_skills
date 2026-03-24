@@ -24,13 +24,12 @@
 
 defined('MOODLE_INTERNAL') || die('No direct access');
 
-require_once($CFG->dirroot.'/lib/formslib.php');
+require_once($CFG->dirroot . '/lib/formslib.php');
 
 /**
  * Filter form for the templates table.
  */
 class tool_skills_table_filter extends \moodleform {
-
     /**
      * Filter form elements defined.
      *

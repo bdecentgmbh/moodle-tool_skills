@@ -26,7 +26,7 @@ namespace tool_skills\table;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/lib/tablelib.php');
+require_once($CFG->dirroot . '/lib/tablelib.php');
 
 use stdClass;
 use moodle_url;
@@ -41,7 +41,6 @@ use tool_skills\skills;
  * Skills list table.
  */
 class course_skills_table extends \table_sql {
-
     /**
      * ID of the course to fetch skills.
      *
@@ -105,7 +104,7 @@ class course_skills_table extends \table_sql {
 
         $categoryid = get_course($this->courseid)->category;
 
-        $this->rawdata = array_filter($this->rawdata, function($row) use ($categoryid) {
+        $this->rawdata = array_filter($this->rawdata, function ($row) use ($categoryid) {
             $json = $row->categories ? json_decode($row->categories) : [];
             // Categories in the skill should be empty or its must contain the currrent course categoryid.
             return empty($json) || in_array($categoryid, $json);
@@ -143,13 +142,12 @@ class course_skills_table extends \table_sql {
         $completion = $row->uponcompletion ?? 0;
 
         switch ($completion) {
-
             case skills::COMPLETIONFORCELEVEL:
                 return get_string('completionforcelevel', 'tool_skills') . ' - ' . \tool_skills\level::get($row->level)->get_name();
                 break;
 
             case skills::COMPLETIONPOINTS:
-                return get_string('completionpoints', 'tool_skills') .' - '. $row->points;
+                return get_string('completionpoints', 'tool_skills') . ' - ' . $row->points;
                 break;
 
             case skills::COMPLETIONSETLEVEL:
@@ -159,7 +157,6 @@ class course_skills_table extends \table_sql {
             case skills::COMPLETIONNOTHING:
             default:
                 return get_string('completionnothing', 'tool_skills');
-
         }
     }
 
@@ -200,7 +197,8 @@ class course_skills_table extends \table_sql {
         $switchclass = $CFG->branch >= 500 ? 'form-check form-switch' : 'custom-control custom-switch';
         $checked = ($row->coursestatus) ? ['checked' => 'checked'] : [];
         $checkbox = html_writer::div(
-            html_writer::empty_tag('input',
+            html_writer::empty_tag(
+                'input',
                 ['type' => 'checkbox', 'class' => $inputclass] + $checked
             ) . html_writer::tag('span', '', ['class' => $labelclass]),
             $switchclass

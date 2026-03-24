@@ -30,7 +30,6 @@ use single_button;
  * Skills helper defined some common purpose methods to easy access.
  */
 class helper {
-
     /**
      * Generate the button which is displayed on top of the templates table. Helps to create templates.
      *
@@ -38,10 +37,10 @@ class helper {
      * @param bool $filtered Is the table result is filtered.
      * @return string The HTML contents to display the create templates button.
      */
-    public static function skills_buttons($tab, $filtered=false) {
+    public static function skills_buttons($tab, $filtered = false) {
         global $OUTPUT, $PAGE, $CFG;
 
-        require_once($CFG->dirroot. '/admin/tool/skills/locallib.php');
+        require_once($CFG->dirroot . '/admin/tool/skills/locallib.php');
 
         $button = '';
 
@@ -79,7 +78,7 @@ class helper {
         global $DB;
         // List of skills available.
         $skills = $DB->get_records('tool_skills', []);
-        array_walk($skills, function(&$skill) {
+        array_walk($skills, function (&$skill) {
             $skill = \tool_skills\skills::get($skill->id);
         });
 
@@ -124,7 +123,7 @@ class helper {
     public static function get_courses_skill_points(array $courseids) {
         global $DB;
 
-        list($insql, $inparams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'skp');
+        [$insql, $inparams] = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'skp');
 
         $sql = "SELECT tsl.skill, MAX(tsl.points) AS skillpoints
         FROM {tool_skills_levels} tsl
@@ -164,7 +163,6 @@ class helper {
             // Trigger the skill id.
             $method->remove_skills($skillid);
         }
-
     }
 
 
@@ -234,5 +232,4 @@ class helper {
         }
         return $result ?? '';
     }
-
 }

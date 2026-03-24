@@ -23,10 +23,10 @@
  */
 
 // Require config.
-require(__DIR__.'/../../../../config.php');
+require(__DIR__ . '/../../../../config.php');
 
 // Require admin library.
-require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->libdir . '/adminlib.php');
 
 // Get parameters.
 $id = optional_param('id', null, PARAM_INT);
@@ -53,10 +53,8 @@ $PAGE->navbar->add(get_string('pluginname', 'tool_skills'), $listurl);
 $PAGE->set_title(get_string('skills', 'tool_skills'));
 
 if ($id !== null && $id > 0) {
-
     $PAGE->set_heading(get_string('editskill', 'tool_skills'));
     $PAGE->navbar->add(get_string('edit', 'tool_skills'));
-
 } else {
     $PAGE->set_heading(get_string('createskill', 'tool_skills'));
     $PAGE->navbar->add(get_string('create', 'tool_skills'));
@@ -85,7 +83,6 @@ if ($data = $form->get_data()) {
 if ($id !== null && $id > 0) {
     // Fetch the data for the menu.
     if ($record = \tool_skills\skills::get($id)->get_data()) {
-
         // Set the menu data to the menu edit form.
         $form->set_data($record);
 
