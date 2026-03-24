@@ -29,4 +29,4 @@ $plugin->requires  = 2021051700;        // Requires this Moodle version.
 $plugin->component = 'tool_skills'; // Full name of the plugin (used for diagnostics).
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->release = '1.1';
-$plugin->supported = [400, 500];
+$plugin->supported = [400, 501];

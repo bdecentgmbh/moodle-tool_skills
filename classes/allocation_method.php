@@ -30,7 +30,6 @@ use stdClass;
  * Abstract class to define skill points allocation methods, like course and activity.
  */
 abstract class allocation_method {
-
     /**
      * Contains the skill instance data for this allocation method.
      *

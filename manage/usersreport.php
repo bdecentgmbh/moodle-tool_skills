@@ -23,10 +23,10 @@
  */
 
 // Require config.
-require(__DIR__.'/../../../../config.php');
+require(__DIR__ . '/../../../../config.php');
 
 // Require admin library.
-require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->libdir . '/adminlib.php');
 
 // Get parameters.
 $skillid = required_param('id', PARAM_INT);
@@ -54,11 +54,13 @@ $PAGE->set_heading($pointstr);
 $PAGE->set_title($pointstr);
 
 $PAGE->navbar->add(get_string('profile', 'core'), new moodle_url('/user/profile.php'));
-$PAGE->navbar->add(get_string('skills', 'tool_skills'),
-    new moodle_url('/admin/tool/skills/manage/usersreport.php', ['id' => $skillid]));
+$PAGE->navbar->add(
+    get_string('skills', 'tool_skills'),
+    new moodle_url('/admin/tool/skills/manage/usersreport.php', ['id' => $skillid])
+);
 
 // Build skills table.
-$filterset = new tool_skills\table\users_skills_filterset;
+$filterset = new tool_skills\table\users_skills_filterset();
 // Users skills list of table.
 $table = new \tool_skills\table\users_skills($skillid);
 $table->define_baseurl($PAGE->url);

@@ -113,18 +113,22 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
             $skillpoints = $skill->get_points_to_earnskill();
 
             $userskillpoint = $skill->get_user_skill($USER->id, false);
-            $earnedstring = html_writer::tag('b',
-                " (" . get_string('earned', 'tool_skills') . ": " . ($userskillpoint->points ?? 0) . ")");
+            $earnedstring = html_writer::tag(
+                'b',
+                " (" . get_string('earned', 'tool_skills') . ": " . ($userskillpoint->points ?? 0) . ")"
+            );
             // Skill name.
             $skillstr = html_writer::tag('h5', $skillslist[$skillid]->get_name());
             // Point to completion this skill.
-            $skillstr .= html_writer::tag('p', get_string('pointscomplete', 'tool_skills', $skillpoints . $earnedstring),
-                ['class' => 'skill-'.$skill->get_data()->identitykey]);
+            $skillstr .= html_writer::tag(
+                'p',
+                get_string('pointscomplete', 'tool_skills', $skillpoints . $earnedstring),
+                ['class' => 'skill-' . $skill->get_data()->identitykey]
+            );
 
             $skillstr .= html_writer::start_tag('ul'); // Start the list of skills courses.
 
             foreach ($skills as $id => $data) {
-
                 // Course skill object.
                 $skillcourse = $data->skillcourse;
                 $pointstoearn = $skillcourse->get_points_earned_fromcourse();
@@ -143,10 +147,11 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
 
                     // Upon compeltion of course user will reached the levels.
                     $resultstring = '';
-                    if (in_array($data->uponcompletion, [\tool_skills\skills::COMPLETIONSETLEVEL,
-                        tool_skills\skills::COMPLETIONFORCELEVEL])) {
+                    if (
+                        in_array($data->uponcompletion, [\tool_skills\skills::COMPLETIONSETLEVEL,
+                        tool_skills\skills::COMPLETIONFORCELEVEL])
+                    ) {
                         $resultstring = isset($data->levels[$data->level]) ? format_string($data->levels[$data->level]->name) : '';
-
                     } else if ($data->uponcompletion == \tool_skills\skills::COMPLETIONPOINTS) { // Points.
                         $resultstring = $data->points;
                     }
@@ -155,10 +160,12 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
                 }
 
                 $pointstr .= get_string('pointsforcompletion', 'tool_skills') . " : " . $pointstoearn;
-                $pointstr .= html_writer::tag('b',
-                    " (".get_string('earned', 'tool_skills') . ": " .( $pointsfromcourse ?? 0) . ")" );
+                $pointstr .= html_writer::tag(
+                    'b',
+                    " (" . get_string('earned', 'tool_skills') . ": " . ( $pointsfromcourse ?? 0) . ")"
+                );
 
-                $li .= html_writer::tag('p', $pointstr, ['class' => 'skills-points-'.$course->shortname]);
+                $li .= html_writer::tag('p', $pointstr, ['class' => 'skills-points-' . $course->shortname]);
 
                 $skillstr .= html_writer::tag('li', $li);
 
@@ -172,11 +179,18 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
                 $skillstr .= html_writer::link($report, get_string('usersreport', 'tool_skills'));
             }
 
-            $coursenode = new core_user\output\myprofile\node('toolskills', "skill_".$skill->get_data()->id,
-                    '', null, null, $skillstr, null, 'toolskill-courses-points');
+            $coursenode = new core_user\output\myprofile\node(
+                'toolskills',
+                "skill_" . $skill->get_data()->id,
+                '',
+                null,
+                null,
+                $skillstr,
+                null,
+                'toolskill-courses-points'
+            );
             $tree->add_node($coursenode);
         }
-
     }
     return true;
 }
@@ -206,7 +220,7 @@ function tool_skills_get_fontawesome_icon_map() {
  * @param array $options additional options affecting the file serving
  * @return bool false if the file was not found, just send the file otherwise and do not return anything
  */
-function tool_skills_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=[]) {
+function tool_skills_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
 
     if ($context->contextlevel != CONTEXT_SYSTEM) {
         return false;
@@ -215,7 +229,6 @@ function tool_skills_pluginfile($course, $cm, $context, $filearea, $args, $force
     require_login();
 
     if ($filearea == 'levelimage') {
-
         $relativepath = implode('/', $args);
 
         $fullpath = "/$context->id/tool_skills/$filearea/$relativepath";

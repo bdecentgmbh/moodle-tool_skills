@@ -27,7 +27,7 @@ namespace tool_skills\form;
 defined('MOODLE_INTERNAL') || die();
 
 // Require forms library.
-require_once($CFG->libdir.'/formslib.php');
+require_once($CFG->libdir . '/formslib.php');
 
 use html_writer;
 use tool_skills\skills;
@@ -36,7 +36,6 @@ use tool_skills\skills;
  * Skills create/edit form.
  */
 class skills_form extends \moodleform {
-
     /**
      * Menu item create form elements defined.
      *
@@ -89,8 +88,12 @@ class skills_form extends \moodleform {
 
         // Add the Available in Course Categories element.
         $categories = \core_course_category::make_categories_list();
-        $cate = $mform->addElement('autocomplete', 'categories', get_string('availableincoursecategories', 'tool_skills'),
-                $categories);
+        $cate = $mform->addElement(
+            'autocomplete',
+            'categories',
+            get_string('availableincoursecategories', 'tool_skills'),
+            $categories
+        );
         $cate->setMultiple(true);
         $mform->addHelpButton('categories', 'availableincoursecategories', 'tool_skills');
 
@@ -109,8 +112,7 @@ class skills_form extends \moodleform {
 
         $PAGE->requires->js_amd_inline("
             document.querySelector('select[name=levelscount]') !== null ? document.querySelector('select[name=levelscount]')
-                .onchange = (e) => document.querySelector('input[name=updatelevelscount]').click() : ''; "
-        );
+                .onchange = (e) => document.querySelector('input[name=updatelevelscount]').click() : ''; ");
     }
 
     /**
@@ -126,7 +128,6 @@ class skills_form extends \moodleform {
         $levelscount = !empty($levelscount) ? reset($levelscount) : 0;
 
         for ($i = 0; $i <= $levelscount; $i++) {
-
             // Static heading.
             $name = ($i == 0) ? get_string('baselevelheading', 'tool_skills') : get_string('levelsnohead', 'tool_skills', $i);
             $mform->addElement('static', "level[$i]", html_writer::tag('h5', $name));
@@ -162,7 +163,6 @@ class skills_form extends \moodleform {
                     "levels[$i][points]" => '0',
                 ]);
             }
-
         }
         // Action buttons.
         $this->add_action_buttons();
@@ -174,7 +174,7 @@ class skills_form extends \moodleform {
      * @param context $context
      * @return array
      */
-    protected function get_editor_options($context=null) {
+    protected function get_editor_options($context = null) {
         global $PAGE;
 
         return [
@@ -200,7 +200,6 @@ class skills_form extends \moodleform {
         if ($data['identitykey']) {
             // Get the records with same identity key.
             if ($records = $DB->get_records('tool_skills', ['identitykey' => $data['identitykey']])) {
-
                 if (empty($data['id'])) {
                     $errors['identitykey'] = get_string('error:identityexists', 'tool_skills');
                 } else {

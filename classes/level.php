@@ -34,8 +34,6 @@ use moodle_url;
  * Level manage instance, fetch points and other data.
  */
 class level extends skills {
-
-
     /**
      * Level instance id.
      *
@@ -80,7 +78,7 @@ class level extends skills {
         // Set the skill id for this instance.
         $this->levelid = $levelid;
         // Generate the skill record.
-        $this->levelrecord = $this->fetch_record() ?? new stdClass;
+        $this->levelrecord = $this->fetch_record() ?? new stdClass();
 
         $this->data = $this->levelrecord;
 
@@ -120,8 +118,6 @@ class level extends skills {
         } else {
             throw new moodle_exception('levelnotfound', 'tool_skills');
         }
-
-        return false;
     }
 
     /**
@@ -132,7 +128,7 @@ class level extends skills {
     public function delete_level() {
         global $DB;
 
-        if ($DB->delete_records('tool_skills_level', ['id' => $this->levelid])) {
+        if ($DB->delete_records('tool_skills_levels', ['id' => $this->levelid])) {
             return true;
         }
         return false;
@@ -192,7 +188,6 @@ class level extends skills {
         $transaction = $DB->start_delegated_transaction();
 
         foreach ($levels as $num => $level) {
-
             $level = (object) $level; // Convert to stdClass.
 
             $level->skill = $skill->get_id();
@@ -238,5 +233,4 @@ class level extends skills {
 
         $DB->delete_records('tool_skills_levels', ['skill' => $skillid]);
     }
-
 }

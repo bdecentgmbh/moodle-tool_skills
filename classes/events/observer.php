@@ -32,7 +32,6 @@ use tool_skills\user;
  * Tool skills event observer to handler multiple triggered events.
  */
 class observer {
-
     /**
      * Observe the course completion event and update the assigned skills of this course for this user.
      *

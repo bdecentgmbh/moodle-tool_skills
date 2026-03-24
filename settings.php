@@ -26,15 +26,17 @@ defined('MOODLE_INTERNAL') || die;
 
 
 if ($hassiteconfig) {
-
     $ADMIN->add('tools', new admin_category('skills', new lang_string('pluginname', 'tool_skills')));
 
     $settings = null; // Reset the settings.
 
     // Include the external page setting to manage skills.
-    $automation = new admin_externalpage('manageskills', get_string('skills', 'tool_skills', null, true),
-        new moodle_url('/admin/tool/skills/manage/list.php'), 'tool/skills:manage');
+    $automation = new admin_externalpage(
+        'manageskills',
+        get_string('skills', 'tool_skills', null, true),
+        new moodle_url('/admin/tool/skills/manage/list.php'),
+        'tool/skills:manage'
+    );
 
     $ADMIN->add('tools', $automation);
-
 }

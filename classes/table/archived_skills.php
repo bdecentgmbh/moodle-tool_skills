@@ -31,7 +31,6 @@ use stdClass;
  * Skills list table.
  */
 class archived_skills extends \table_sql {
-
     /**
      * Table contructor to define columns and headers.
      */
@@ -81,7 +80,7 @@ class archived_skills extends \table_sql {
             $values = $this->filterset->get_filter('category')->get_filter_values();
             $category = isset($values[0]) ? current($values) : '';
             $condition .= ' AND ' . $DB->sql_like('categories', ':value');
-            $params = ['value' => '%"'.$category.'"%'];
+            $params = ['value' => '%"' . $category . '"%'];
         }
 
         // Set the query values to fetch skills.
@@ -126,7 +125,7 @@ class archived_skills extends \table_sql {
         $categories = json_decode($categories);
         $list = core_course_category::get_many($categories);
 
-        array_walk($list, function(&$cate) {
+        array_walk($list, function (&$cate) {
             $cate = $cate->get_formatted_name();
         });
 

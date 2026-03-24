@@ -32,13 +32,12 @@ use moodle_url;
 use core_table\dynamic as dynamic_table;
 use core_table\local\filter\filterset;
 
-require_once($CFG->libdir.'/tablelib.php');
+require_once($CFG->libdir . '/tablelib.php');
 
 /**
  * View the users skills for this skill.
  */
 class users_skills extends \table_sql implements dynamic_table {
-
     /**
      * Current skill instance record data.
      *
@@ -76,8 +75,7 @@ class users_skills extends \table_sql implements dynamic_table {
 
         $this->set_attribute('id', 'tool_skills_users_report');
 
-        $this->skill = $DB->get_record('tool_skills', ['id' => $skillid] );
-
+        $this->skill = $DB->get_record('tool_skills', ['id' => $skillid]);
     }
 
     /**
@@ -94,7 +92,7 @@ class users_skills extends \table_sql implements dynamic_table {
      * Guess the base url for the participants table.
      */
     public function guess_base_url(): void {
-        $this->baseurl = new \moodle_url('/admin/tools/skills/manage/usersreport.php', ['id' => $this->skill->id]);
+        $this->baseurl = new \moodle_url('/admin/tool/skills/manage/usersreport.php', ['id' => $this->skill->id]);
     }
 
     /**

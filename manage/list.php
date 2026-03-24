@@ -23,11 +23,11 @@
  */
 
 // Require config.
-require(__DIR__.'/../../../../config.php');
+require(__DIR__ . '/../../../../config.php');
 
 // Require admin library.
-require_once($CFG->libdir.'/adminlib.php');
-require_once($CFG->libdir.'/tablelib.php');
+require_once($CFG->libdir . '/adminlib.php');
+require_once($CFG->libdir . '/tablelib.php');
 
 
 // Get parameters.
@@ -119,7 +119,7 @@ if ($action !== null && confirm_sesskey()) {
 $PAGE->set_title(get_string('skillslist', 'tool_skills'));
 
 // Build skills table.
-$filterset = new tool_skills\table\skills_filterset;
+$filterset = new tool_skills\table\skills_filterset();
 
 if ($categoryid = optional_param('category', null, PARAM_INT)) {
     $category = new \core_table\local\filter\integer_filter('category');
@@ -146,11 +146,21 @@ echo get_string('skillslist_desc', 'tool_skills');
 // Table Tabs.
 $tabs = [];
 // Active skills table tab.
-$tabs[] = new tabobject('active',
-    new moodle_url($PAGE->url, ['t' => 'active']), get_string('activeskills', 'tool_skills'), '', true);
+$tabs[] = new tabobject(
+    'active',
+    new moodle_url($PAGE->url, ['t' => 'active']),
+    get_string('activeskills', 'tool_skills'),
+    '',
+    true
+);
 // Archive skills table tab.
-$tabs[] = new tabobject('archive',
-    new moodle_url($PAGE->url, ['t' => 'archive']), get_string('archiveskills', 'tool_skills'), '', true);
+$tabs[] = new tabobject(
+    'archive',
+    new moodle_url($PAGE->url, ['t' => 'archive']),
+    get_string('archiveskills', 'tool_skills'),
+    '',
+    true
+);
 
 // Create skills button to create new skill.
 $createbutton = $OUTPUT->box_start();
@@ -164,7 +174,7 @@ echo $OUTPUT->tabtree($tabs, $tab);
 
 $table->out(50, true);
 
-$PAGE->requires->js_amd_inline('require(["jquery"], function($) {
+$PAGE->requires->js_amd_inline('(function() {
     // Make the status toggle check and uncheck on click on status update toggle.
     var form = document.querySelectorAll(".toolskills-status-switch");
     form.forEach((switche) => {
@@ -179,7 +189,7 @@ $PAGE->requires->js_amd_inline('require(["jquery"], function($) {
     var filterForm = document.querySelector("#tool-skills-filterform");
     filterIcon.onclick = (e) => filterForm.classList.toggle("hide");
 
-})');
+})()');
 
 
 // Footer.

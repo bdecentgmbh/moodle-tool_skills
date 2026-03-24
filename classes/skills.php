@@ -31,15 +31,14 @@ use stdClass;
 use context_system;
 use tool_skills\allocation_method;
 
-require_once($CFG->dirroot.'/grade/lib.php');
-require_once($CFG->dirroot.'/grade/querylib.php');
-require_once($CFG->dirroot.'/admin/tool/skills/lib.php');
+require_once($CFG->dirroot . '/grade/lib.php');
+require_once($CFG->dirroot . '/grade/querylib.php');
+require_once($CFG->dirroot . '/admin/tool/skills/lib.php');
 
 /**
  * Skills manage instance, doing manage of skills tasks.
  */
 class skills {
-
     /**
      * Reference of the status is enabled.
      *
@@ -128,7 +127,7 @@ class skills {
         // Set the skill id for this instance.
         $this->skillid = $skillid;
         // Generate the skill record.
-        $this->skillrecord = $this->fetch_skill_record() ?? new stdClass;
+        $this->skillrecord = $this->fetch_skill_record() ?? new stdClass();
 
         $this->data = $this->update_data_structure();
 
@@ -185,8 +184,6 @@ class skills {
         } else {
             throw new moodle_exception('skillnotfound', 'tool_skills');
         }
-
-        return false;
     }
 
     /**
@@ -245,7 +242,6 @@ class skills {
         global $DB;
 
         if ($DB->delete_records('tool_skills', ['id' => $this->skillid])) {
-
             // Remove all the levels associated with this skill.
             \tool_skills\level::remove_skill_levels($this->skillid);
             // Delete all its actions.
@@ -272,7 +268,6 @@ class skills {
         global $DB;
 
         if ($DB->update_record('tool_skills', ['id' => $this->skillid, 'archived' => 1, 'timearchived' => time()])) {
-
             \tool_skills\courseskills::disable_course_skills($this->skillid);
         }
     }
@@ -358,7 +353,7 @@ class skills {
      *
      * @return stdClass
      */
-    public function get_user_skill(int $userid, $create=true) {
+    public function get_user_skill(int $userid, $create = true) {
         global $DB;
 
         // Fetch the user skill record.
@@ -366,7 +361,6 @@ class skills {
         $userskill = $DB->get_record('tool_skills_userpoints', $condition);
 
         if (empty($userskill) && $create) {
-
             $record = $condition;
             $record['points'] = 0;
             $record['timecreated'] = time();
@@ -464,7 +458,6 @@ class skills {
             $data->timemodified = time();
 
             $DB->update_record('tool_skills_userpoints', $data);
-
         } else {
             $record['points'] = $points;
             $record['timecreated'] = time();
@@ -567,7 +560,6 @@ class skills {
 
             // Update the skill record.
             $DB->update_record('tool_skills', $record);
-
         } else {
             // New record add the created time.
             $record->timecreated = time();
@@ -594,5 +586,4 @@ class skills {
 
         return $skillid ?? false;
     }
-
 }

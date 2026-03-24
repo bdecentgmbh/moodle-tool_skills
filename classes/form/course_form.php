@@ -31,13 +31,12 @@ use tool_skills\courseskills;
 use moodle_url;
 use stdClass;
 
-require_once($CFG->libdir.'/formslib.php');
+require_once($CFG->libdir . '/formslib.php');
 
 /**
  * Form to assign the skills to the courses.
  */
 class course_form extends \core_form\dynamic_form {
-
     /**
      * Defined the fields for the skill.
      *
@@ -102,7 +101,8 @@ class course_form extends \core_form\dynamic_form {
      * @return bool
      */
     protected function check_access_for_dynamic_submission(): void {
-        // ...TODO: Validatation of user capability goes here.
+        $courseid = $this->optional_param('courseid', 0, PARAM_INT);
+        require_capability('tool/skills:managecourseskillslist', \context_course::instance($courseid));
     }
 
     /**
@@ -178,8 +178,10 @@ class course_form extends \core_form\dynamic_form {
      * @return moodle_url
      */
     protected function get_page_url_for_dynamic_submission(): moodle_url {
-        return new moodle_url('/admin/tool/skills/manage/courselist.php',
-            ['courseid' => $this->optional_param('courseid', 0, PARAM_INT)]);
+        return new moodle_url(
+            '/admin/tool/skills/manage/courselist.php',
+            ['courseid' => $this->optional_param('courseid', 0, PARAM_INT)]
+        );
     }
 
     /**
@@ -193,7 +195,7 @@ class course_form extends \core_form\dynamic_form {
     public static function update_status(int $skillid, int $courseid, bool $status): void {
         global $DB;
 
-        $record = new stdClass;
+        $record = new stdClass();
         $record->skill = $skillid;
         $record->courseid = $courseid;
 
@@ -208,5 +210,4 @@ class course_form extends \core_form\dynamic_form {
         // Manage the users completion data.
         courseskills::get($record->courseid)->manage_users_completion($record->skill, $status);
     }
-
 }
