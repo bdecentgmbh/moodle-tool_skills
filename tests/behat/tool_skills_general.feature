@@ -152,7 +152,7 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
     And I set the field "Status" to "Enabled"
     And I set the field "Upon course completion" to "Set level"
     Then I should see "Level" in the ".modal-body form" "css_element"
-    And I click on ".custom-select" "css_element"
+    And I click on "select[name=\"level\"]" "css_element"
     Then I should see "Level 1"
     Then I should see "Level 2"
     Then I should see "Level 3"
