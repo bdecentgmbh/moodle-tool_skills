@@ -36,7 +36,7 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
       | Key             | beginner |
       | Base level name   | beginner |
       | Base level point  | 10       |
-    And ".skill-item-actions .custom-control-input:checked" "css_element" should exist in the "beginner" "table_row"
+    And ".skill-item-actions input[type=\"checkbox\"]:checked" "css_element" should exist in the "beginner" "table_row"
     Then I am on "Course 1" course homepage
     And I click on "More" "link" in the ".secondary-navigation" "css_element"
     And I click on "Manage skills" "link"
