@@ -41,13 +41,13 @@ Feature: Allocate points to users, need to manage levels and assign skills to co
     And I create skill with the following fields to these values:
       | Skill name       | Beginner |
       | Key              | beginner |
-      | Number of levels | 2        |
-      | Base level name    | beginner |
-      | Base level point   | 10       |
-      | Level #1 name    | Level 1  |
-      | Level #1 point   | 20       |
-      | Level #2 name    | Level 2  |
-      | Level #2 point   | 30       |
+      | Number of levels | 3        |
+      | Level #1 name    | beginner |
+      | Level #1 point   | 10       |
+      | Level #2 name    | Level 1  |
+      | Level #2 point   | 20       |
+      | Level #3 name    | Level 2  |
+      | Level #3 point   | 30       |
 
   @javascript
   Scenario: Award points to users for course completion

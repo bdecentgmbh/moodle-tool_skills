@@ -60,5 +60,13 @@ function xmldb_tool_skills_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024020802, 'tool', 'skills');
     }
 
+    if ($oldversion < 2025042301) {
+        // Migrate levelscount from "extra levels beyond base" to "total levels".
+        // Previously, selecting N created N+1 levels (base + N extras), so levelscount stored N.
+        // Now levelscount stores the total number of levels, so increment all existing values by 1.
+        $DB->execute("UPDATE {tool_skills} SET levelscount = levelscount + 1");
+        upgrade_plugin_savepoint(true, 2025042301, 'tool', 'skills');
+    }
+
     return true;
 }

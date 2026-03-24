@@ -202,7 +202,7 @@ class skills {
 
         $levelscount = count($data->levels);
         $data->levelsrecordscount = $levelscount;
-        $data->levelscount = $levelscount ? $levelscount - 1 : 0; // Levels count without the default level 0.
+        $data->levelscount = $levelscount; // Total number of levels (including base level).
 
         return $data;
     }
