@@ -24,6 +24,4 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$subplugins = [
-    'skilladdon' => 'admin/tool/skills/addon',
-];
+$subplugins = (array) json_decode(file_get_contents(__DIR__ . '/subplugins.json'))->plugintypes;

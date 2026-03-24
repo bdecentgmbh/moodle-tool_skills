@@ -1,5 +1,8 @@
 {
     "plugintypes": {
         "skilladdon": "admin/tool/skills/addon"
+    },
+    "subplugintypes": {
+        "skilladdon": "addon"
     }
 }
