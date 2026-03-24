@@ -109,8 +109,8 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
     And I create skill with the following fields to these values:
       | Skill name      | Critical thinker |
       | Key             | critical-thinker |
-      | Base level name   | beginner |
-      | Base level point  | 20       |
+      | Level #1 name   | beginner |
+      | Level #1 point  | 20       |
     Then I am on "Course 1" course homepage
     And I click on "More" "link" in the ".secondary-navigation" "css_element"
     And I click on "Manage skills" "link"
