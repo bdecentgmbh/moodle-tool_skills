@@ -34,7 +34,7 @@ This plugin is developed and tested on Moodle Core's Boost theme. It should also
 # Plugin repositories
 
 This plugin will be published and regularly updated in the Moodle plugins repository: https://moodle.org/plugins/tool_skills
-The latest development version can be found on Github: https://github.com/bdecentgmbh/moodle-tools_skills
+The latest development version can be found on Github: https://github.com/bdecentgmbh/moodle-tool_skills
 
 # Bug and problem reports / Support requests
 
