@@ -91,8 +91,14 @@ if ($id !== null && $id > 0) {
             foreach (array_values($record->levels) as $i => $leveldata) {
                 $leveldata = (array) $leveldata;
                 $draftitemid = 0;
-                file_prepare_draft_area($draftitemid, $levelcontext->id, 'tool_skills', 'levelimage',
-                    $leveldata['id'], $leveloptions);
+                file_prepare_draft_area(
+                    $draftitemid,
+                    $levelcontext->id,
+                    'tool_skills',
+                    'levelimage',
+                    $leveldata['id'],
+                    $leveloptions
+                );
                 $leveldata['image'] = $draftitemid;
                 $reindexed[$i + 1] = $leveldata;
             }
