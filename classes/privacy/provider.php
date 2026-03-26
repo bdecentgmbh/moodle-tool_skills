@@ -38,8 +38,8 @@ use core_privacy\local\request\writer;
  * The skills stores user points and allocation logs details.
  */
 class provider implements
-    \core_privacy\local\metadata\provider,
     \core_privacy\local\request\core_userlist_provider,
+    \core_privacy\local\metadata\provider,
     \core_privacy\local\request\plugin\provider {
     /**
      * List of used data fields summary meta key.

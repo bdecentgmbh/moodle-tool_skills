@@ -50,10 +50,10 @@ class skills_form extends \moodleform {
         $mform->addElement('hidden', 'id', 0);
         $mform->setType('id', PARAM_INT);
 
-        require_once($CFG->dirroot.'/admin/tool/skills/form/element-colorpicker.php');
+        require_once($CFG->dirroot . '/admin/tool/skills/form/element-colorpicker.php');
         \MoodleQuickForm::registerElementType(
             'tool_skills_colorpicker',
-            $CFG->dirroot.'/admin/tool/skills/form/element-colorpicker.php',
+            $CFG->dirroot . '/admin/tool/skills/form/element-colorpicker.php',
             'moodlequickform_toolskills_colorpicker'
         );
 
