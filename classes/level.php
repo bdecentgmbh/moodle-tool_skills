@@ -213,8 +213,14 @@ class level extends skills {
             // Persist any uploaded level image from the filemanager draft area.
             if ($imagedraftid) {
                 $context = context_system::instance();
-                file_save_draft_area_files($imagedraftid, $context->id, 'tool_skills', 'levelimage', $levelid,
-                    ['subdirs' => 0, 'maxfiles' => 1]);
+                file_save_draft_area_files(
+                    $imagedraftid,
+                    $context->id,
+                    'tool_skills',
+                    'levelimage',
+                    $levelid,
+                    ['subdirs' => 0, 'maxfiles' => 1]
+                );
             }
 
             $levelslist[] = $levelid;

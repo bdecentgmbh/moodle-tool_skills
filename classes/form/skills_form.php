@@ -50,10 +50,10 @@ class skills_form extends \moodleform {
         $mform->addElement('hidden', 'id', 0);
         $mform->setType('id', PARAM_INT);
 
-        require_once($CFG->dirroot.'/admin/tool/skills/form/element-colorpicker.php');
+        require_once($CFG->dirroot . '/admin/tool/skills/form/element-colorpicker.php');
         \MoodleQuickForm::registerElementType(
             'tool_skills_colorpicker',
-            $CFG->dirroot.'/admin/tool/skills/form/element-colorpicker.php',
+            $CFG->dirroot . '/admin/tool/skills/form/element-colorpicker.php',
             'moodlequickform_toolskills_colorpicker'
         );
 
@@ -140,7 +140,7 @@ class skills_form extends \moodleform {
         $levelscount = $mform->getElementValue('levelscount');
         $levelscount = !empty($levelscount) ? reset($levelscount) : 0;
 
-        for ($i = 1; $i <= $levelscount; $i++) {
+        for ($i = 0; $i <= $levelscount; $i++) {
             // Static heading.
             $mform->addElement('static', "level[$i]", html_writer::tag('h5', get_string('levelsnohead', 'tool_skills', $i)));
 
@@ -177,6 +177,14 @@ class skills_form extends \moodleform {
             // Set the default point for this level.
             if ($mform->getElementValue("levels[$i][points]") === null) {
                 $mform->setDefault("levels[$i][points]", ($i - 1) * 10);
+            }
+
+            // Set the default values for the level 0.
+            if ($i == 0  && !$mform->getElementValue("levels[$i][name]")) {
+                $mform->setDefaults([
+                    "levels[$i][name]" => get_string('skillslevel', 'tool_skills') . ' ' . $i,
+                    "levels[$i][points]" => '0',
+                ]);
             }
         }
         // Action buttons.
