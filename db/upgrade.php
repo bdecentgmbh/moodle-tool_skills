@@ -68,5 +68,24 @@ function xmldb_tool_skills_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025042301, 'tool', 'skills');
     }
 
+    if ($oldversion < 2026032401) {
+        // Add color field to tool_skills.
+        $table = new xmldb_table('tool_skills');
+        $field = new xmldb_field('color', XMLDB_TYPE_CHAR, '50', null, null, null, null, 'learningtime');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Add color field to tool_skills_levels.
+        $table = new xmldb_table('tool_skills_levels');
+        $field = new xmldb_field('color', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'points');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2026032401, 'tool', 'skills');
+    }
+
+
     return true;
 }
