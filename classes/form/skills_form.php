@@ -50,6 +50,13 @@ class skills_form extends \moodleform {
         $mform->addElement('hidden', 'id', 0);
         $mform->setType('id', PARAM_INT);
 
+        require_once($CFG->dirroot.'/admin/tool/skills/form/element-colorpicker.php');
+        \MoodleQuickForm::registerElementType(
+            'tool_skills_colorpicker',
+            $CFG->dirroot.'/admin/tool/skills/form/element-colorpicker.php',
+            'moodlequickform_toolskills_colorpicker'
+        );
+
         // General section.
         $mform->addElement('header', 'general', get_string('general', 'core'));
 
@@ -85,6 +92,11 @@ class skills_form extends \moodleform {
         ]);
         $mform->setDefault('learningtime', 90 * DAYSECS);
         $mform->addHelpButton('learningtime', 'learningtime', 'tool_skills');
+
+        // Skill color element.
+        $mform->addElement('tool_skills_colorpicker', 'color', get_string('skillcolor', 'tool_skills'));
+        $mform->addHelpButton('color', 'skillcolor', 'tool_skills');
+        $mform->setType('color', PARAM_TEXT);
 
         // Add the Available in Course Categories element.
         $categories = \core_course_category::make_categories_list();
@@ -152,6 +164,15 @@ class skills_form extends \moodleform {
             if (!$mform->getElementValue("levels[$i][name]")) {
                 $mform->setDefault("levels[$i][name]", get_string('leveldefaultname', 'tool_skills', $i));
             }
+
+            // Level color.
+            $mform->addElement('tool_skills_colorpicker', "levels[$i][color]", get_string('levelscolor', 'tool_skills', $i), '');
+            $mform->setType("levels[$i][color]", PARAM_TEXT);
+            $mform->addHelpButton("levels[$i][color]", 'levelscolor', 'tool_skills');
+
+            // Level image.
+            $mform->addElement('filemanager', "levels[$i][image]", get_string('levelsimage', 'tool_skills', $i));
+            $mform->addHelpButton("levels[$i][image]", 'levelsimage', 'tool_skills');
 
             // Set the default point for this level.
             if ($mform->getElementValue("levels[$i][points]") === null) {

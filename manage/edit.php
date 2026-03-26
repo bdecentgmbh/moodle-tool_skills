@@ -83,6 +83,23 @@ if ($data = $form->get_data()) {
 if ($id !== null && $id > 0) {
     // Fetch the data for the menu.
     if ($record = \tool_skills\skills::get($id)->get_data()) {
+
+        // Re-index levels from 1 (form uses 1-based), and prepare image draft areas.
+        if (!empty($record->levels)) {
+            $levelcontext = \context_system::instance();
+            $leveloptions = ['subdirs' => 0, 'maxfiles' => 1];
+            $reindexed = [];
+            foreach (array_values($record->levels) as $i => $leveldata) {
+                $leveldata = (array) $leveldata;
+                $draftitemid = 0;
+                file_prepare_draft_area($draftitemid, $levelcontext->id, 'tool_skills', 'levelimage',
+                    $leveldata['id'], $leveloptions);
+                $leveldata['image'] = $draftitemid;
+                $reindexed[$i + 1] = $leveldata;
+            }
+            $record->levels = $reindexed;
+        }
+
         // Set the menu data to the menu edit form.
         $form->set_data($record);
 
