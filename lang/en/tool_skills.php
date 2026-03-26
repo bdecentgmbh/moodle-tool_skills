@@ -159,6 +159,7 @@ $string['status_help'] = 'Choose the status for this skill:
     <br>
     <b> Enabled: </b> The skill will be added to all courses that match the course categories setting below and can be configured by teachers. <br />
     <b> Disabled: </b> The skill will not be added to any courses and cannot be used by teachers.';
+$string['subplugintype_skilladdon'] = 'Skill addon';
 $string['subplugintype_skilladdon_plural'] = 'Skill addons';
 $string['timearchived'] = 'Archived time';
 $string['timemodified'] = 'Time modified';

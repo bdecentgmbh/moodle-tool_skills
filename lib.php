@@ -148,8 +148,10 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
                     // Upon compeltion of course user will reached the levels.
                     $resultstring = '';
                     if (
-                        in_array($data->uponcompletion, [\tool_skills\skills::COMPLETIONSETLEVEL,
-                        tool_skills\skills::COMPLETIONFORCELEVEL])
+                        in_array(
+                            $data->uponcompletion,
+                            [\tool_skills\skills::COMPLETIONSETLEVEL, tool_skills\skills::COMPLETIONFORCELEVEL]
+                        )
                     ) {
                         $resultstring = isset($data->levels[$data->level]) ? format_string($data->levels[$data->level]->name) : '';
                     } else if ($data->uponcompletion == \tool_skills\skills::COMPLETIONPOINTS) { // Points.
@@ -162,7 +164,7 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
                 $pointstr .= get_string('pointsforcompletion', 'tool_skills') . " : " . $pointstoearn;
                 $pointstr .= html_writer::tag(
                     'b',
-                    " (" . get_string('earned', 'tool_skills') . ": " . ( $pointsfromcourse ?? 0) . ")"
+                    " (" . get_string('earned', 'tool_skills') . ": " . ($pointsfromcourse ?? 0) . ")"
                 );
 
                 $li .= html_writer::tag('p', $pointstr, ['class' => 'skills-points-' . $course->shortname]);
