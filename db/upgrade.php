@@ -86,6 +86,5 @@ function xmldb_tool_skills_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026032401, 'tool', 'skills');
     }
 
-
     return true;
 }
