@@ -190,6 +190,10 @@ class level extends skills {
         foreach ($levels as $num => $level) {
             $level = (object) $level; // Convert to stdClass.
 
+            // Extract image draft area ID before saving (not a DB column).
+            $imagedraftid = isset($level->image) ? (int) $level->image : 0;
+            unset($level->image);
+
             $level->skill = $skill->get_id();
 
             if (isset($level->id) && $level->id != "" && $DB->record_exists('tool_skills_levels', ['id' => $level->id])) {
@@ -204,6 +208,19 @@ class level extends skills {
                 $level->timecreated = time();
                 // Insert the record of the new skill.
                 $levelid = $DB->insert_record('tool_skills_levels', $level);
+            }
+
+            // Persist any uploaded level image from the filemanager draft area.
+            if ($imagedraftid) {
+                $context = context_system::instance();
+                file_save_draft_area_files(
+                    $imagedraftid,
+                    $context->id,
+                    'tool_skills',
+                    'levelimage',
+                    $levelid,
+                    ['subdirs' => 0, 'maxfiles' => 1]
+                );
             }
 
             $levelslist[] = $levelid;
