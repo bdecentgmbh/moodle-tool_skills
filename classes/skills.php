@@ -42,14 +42,14 @@ class skills {
     /**
      * Reference of the status is enabled.
      *
-     * @var bool
+     * @var int
      */
     public const STATUS_ENABLE = 1;
 
     /**
      * Reference of the status is disabled.
      *
-     * @var bool
+     * @var int
      */
     public const STATUS_DISABLE = 0;
 
@@ -127,7 +127,7 @@ class skills {
         // Set the skill id for this instance.
         $this->skillid = $skillid;
         // Generate the skill record.
-        $this->skillrecord = $this->fetch_skill_record() ?? new stdClass();
+        $this->skillrecord = $this->fetch_skill_record();
 
         $this->data = $this->update_data_structure();
 
@@ -174,9 +174,9 @@ class skills {
     /**
      * Fetch the skill record from db for the current skillid.
      *
-     * @return stdClass|bool
+     * @return stdClass
      */
-    protected function fetch_skill_record(): ?stdClass {
+    protected function fetch_skill_record(): stdClass {
         global $DB;
 
         if ($skill = $DB->get_record('tool_skills', ['id' => $this->skillid])) {
@@ -321,7 +321,7 @@ class skills {
     }
 
     /**
-     * Get the count of the levels for this skill.
+     * Get the levels for this skill.
      *
      * @return array
      */
@@ -530,7 +530,7 @@ class skills {
      * Create levels and update existing levels, delete removed levels.
      *
      * @param stdClass $formdata
-     * @return void
+     * @return int|false The skill id on success, false otherwise.
      */
     public static function manage_instance($formdata) {
         global $DB, $PAGE;

@@ -78,7 +78,7 @@ class level extends skills {
         // Set the skill id for this instance.
         $this->levelid = $levelid;
         // Generate the skill record.
-        $this->levelrecord = $this->fetch_record() ?? new stdClass();
+        $this->levelrecord = $this->fetch_record();
 
         $this->data = $this->levelrecord;
 
@@ -106,11 +106,11 @@ class level extends skills {
     }
 
     /**
-     * Fetch the skill record from db for the current skillid.
+     * Fetch the level record from db for the current levelid.
      *
-     * @return stdClass|bool
+     * @return stdClass
      */
-    protected function fetch_record(): ?stdClass {
+    protected function fetch_record(): stdClass {
         global $DB;
 
         if ($skill = $DB->get_record('tool_skills_levels', ['id' => $this->levelid])) {
@@ -121,7 +121,7 @@ class level extends skills {
     }
 
     /**
-     * Delete the current skill and all its associated levels from the database.
+     * Delete the current level from the database.
      *
      * @return bool True if the deletion is successful, false otherwise.
      */
@@ -153,12 +153,13 @@ class level extends skills {
     }
 
     /**
-     * Generate the skill instance for the skill id.
+     * Generate the level instance for the level id.
      *
      * @param int $levelid
+     * @return \tool_skills\level
      */
     public static function get(int $levelid): \tool_skills\level {
-        // Create the instance for this skill and return.
+        // Create the instance for this level and return.
         return new self($levelid);
     }
 
@@ -168,7 +169,7 @@ class level extends skills {
      *
      * @param \tool_skills\skills $skill
      * @param array $levels
-     * @return array List of levels created for this skills.
+     * @return array|false List of levels created for this skill, or false if no levels provided.
      */
     public static function manage_level_instance(\tool_skills\skills $skill, array $levels) {
         global $DB, $PAGE;

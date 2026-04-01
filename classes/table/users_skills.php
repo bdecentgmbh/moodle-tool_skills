@@ -41,7 +41,7 @@ class users_skills extends \table_sql implements dynamic_table {
     /**
      * Current skill instance record data.
      *
-     * @var stdclass
+     * @var \stdClass
      */
     public $skill;
 

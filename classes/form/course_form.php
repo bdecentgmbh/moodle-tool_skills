@@ -100,7 +100,7 @@ class course_form extends \core_form\dynamic_form {
     /**
      * Check the access for the submit data to this form.
      *
-     * @return bool
+     * @return void
      */
     protected function check_access_for_dynamic_submission(): void {
         $courseid = $this->optional_param('courseid', 0, PARAM_INT);
@@ -122,7 +122,7 @@ class course_form extends \core_form\dynamic_form {
     /**
      * Process the submission from AJAX.
      *
-     * @return void
+     * @return bool
      */
     public function process_dynamic_submission() {
         global $DB;
