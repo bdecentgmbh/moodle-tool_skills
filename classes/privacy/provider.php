@@ -187,17 +187,50 @@ class provider implements
             return;
         }
 
-        $courses = $DB->get_records('tool_skills_courses', ['courseid' => $course->id]);
-        foreach ($courses as $skillcourse) {
-            $log = $DB->get_record('tool_skills_awardlogs', ['methodid' => $skillcourse->id, 'method' => 'course']);
-            $points = $DB->get_record('tool_skills_userpoints', ['skill' => $log->skill, 'userid' => $log->userid]);
-
-            // Find and remove the points awarded for this user from this course.
-            $point = $points->points - $log->points;
-            $DB->set_field('tool_skills_userpoints', 'points', $point, ['id' => $points->id]);
-
-            (new \tool_skills\logs())->delete_method_log($course->id, 'course'); // Remove the log.
+        $courseskills = $DB->get_records('tool_skills_courses', ['courseid' => $course->id]);
+        if (empty($courseskills)) {
+            return;
         }
+
+        // Bulk-load all award logs for this course's skill assignments in one query.
+        [$insql, $inparams] = $DB->get_in_or_equal(array_keys($courseskills), SQL_PARAMS_NAMED);
+        $logs = $DB->get_records_select(
+            'tool_skills_awardlogs',
+            "methodid {$insql} AND method = 'course'",
+            $inparams
+        );
+
+        if (empty($logs)) {
+            return;
+        }
+
+        // Bulk-load affected userpoints rows keyed by skill+userid.
+        $skillids = array_unique(array_column((array) $logs, 'skill'));
+        $userids = array_unique(array_column((array) $logs, 'userid'));
+        [$skillsql, $skillparams] = $DB->get_in_or_equal($skillids, SQL_PARAMS_NAMED, 'skill');
+        [$usersql, $userparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED, 'user');
+        $pointsrecords = $DB->get_records_select(
+            'tool_skills_userpoints',
+            "skill {$skillsql} AND userid {$usersql}",
+            $skillparams + $userparams
+        );
+        // Index by "skill-userid" for O(1) lookup.
+        $pointsmap = [];
+        foreach ($pointsrecords as $rec) {
+            $pointsmap[$rec->skill . '-' . $rec->userid] = $rec;
+        }
+
+        // Deduct each log's points from the matching userpoints row.
+        foreach ($logs as $log) {
+            $key = $log->skill . '-' . $log->userid;
+            if (isset($pointsmap[$key])) {
+                $newpoints = $pointsmap[$key]->points - $log->points;
+                $DB->set_field('tool_skills_userpoints', 'points', $newpoints, ['id' => $pointsmap[$key]->id]);
+            }
+        }
+
+        // Remove all award logs for this course in one call.
+        (new \tool_skills\logs())->delete_method_log($course->id, 'course');
     }
 
     /**
