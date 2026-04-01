@@ -16,10 +16,9 @@
 /**
  * Tool skills - Manage skills, course skills.
  *
- * @module   tool_skills/skills
- * @copyright 2023 bdecent GmbH <https://bdecent.de>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+ * @module     tool_skills/skills
+ * @copyright  2023 bdecent GmbH <https://bdecent.de>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 
 define(['jquery', 'core/modal_factory', 'core/str', 'core_form/modalform'], function($, ModalFactory, Str, ModalForm) {
 
