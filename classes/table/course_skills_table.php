@@ -144,15 +144,12 @@ class course_skills_table extends \table_sql {
         switch ($completion) {
             case skills::COMPLETIONFORCELEVEL:
                 return get_string('completionforcelevel', 'tool_skills') . ' - ' . \tool_skills\level::get($row->level)->get_name();
-                break;
 
             case skills::COMPLETIONPOINTS:
                 return get_string('completionpoints', 'tool_skills') . ' - ' . $row->points;
-                break;
 
             case skills::COMPLETIONSETLEVEL:
                 return get_string('completionsetlevel', 'tool_skills') . ' - ' . \tool_skills\level::get($row->level)->get_name();
-                break;
 
             case skills::COMPLETIONNOTHING:
             default:

@@ -70,9 +70,9 @@ class helper {
     }
 
     /**
-     * Undocumented function
+     * Get the list of all available skills.
      *
-     * @return void
+     * @return array List of skill instances.
      */
     public static function get_skills_list() {
         global $DB;
@@ -199,8 +199,8 @@ class helper {
     /**
      * Add to the user points content in profile page.
      *
-     * @param int $skillstr Course ID.
-     * @param stdclass $data Data.
+     * @param string $skillstr HTML content string passed by reference.
+     * @param \stdClass $data Data.
      * @return void
      */
     public static function extend_addons_add_user_points_content(&$skillstr, $data) {

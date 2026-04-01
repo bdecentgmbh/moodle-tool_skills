@@ -1,3 +1,11 @@
+/**
+ * Tool Skills - Styles.
+ *
+ * @package   tool_skills
+ * @copyright 2023 bdecent GmbH <https://bdecent.de>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 /* Skills list actions links align to inline and center */
 .skill-course-actions.skill-actions a,
 #tool_skills_list .skill-item-actions a {

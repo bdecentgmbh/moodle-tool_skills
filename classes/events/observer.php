@@ -76,6 +76,6 @@ class observer {
         // ID of the completed course.
         $courseid = $data['courseid'];
         // Remove the course skills of the deleted course.
-        courseskills::get($courseid)->remove_instance_skills($courseid);
+        courseskills::get($courseid)->remove_instance_skills();
     }
 }

@@ -43,7 +43,7 @@ class skills_filterset extends filterset {
      *
      * The only required filter is the courseid filter.
      *
-     * @return array.
+     * @return array
      */
     public function get_required_filters(): array {
         return [];

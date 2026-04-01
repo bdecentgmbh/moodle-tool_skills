@@ -165,7 +165,7 @@ class skills_form extends \moodleform {
     /**
      * Editor form element options.
      *
-     * @param context $context
+     * @param \context $context
      * @return array
      */
     protected function get_editor_options($context = null) {
@@ -184,7 +184,7 @@ class skills_form extends \moodleform {
      *
      * @param array $data
      * @param array $files
-     * @return void
+     * @return array List of validation errors, empty array if none.
      */
     public function validation($data, $files) {
         global $DB;

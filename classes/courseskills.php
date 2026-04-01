@@ -75,7 +75,7 @@ class courseskills extends \tool_skills\allocation_method {
      * Fetch to the skills course data .
      *
      * @param int $skillid
-     * @return self
+     * @return array
      */
     public static function get_for_skill(int $skillid): array {
         global $DB;
@@ -150,7 +150,7 @@ class courseskills extends \tool_skills\allocation_method {
     /**
      * Get the skill course record.
      *
-     * @return stdclass
+     * @return \stdClass
      */
     public function build_data() {
         global $DB;
@@ -181,7 +181,7 @@ class courseskills extends \tool_skills\allocation_method {
     /**
      * Get points earned from this course completion.
      *
-     * @return string
+     * @return int|string
      */
     public function get_points_earned_fromcourse() {
 
@@ -202,14 +202,14 @@ class courseskills extends \tool_skills\allocation_method {
      * Fetch the points user earned for this instance.
      *
      * @param int $userid
-     * @return int
+     * @return int|null
      */
     public function get_user_earned_points(int $userid) {
 
         $user = \tool_skills\user::get($userid);
         $points = $user->get_user_award_by_method('course', $this->instanceid);
 
-        return $points ?? null;
+        return $points;
     }
 
     /**
@@ -242,7 +242,7 @@ class courseskills extends \tool_skills\allocation_method {
 
             // Disable user points award if the instance is disabled.
             $disabledskills = $this->get_instance_disabled_skills();
-            if ($status !== null && $status === 0 && $skills) {
+            if ($status !== null && $status === false && $skills) {
                 $disabledskills = $skills;
             }
 
@@ -257,7 +257,7 @@ class courseskills extends \tool_skills\allocation_method {
     /**
      * Manage the points award to the user for a skill.
      *
-     * @param tool_skills\skills $skill
+     * @param skills $skill
      * @param int $userid
      * @param int $skillcourseid
      *
@@ -320,7 +320,7 @@ class courseskills extends \tool_skills\allocation_method {
     /**
      * Remove the user earned points for this course from the skill points.
      *
-     * @param tool_skills\skills $skill
+     * @param skills $skill
      * @param int $userid
      * @param int $skillcourseid Course skill instance id (skill_courses table id).
      * @return void
