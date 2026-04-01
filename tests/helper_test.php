@@ -24,20 +24,20 @@
 
 namespace tool_skills;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Unit tests for \tool_skills\helper.
  *
  * @covers \tool_skills\helper
  */
 final class helper_test extends \advanced_testcase {
-
     protected function setUp(): void {
         parent::setUp();
         $this->resetAfterTest(true);
     }
 
+    /**
+     * Create the DB fixtures needed by most tests.
+     */
     private function create_skill(int $points = 0): int {
         global $DB;
         static $n = 0;
@@ -115,7 +115,7 @@ final class helper_test extends \advanced_testcase {
     public function test_get_user_completedskills_returns_completed_skills(): void {
         $user    = $this->getDataGenerator()->create_user();
         $skillid = $this->create_skill();
-        $this->create_level($skillid, 100); // max = 100 pts
+        $this->create_level($skillid, 100); // Max = 100 pts.
         $this->insert_userpoints($skillid, $user->id, 100);
 
         $result = helper::get_user_completedskills($user->id);
@@ -130,7 +130,7 @@ final class helper_test extends \advanced_testcase {
         $user    = $this->getDataGenerator()->create_user();
         $skillid = $this->create_skill();
         $this->create_level($skillid, 100);
-        $this->insert_userpoints($skillid, $user->id, 50); // only 50%
+        $this->insert_userpoints($skillid, $user->id, 50); // Only 50%.
 
         $result = helper::get_user_completedskills($user->id);
         $this->assertEmpty($result);

@@ -60,6 +60,11 @@ final class courseskills_test extends \advanced_testcase {
         ]);
     }
 
+    /**
+     * Insert a minimal skill level record and return its id.
+     *
+     * @return int
+     */
     private function create_level(int $skillid, int $points): int {
         global $DB;
         return $DB->insert_record('tool_skills_levels', (object)[
@@ -103,10 +108,6 @@ final class courseskills_test extends \advanced_testcase {
         $cinfo->mark_course_completions([$user->id]);
     }
 
-    // -------------------------------------------------------------------------
-    // Instance skill lists
-    // -------------------------------------------------------------------------
-
     /**
      * Test get_instance_skills() returns only enabled skills for the course.
      */
@@ -137,10 +138,6 @@ final class courseskills_test extends \advanced_testcase {
         $this->assertCount(1, $result);
     }
 
-    // -------------------------------------------------------------------------
-    // remove_instance_skills
-    // -------------------------------------------------------------------------
-
     /**
      * Test remove_instance_skills() clears all skill assignments for a course.
      */
@@ -157,10 +154,6 @@ final class courseskills_test extends \advanced_testcase {
         $this->assertEquals(0, $DB->count_records('tool_skills_courses', ['courseid' => $course->id]));
     }
 
-    // -------------------------------------------------------------------------
-    // manage_course_completions
-    // -------------------------------------------------------------------------
-
     /**
      * Test COMPLETIONPOINTS strategy awards the configured points when course is completed.
      */
@@ -174,6 +167,7 @@ final class courseskills_test extends \advanced_testcase {
 
         $cs = courseskills::get($course->id);
         $skills = $cs->get_instance_skills();
+        $this->complete_course($course, $user);
         $cs->manage_course_completions($user->id, $skills, null);
 
         $points = $DB->get_field('tool_skills_userpoints', 'points', ['skill' => $skillid, 'userid' => $user->id]);
@@ -193,6 +187,7 @@ final class courseskills_test extends \advanced_testcase {
         $this->assign_skill_to_course($course->id, $skillid, 1, skills::COMPLETIONSETLEVEL, 0, $levelid);
 
         $cs = courseskills::get($course->id);
+        $this->complete_course($course, $user);
         $cs->manage_course_completions($user->id, $cs->get_instance_skills(), null);
 
         $points = $DB->get_field('tool_skills_userpoints', 'points', ['skill' => $skillid, 'userid' => $user->id]);
@@ -219,6 +214,7 @@ final class courseskills_test extends \advanced_testcase {
         $this->assign_skill_to_course($course->id, $skillid, 1, skills::COMPLETIONFORCELEVEL, 0, $levelid);
 
         $cs = courseskills::get($course->id);
+        $this->complete_course($course, $user);
         $cs->manage_course_completions($user->id, $cs->get_instance_skills(), null);
 
         $points = $DB->get_field('tool_skills_userpoints', 'points', ['skill' => $skillid, 'userid' => $user->id]);
@@ -241,10 +237,6 @@ final class courseskills_test extends \advanced_testcase {
 
         $this->assertFalse($DB->record_exists('tool_skills_userpoints', ['skill' => $skillid, 'userid' => $user->id]));
     }
-
-    // -------------------------------------------------------------------------
-    // Static helpers
-    // -------------------------------------------------------------------------
 
     /**
      * Test get_for_skill() returns all courses that have the skill assigned.
@@ -277,10 +269,6 @@ final class courseskills_test extends \advanced_testcase {
 
         $this->assertEquals(0, $DB->count_records('tool_skills_courses', ['skill' => $skillid]));
     }
-
-    // -------------------------------------------------------------------------
-    // get_points_earned_fromcourse
-    // -------------------------------------------------------------------------
 
     /**
      * Test get_points_earned_fromcourse() returns the configured points for COMPLETIONPOINTS.

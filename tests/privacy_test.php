@@ -24,8 +24,6 @@
 
 namespace tool_skills;
 
-defined('MOODLE_INTERNAL') || die();
-
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\approved_userlist;
@@ -39,7 +37,6 @@ use tool_skills\privacy\provider;
  * @covers \tool_skills\privacy\provider
  */
 final class privacy_test extends \core_privacy\tests\provider_testcase {
-
     protected function setUp(): void {
         parent::setUp();
         $this->resetAfterTest(true);
