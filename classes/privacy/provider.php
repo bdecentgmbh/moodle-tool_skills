@@ -205,10 +205,10 @@ class provider implements
         }
 
         // Bulk-load affected userpoints rows keyed by skill+userid.
-        $skillids   = array_unique(array_column((array) $logs, 'skill'));
-        $userids    = array_unique(array_column((array) $logs, 'userid'));
+        $skillids = array_unique(array_column((array) $logs, 'skill'));
+        $userids = array_unique(array_column((array) $logs, 'userid'));
         [$skillsql, $skillparams] = $DB->get_in_or_equal($skillids, SQL_PARAMS_NAMED, 'skill');
-        [$usersql,  $userparams]  = $DB->get_in_or_equal($userids,  SQL_PARAMS_NAMED, 'user');
+        [$usersql, $userparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED, 'user');
         $pointsrecords = $DB->get_records_select(
             'tool_skills_userpoints',
             "skill {$skillsql} AND userid {$usersql}",
