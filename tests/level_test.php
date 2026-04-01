@@ -24,15 +24,12 @@
 
 namespace tool_skills;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Unit tests for \tool_skills\level.
  *
  * @covers \tool_skills\level
  */
 final class level_test extends \advanced_testcase {
-
     /** @var int Reusable skill id. */
     private int $skillid;
 
@@ -43,6 +40,11 @@ final class level_test extends \advanced_testcase {
         $this->skillid = $this->create_skill();
     }
 
+    /**
+     * Insert a minimal skill record and return its id.
+     *
+     * @return int
+     */
     private function create_skill(): int {
         global $DB;
         static $counter = 0;
@@ -62,6 +64,13 @@ final class level_test extends \advanced_testcase {
         ]);
     }
 
+    /**
+     * Insert a level for the given skill and return its id.
+     *
+     * @param int $skillid
+     * @param int $points
+     * @return int
+     */
     private function create_level(int $skillid, int $points = 100): int {
         global $DB;
         return $DB->insert_record('tool_skills_levels', (object)[
@@ -101,7 +110,7 @@ final class level_test extends \advanced_testcase {
         global $DB;
         $skill = skills::get($this->skillid);
         $levels = [
-            1 => ['name' => 'Bronze', 'points' => 50,  'status' => 1, 'color' => ''],
+            1 => ['name' => 'Bronze', 'points' => 50, 'status' => 1, 'color' => ''],
             2 => ['name' => 'Silver', 'points' => 100, 'status' => 1, 'color' => ''],
         ];
         level::manage_level_instance($skill, $levels);

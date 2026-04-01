@@ -24,15 +24,12 @@
 
 namespace tool_skills;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Unit tests for \tool_skills\skills.
  *
  * @covers \tool_skills\skills
  */
 final class skills_test extends \advanced_testcase {
-
     /**
      * Insert a minimal skill record and return its id.
      *
@@ -100,10 +97,6 @@ final class skills_test extends \advanced_testcase {
         return $DB->insert_record('tool_skills_courses', $record);
     }
 
-    // -------------------------------------------------------------------------
-    // Factory / getters
-    // -------------------------------------------------------------------------
-
     /**
      * Test that skills::get() returns a skills instance with the correct id.
      */
@@ -124,10 +117,6 @@ final class skills_test extends \advanced_testcase {
         $skill = skills::get($skillid);
         $this->assertEquals('My Skill', $skill->get_name());
     }
-
-    // -------------------------------------------------------------------------
-    // Status
-    // -------------------------------------------------------------------------
 
     /**
      * Test disabling a skill sets status to 0 in the DB.
@@ -153,10 +142,6 @@ final class skills_test extends \advanced_testcase {
         $this->assertEquals(1, $DB->get_field('tool_skills', 'status', ['id' => $skillid]));
     }
 
-    // -------------------------------------------------------------------------
-    // Field update
-    // -------------------------------------------------------------------------
-
     /**
      * Test that update_field() persists a changed value to the DB.
      */
@@ -168,10 +153,6 @@ final class skills_test extends \advanced_testcase {
         $skill->update_field('name', 'New Name');
         $this->assertEquals('New Name', $DB->get_field('tool_skills', 'name', ['id' => $skillid]));
     }
-
-    // -------------------------------------------------------------------------
-    // Delete
-    // -------------------------------------------------------------------------
 
     /**
      * Test that delete_skill() removes the skill and all its associated records.
@@ -204,10 +185,6 @@ final class skills_test extends \advanced_testcase {
         $this->assertFalse($DB->record_exists('tool_skills_awardlogs', ['skill' => $skillid]));
     }
 
-    // -------------------------------------------------------------------------
-    // Archive / active
-    // -------------------------------------------------------------------------
-
     /**
      * Test archiving a skill sets archived = 1 and records a timestamp.
      */
@@ -232,10 +209,6 @@ final class skills_test extends \advanced_testcase {
         $this->assertEquals(0, $DB->get_field('tool_skills', 'archived', ['id' => $skillid]));
     }
 
-    // -------------------------------------------------------------------------
-    // Points to earn skill
-    // -------------------------------------------------------------------------
-
     /**
      * Test get_points_to_earnskill() returns the highest level's points.
      */
@@ -257,10 +230,6 @@ final class skills_test extends \advanced_testcase {
         $skill = skills::get($skillid);
         $this->assertEquals(0, $skill->get_points_to_earnskill());
     }
-
-    // -------------------------------------------------------------------------
-    // Point awarding
-    // -------------------------------------------------------------------------
 
     /**
      * Helper to build a minimal allocation_method stub for point operations.
@@ -393,10 +362,6 @@ final class skills_test extends \advanced_testcase {
         $points = $DB->get_field('tool_skills_userpoints', 'points', ['skill' => $skillid, 'userid' => $user->id]);
         $this->assertEquals(80, $points);
     }
-
-    // -------------------------------------------------------------------------
-    // manage_instance
-    // -------------------------------------------------------------------------
 
     /**
      * Test manage_instance() creates a skill and associated levels from form data.

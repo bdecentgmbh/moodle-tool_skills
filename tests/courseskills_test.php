@@ -24,21 +24,23 @@
 
 namespace tool_skills;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Unit tests for \tool_skills\courseskills.
  *
  * @covers \tool_skills\courseskills
  */
 final class courseskills_test extends \advanced_testcase {
-
     protected function setUp(): void {
         parent::setUp();
         $this->resetAfterTest(true);
         $this->setAdminUser();
     }
 
+    /**
+     * Insert a minimal skill record and return its id.
+     *
+     * @return int
+     */
     private function create_skill(): int {
         global $DB;
         static $n = 0;

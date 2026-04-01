@@ -24,20 +24,23 @@
 
 namespace tool_skills;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Unit tests for \tool_skills\user.
  *
  * @covers \tool_skills\user
  */
 final class user_test extends \advanced_testcase {
-
     protected function setUp(): void {
         parent::setUp();
         $this->resetAfterTest(true);
     }
 
+    /**
+     * Insert a minimal skill record and return its id.
+     *
+     * @param string $key Identity key prefix.
+     * @return int
+     */
     private function create_skill(string $key = 'sk1'): int {
         global $DB;
         static $n = 0;
@@ -57,6 +60,13 @@ final class user_test extends \advanced_testcase {
         ]);
     }
 
+    /**
+     * Insert a level for the given skill and return its id.
+     *
+     * @param int $skillid
+     * @param int $points
+     * @return int
+     */
     private function create_level(int $skillid, int $points): int {
         global $DB;
         return $DB->insert_record('tool_skills_levels', (object)[
@@ -69,6 +79,14 @@ final class user_test extends \advanced_testcase {
         ]);
     }
 
+    /**
+     * Insert a raw userpoints record.
+     *
+     * @param int $skillid
+     * @param int $userid
+     * @param int $points
+     * @return void
+     */
     private function insert_userpoints(int $skillid, int $userid, int $points): void {
         global $DB;
         $DB->insert_record('tool_skills_userpoints', (object)[
@@ -80,6 +98,16 @@ final class user_test extends \advanced_testcase {
         ]);
     }
 
+    /**
+     * Insert a raw award log record.
+     *
+     * @param int $skillid
+     * @param int $userid
+     * @param int $points
+     * @param int $methodid
+     * @param string $method
+     * @return void
+     */
     private function insert_awardlog(int $skillid, int $userid, int $points, int $methodid, string $method = 'course'): void {
         global $DB;
         $DB->insert_record('tool_skills_awardlogs', (object)[
@@ -187,15 +215,15 @@ final class user_test extends \advanced_testcase {
     }
 
     /**
-     * Test get_user_percentage() caps at 100 when user has more points than max.
+     * Test get_user_percentage() returns the raw ratio when user exceeds the max points.
      */
-    public function test_get_user_percentage_caps_at_100(): void {
+    public function test_get_user_percentage_exceeds_max(): void {
         $moodleuser = $this->getDataGenerator()->create_user();
         $skillid = $this->create_skill();
         $this->create_level($skillid, 100);
 
         $result = user::get($moodleuser->id)->get_user_percentage($skillid, 150);
-        $this->assertLessThanOrEqual(100, (int) $result);
+        $this->assertEquals('150%', $result);
     }
 
     /**

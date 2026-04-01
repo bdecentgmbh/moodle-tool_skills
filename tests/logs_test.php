@@ -24,20 +24,27 @@
 
 namespace tool_skills;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Unit tests for \tool_skills\logs.
  *
  * @covers \tool_skills\logs
  */
 final class logs_test extends \advanced_testcase {
-
     protected function setUp(): void {
         parent::setUp();
         $this->resetAfterTest(true);
     }
 
+    /**
+     * Insert a raw award log record and return its id.
+     *
+     * @param int $skillid
+     * @param int $userid
+     * @param int $points
+     * @param int $methodid
+     * @param string $method
+     * @return int
+     */
     private function insert_log(int $skillid, int $userid, int $points, int $methodid, string $method = 'course'): int {
         global $DB;
         return $DB->insert_record('tool_skills_awardlogs', (object)[
