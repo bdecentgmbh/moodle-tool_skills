@@ -118,6 +118,19 @@ final class level_test extends \advanced_testcase {
     }
 
     /**
+     * Test manage_level_instance() persists the level color value.
+     */
+    public function test_manage_level_instance_saves_color(): void {
+        global $DB;
+        $skill = skills::get($this->skillid);
+        $levels = [
+            1 => ['name' => 'Bronze', 'points' => 50, 'status' => 1, 'color' => '#ff0000'],
+        ];
+        $levelids = level::manage_level_instance($skill, $levels);
+        $this->assertEquals('#ff0000', $DB->get_field('tool_skills_levels', 'color', ['id' => reset($levelids)]));
+    }
+
+    /**
      * Test manage_level_instance() updates an existing level without creating a duplicate.
      */
     public function test_manage_level_instance_updates_existing_levels(): void {

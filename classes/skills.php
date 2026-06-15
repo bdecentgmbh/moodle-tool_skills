@@ -198,7 +198,11 @@ class skills {
         // Decode the categories.
         $data->categories = $data->categories ? json_decode($data->categories) : [];
 
-        $data->levels = array_values(array_map(fn($r) => (array) $r, $this->get_levels()));
+        // Re-key the levels from 1 to match the 1-indexed level fields rendered by the form
+        // (levels[1], levels[2], ...). Using array_values() here (0-indexed) shifts every level
+        // by one on edit, dropping the first level and orphaning its files.
+        $levels = array_values(array_map(fn($r) => (array) $r, $this->get_levels()));
+        $data->levels = $levels ? array_combine(range(1, count($levels)), $levels) : [];
 
         $levelscount = count($data->levels);
         $data->levelsrecordscount = $levelscount;

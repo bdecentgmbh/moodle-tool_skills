@@ -378,9 +378,10 @@ final class skills_test extends \advanced_testcase {
             'status'       => skills::STATUS_ENABLE,
             'categories'   => [],
             'learningtime' => '',
+            'color'        => '#123456',
             'levelscount'  => 1,
             'levels'       => [
-                1 => ['name' => 'Level One', 'points' => 100, 'status' => 1, 'color' => ''],
+                1 => ['name' => 'Level One', 'points' => 100, 'status' => 1, 'color' => '#abcdef'],
             ],
         ];
 
@@ -388,6 +389,41 @@ final class skills_test extends \advanced_testcase {
         $this->assertNotEmpty($skillid);
         $this->assertTrue($DB->record_exists('tool_skills', ['id' => $skillid, 'name' => 'Managed Skill']));
         $this->assertEquals(1, $DB->count_records('tool_skills_levels', ['skill' => $skillid]));
+        // The skill and level color values are persisted.
+        $this->assertEquals('#123456', $DB->get_field('tool_skills', 'color', ['id' => $skillid]));
+        $this->assertEquals('#abcdef', $DB->get_field('tool_skills_levels', 'color', ['skill' => $skillid]));
+    }
+
+    /**
+     * Test get_data() returns levels keyed from 1, matching the 1-indexed level form fields.
+     * A 0-indexed array here shifts every level by one on edit (dropping the first level and
+     * orphaning its image files), so the keys and their order must be exact.
+     */
+    public function test_get_data_levels_are_one_indexed_and_ordered(): void {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+
+        $formdata = (object)[
+            'name'         => 'Indexed Skill',
+            'identitykey'  => 'indexedskill1',
+            'description'  => '',
+            'status'       => skills::STATUS_ENABLE,
+            'categories'   => [],
+            'learningtime' => '',
+            'levelscount'  => 3,
+            'levels'       => [
+                1 => ['name' => 'Bronze', 'points' => 10, 'status' => 1, 'color' => ''],
+                2 => ['name' => 'Silver', 'points' => 20, 'status' => 1, 'color' => ''],
+                3 => ['name' => 'Gold',   'points' => 30, 'status' => 1, 'color' => ''],
+            ],
+        ];
+        $skillid = skills::manage_instance($formdata);
+
+        $data = skills::get($skillid)->get_data();
+        $this->assertSame([1, 2, 3], array_keys($data->levels));
+        $this->assertSame('Bronze', $data->levels[1]['name']);
+        $this->assertSame('Silver', $data->levels[2]['name']);
+        $this->assertSame('Gold', $data->levels[3]['name']);
     }
 
     /**
