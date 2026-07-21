@@ -83,6 +83,7 @@ $string['editskill'] = 'Edit skill';
 $string['enabled'] = 'Enabled';
 $string['entitycategory'] = 'Category';
 $string['error:identityexists'] = 'Given skill identity is exists, Please use unique value';
+$string['error:invalidcolor'] = 'Enter a valid hex colour (for example #3b82f6) or leave the field empty';
 $string['error:numeric'] = 'Value should be in numbers';
 $string['error:skillsnotfound'] = 'Skill record not found for the given id';
 $string['formtab'] = 'Skills';

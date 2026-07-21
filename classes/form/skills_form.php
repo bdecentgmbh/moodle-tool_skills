@@ -300,6 +300,23 @@ class skills_form extends \moodleform {
             }
         }
 
+        // Colours are emitted into inline CSS in the profile template, so restrict them to an empty
+        // value or a #rgb / #rrggbb hex string to prevent CSS injection through the style attribute.
+        $ishexcolour = fn($value) => ($value === '' || $value === null
+            || preg_match('/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', (string) $value));
+
+        if (isset($data['color']) && !$ishexcolour($data['color'])) {
+            $errors['color'] = get_string('error:invalidcolor', 'tool_skills');
+        }
+
+        if (!empty($data['levels']) && is_array($data['levels'])) {
+            foreach ($data['levels'] as $i => $level) {
+                if (isset($level['color']) && !$ishexcolour($level['color'])) {
+                    $errors["levels[$i][color]"] = get_string('error:invalidcolor', 'tool_skills');
+                }
+            }
+        }
+
         return $errors ?? [];
     }
 }
