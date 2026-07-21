@@ -25,7 +25,11 @@ Teachers (or users with the capability tool/skills:managecourseskillslist) can t
 
 # Documentation
 
-Please refer to the documentation for more information: https://github.com/bdecentgmbh/moodle-tool_skills/wiki
+Full documentation is in the [`docs/`](docs/README.md) folder:
+
+- [Administrator guide](docs/admin-guide.md) — install the plugin and create/manage skills, levels and categories site-wide.
+- [Teacher guide](docs/teacher-guide.md) — enable skills in a course and configure what course completion awards.
+- [Manager guide](docs/manager-guide.md) — manage skills site-wide, assign them in courses, and view users' points reports.
 
 # Theme support
 
