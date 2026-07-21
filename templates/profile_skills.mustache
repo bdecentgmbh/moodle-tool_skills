@@ -30,12 +30,13 @@
     Context variables required for this template:
     * uniqid - Unique string to namespace the accordion element ids.
     * skills - Array of skills, each:
-        * skillid, name, hascolor, color
+        * skillid, identitykey, name, hascolor, color
         * hascurrentlevel, currentlevelname, hascurrentlevelcolor, currentlevelcolor, currentleveltextcolor
         * haslevelimage, levelimageurl
         * earned, hastotalpoints, pointstocomplete
         * haslearningtime, learningtime
-        * hascourses, courses (coursename, courseurl, haspoints, earned, available, iscomplete, hasaddoncontent, addoncontent)
+        * hascourses, courses (coursename, courseurl, courseclass, haspoints, hasgoal, earned, available,
+          iscomplete, hasaddoncontent, addoncontent)
         * hasreport, reporturl, expanded
 
     Example context (json):
@@ -44,6 +45,7 @@
         "skills": [
             {
                 "skillid": 5,
+                "identitykey": "myfirstskill",
                 "name": "My first skill",
                 "hascolor": true,
                 "color": "#22c55e",
@@ -64,7 +66,9 @@
                     {
                         "coursename": "My first 5.2 course",
                         "courseurl": "https://example.com/course/view.php?id=2",
+                        "courseclass": "toolskill-course-first52",
                         "haspoints": false,
+                        "hasgoal": false,
                         "earned": 0,
                         "available": 0,
                         "iscomplete": false,
@@ -74,7 +78,9 @@
                     {
                         "coursename": "Kick 5.2",
                         "courseurl": "https://example.com/course/view.php?id=3",
+                        "courseclass": "toolskill-course-kick52",
                         "haspoints": true,
+                        "hasgoal": true,
                         "earned": 0,
                         "available": 33,
                         "iscomplete": false,
@@ -91,7 +97,7 @@
 }}
 <div class="toolskills-profile-skills accordion" id="toolskills-accordion-{{uniqid}}">
     {{#skills}}
-    <div class="accordion-item toolskill-card"{{#hascolor}} style="border-inline-start: 4px solid {{color}};"{{/hascolor}}>
+    <div class="accordion-item toolskill-card skill-{{identitykey}}"{{#hascolor}} style="border-inline-start: 4px solid {{color}};"{{/hascolor}}>
         <h3 class="accordion-header" id="toolskill-heading-{{uniqid}}-{{skillid}}">
             <button class="accordion-button{{^expanded}} collapsed{{/expanded}}" type="button"
                 data-bs-toggle="collapse" data-bs-target="#toolskill-collapse-{{uniqid}}-{{skillid}}"
@@ -124,10 +130,10 @@
                 {{#hascourses}}
                 <ul class="toolskill-courses list-unstyled mb-2">
                     {{#courses}}
-                    <li class="toolskill-course d-flex align-items-center justify-content-between gap-2 py-1">
+                    <li class="toolskill-course {{courseclass}} d-flex align-items-center justify-content-between gap-2 py-1">
                         <a href="{{courseurl}}">{{{coursename}}}</a>
                         {{#haspoints}}
-                        <span class="badge rounded-pill toolskill-chip{{#iscomplete}} toolskill-chip-complete{{/iscomplete}}">{{earned}} / {{available}}</span>
+                        <span class="badge rounded-pill toolskill-chip{{#iscomplete}} toolskill-chip-complete{{/iscomplete}}">{{earned}}{{#hasgoal}} / {{available}}{{/hasgoal}}</span>
                         {{/haspoints}}
                     </li>
                     {{#hasaddoncontent}}

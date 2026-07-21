@@ -275,19 +275,26 @@ class helper {
             $courses = [];
             foreach ($courserecords as $record) {
                 $skillcourse = $record->skillcourse;
+                $course = $skillcourse->get_course();
                 $available = $skillcourse->get_points_earned_fromcourse();
+                $availableint = is_numeric($available) ? (int) $available : 0;
                 $courseearned = (int) ($skillcourse->get_user_earned_points($userid) ?? 0);
-                $haspoints = is_numeric($available) && (int) $available > 0;
+                // Show a points chip whenever the course awards (or deducts) points; a positive award
+                // also shows the goal as "earned / available".
+                $haspoints = $availableint !== 0;
+                $hasgoal = $availableint > 0;
                 // Let addons contribute their own per-course content (e.g. activity breakdown).
                 $addon = '';
                 self::extend_addons_add_user_points_content($addon, $record);
                 $courses[] = [
-                    'coursename' => format_string($skillcourse->get_course()->fullname),
+                    'coursename' => format_string($course->fullname),
                     'courseurl' => (new \moodle_url('/course/view.php', ['id' => $record->courseid]))->out(false),
+                    'courseclass' => 'toolskill-course-' . preg_replace('/[^a-zA-Z0-9_-]/', '', $course->shortname),
                     'haspoints' => $haspoints,
+                    'hasgoal' => $hasgoal,
                     'earned' => $courseearned,
-                    'available' => (int) $available,
-                    'iscomplete' => $haspoints && $courseearned >= (int) $available,
+                    'available' => $availableint,
+                    'iscomplete' => $hasgoal && $courseearned >= $availableint,
                     'hasaddoncontent' => $addon !== '',
                     'addoncontent' => $addon,
                 ];
@@ -295,6 +302,7 @@ class helper {
 
             $skills[] = [
                 'skillid' => (int) $skillid,
+                'identitykey' => preg_replace('/[^a-zA-Z0-9_-]/', '', $data->identitykey ?? ''),
                 'name' => $skill->get_name(),
                 'hascolor' => !empty($data->color),
                 'color' => $data->color ?? '',
