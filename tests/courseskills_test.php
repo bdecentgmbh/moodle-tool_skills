@@ -310,4 +310,51 @@ final class courseskills_test extends \advanced_testcase {
 
         $this->assertEquals(75, $result);
     }
+
+    /**
+     * Test is_skill_available_for_course() honours category restriction, archived and disabled state.
+     */
+    public function test_is_skill_available_for_course(): void {
+        global $DB;
+
+        $cat = $this->getDataGenerator()->create_category();
+        $othercat = $this->getDataGenerator()->create_category();
+        $course = $this->getDataGenerator()->create_course(['category' => $cat->id]);
+
+        // A global skill (no category restriction) is available.
+        $global = $this->create_skill();
+        $this->assertTrue(courseskills::is_skill_available_for_course($global, $course->id));
+
+        // Restricted to the course's category: available.
+        $inid = $DB->insert_record('tool_skills', (object)[
+            'name' => 'InCat', 'identitykey' => 'incat', 'description' => '', 'status' => 1,
+            'categories' => json_encode([(int) $cat->id]), 'learningtime' => '', 'levelscount' => 0,
+            'archived' => 0, 'timearchived' => 0, 'timecreated' => time(), 'timemodified' => time(),
+        ]);
+        $this->assertTrue(courseskills::is_skill_available_for_course($inid, $course->id));
+
+        // Restricted to a different category: not available.
+        $outid = $DB->insert_record('tool_skills', (object)[
+            'name' => 'OutCat', 'identitykey' => 'outcat', 'description' => '', 'status' => 1,
+            'categories' => json_encode([(int) $othercat->id]), 'learningtime' => '', 'levelscount' => 0,
+            'archived' => 0, 'timearchived' => 0, 'timecreated' => time(), 'timemodified' => time(),
+        ]);
+        $this->assertFalse(courseskills::is_skill_available_for_course($outid, $course->id));
+
+        // Archived skill: not available.
+        $DB->set_field('tool_skills', 'archived', 1, ['id' => $global]);
+        $this->assertFalse(courseskills::is_skill_available_for_course($global, $course->id));
+    }
+
+    /**
+     * Test level_belongs_to_skill() only accepts a level that belongs to the given skill.
+     */
+    public function test_level_belongs_to_skill(): void {
+        $skill1 = $this->create_skill();
+        $skill2 = $this->create_skill();
+        $level = $this->create_level($skill1, 10);
+
+        $this->assertTrue(courseskills::level_belongs_to_skill($level, $skill1));
+        $this->assertFalse(courseskills::level_belongs_to_skill($level, $skill2));
+    }
 }

@@ -69,9 +69,6 @@ class provider implements
         ];
         $collection->add_database_table('tool_skills_awardlogs', $awardlogsmetadata, 'privacy:metadata:awardlogs');
 
-        // Added moodle subsystems used in tool skills.
-        $collection->add_subsystem_link('core_message', [], 'privacy:metadata:userpointsexplanation');
-
         return $collection;
     }
 

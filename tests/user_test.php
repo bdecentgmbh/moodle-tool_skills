@@ -227,6 +227,17 @@ final class user_test extends \advanced_testcase {
     }
 
     /**
+     * Test get_user_percentage() returns 0% (no division by zero) when the skill has no levels.
+     */
+    public function test_get_user_percentage_no_levels(): void {
+        $moodleuser = $this->getDataGenerator()->create_user();
+        $skillid = $this->create_skill();
+
+        $result = user::get($moodleuser->id)->get_user_percentage($skillid, 50);
+        $this->assertEquals('0%', $result);
+    }
+
+    /**
      * Test get_user_award_by_method() returns the points from a matching log entry.
      */
     public function test_get_user_award_by_method_returns_points(): void {

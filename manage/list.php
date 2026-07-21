@@ -94,10 +94,6 @@ if ($action !== null && confirm_sesskey()) {
                 \core\notification::success(get_string('skillsactivated', 'tool_skills'));
             }
             break;
-        case "copy":
-            // Duplicate the skill and it levels.
-            $skill->duplicate();
-            break;
         case "disable":
             // Disable the skill.
             $skill->update_status(false);

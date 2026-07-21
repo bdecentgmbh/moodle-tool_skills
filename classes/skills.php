@@ -288,15 +288,6 @@ class skills {
     }
 
     /**
-     * Duplicate the skill and its levels.
-     *
-     * @return bool
-     */
-    public function duplicate() {
-        return true;
-    }
-
-    /**
      * Find how many points user should earn to complete this skill.
      *
      * @return int

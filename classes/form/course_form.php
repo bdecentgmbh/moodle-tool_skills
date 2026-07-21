@@ -138,6 +138,18 @@ class course_form extends \core_form\dynamic_form {
         $courseid = $this->optional_param('courseid', 0, PARAM_INT);
         $record->courseid = $courseid;
 
+        // Reject a skill that is not available to this course, and a level that does not belong to it.
+        if (!courseskills::is_skill_available_for_course((int) $record->skill, $courseid)) {
+            throw new \moodle_exception('skillnotavailableincourse', 'tool_skills');
+        }
+        if (
+            in_array((int) $record->uponcompletion, [skills::COMPLETIONSETLEVEL, skills::COMPLETIONFORCELEVEL], true)
+                && !empty($record->level)
+                && !courseskills::level_belongs_to_skill((int) $record->level, (int) $record->skill)
+        ) {
+            throw new \moodle_exception('invalidlevelforskill', 'tool_skills');
+        }
+
         $existing = $DB->get_record('tool_skills_courses', ['skill' => $record->skill, 'courseid' => $courseid]);
         if ($existing) {
             // Update the existing course skill record for this course.

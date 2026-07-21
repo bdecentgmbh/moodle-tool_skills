@@ -62,6 +62,11 @@ if ($action !== null && confirm_sesskey()) {
     // Every action is based on a skill, thus the skill ID param has to exist.
     $skillid = required_param('skill', PARAM_INT);
 
+    // Only allow acting on a skill that is actually available to this course.
+    if (!\tool_skills\courseskills::is_skill_available_for_course($skillid, $courseid)) {
+        throw new \moodle_exception('skillnotavailableincourse', 'tool_skills');
+    }
+
     // Start the query transaction snapshots.
     $transaction = $DB->start_delegated_transaction();
 

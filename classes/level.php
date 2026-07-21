@@ -135,15 +135,6 @@ class level extends skills {
     }
 
     /**
-     * Duplicate the skill and its levels.
-     *
-     * @return bool
-     */
-    public function duplicate() {
-        return true;
-    }
-
-    /**
      * Get the points of the level.
      *
      * @return int

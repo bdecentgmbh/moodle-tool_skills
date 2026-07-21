@@ -103,14 +103,16 @@ class users_skills extends \table_sql implements dynamic_table {
      */
     public function query_db($pagesize, $useinitialsbar = true) {
 
-        // Set the query values to fetch skills.
-        $select = 'usp.*, s.*, u.*';
+        // Select only the user-picture identity fields (id aliased so each row's id is the user id)
+        // plus the earned points; avoids over-fetching {user} secret columns and the fragile id
+        // collision that the previous "usp.*, s.*, u.*" relied on.
+        $userfields = \core_user\fields::for_userpic()->get_sql('u', false, '', '', false);
+        $select = 'usp.points AS points' . $userfields->selects;
 
         $from = '{tool_skills_userpoints} usp
-        LEFT JOIN {tool_skills} s ON usp.skill = s.id
-        LEFT JOIN {user} u ON usp.userid = u.id';
+        JOIN {user} u ON usp.userid = u.id' . $userfields->joins;
 
-        $this->set_sql($select, $from, 's.id = :skillid', ['skillid' => $this->skill->id]);
+        $this->set_sql($select, $from, 'usp.skill = :skillid', ['skillid' => $this->skill->id] + $userfields->params);
 
         parent::query_db($pagesize, $useinitialsbar);
     }
