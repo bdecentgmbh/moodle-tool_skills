@@ -49,3 +49,6 @@ Thumbs.db
 *.wmv
 
 phpunit.xml
+
+# tool_skills addon subplugins are distributed separately; never track them in the free repo.
+/addon/*/

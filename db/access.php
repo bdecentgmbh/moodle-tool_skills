@@ -39,7 +39,8 @@ $capabilities = [
     'tool/skills:managecourseskillslist' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'riskbitmask' => RISK_XSS | RISK_CONFIG,
+        // Configures course behaviour, but the form accepts no HTML, so no XSS risk.
+        'riskbitmask' => RISK_CONFIG,
         'archetypes' => [
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
@@ -47,10 +48,10 @@ $capabilities = [
         ],
     ],
 
+    // Read-only capability to view other users' skill points report.
     'tool/skills:viewotherspoints' => [
-        'captype' => 'write',
+        'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
-        'riskbitmask' => RISK_XSS | RISK_CONFIG,
         'archetypes' => [
             'manager' => CAP_ALLOW,
         ],
