@@ -57,6 +57,13 @@ final class helper_test extends \advanced_testcase {
         ]);
     }
 
+    /**
+     * Insert a level for the given skill and return its id.
+     *
+     * @param int $skillid
+     * @param int $points
+     * @return int
+     */
     private function create_level(int $skillid, int $points): int {
         global $DB;
         return $DB->insert_record('tool_skills_levels', (object)[
@@ -69,6 +76,13 @@ final class helper_test extends \advanced_testcase {
         ]);
     }
 
+    /**
+     * Insert a userpoints record for the given skill and user.
+     *
+     * @param int $skillid
+     * @param int $userid
+     * @param int $points
+     */
     private function insert_userpoints(int $skillid, int $userid, int $points): void {
         global $DB;
         $DB->insert_record('tool_skills_userpoints', (object)[
@@ -80,6 +94,14 @@ final class helper_test extends \advanced_testcase {
         ]);
     }
 
+    /**
+     * Assign a skill (with one level) to a course and return the tool_skills_courses id.
+     *
+     * @param int $courseid
+     * @param int $skillid
+     * @param int $levelpoints
+     * @return int
+     */
     private function create_courseskill(int $courseid, int $skillid, int $levelpoints): int {
         global $DB;
         $levelid = $this->create_level($skillid, $levelpoints);
@@ -114,7 +136,7 @@ final class helper_test extends \advanced_testcase {
      */
     public function test_get_user_completedskills_returns_completed_skills(): void {
         $user    = $this->getDataGenerator()->create_user();
-        // get_user_completedskills() only considers skills from courses the user is enrolled in.
+        // The helper only considers skills from courses the user is enrolled in.
         $course  = $this->getDataGenerator()->create_course();
         $this->getDataGenerator()->enrol_user($user->id, $course->id);
         $skillid = $this->create_skill();

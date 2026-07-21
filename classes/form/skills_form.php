@@ -178,8 +178,13 @@ class skills_form extends \moodleform {
             $mform->addHelpButton("levels[$i][color]", 'levelscolor', 'tool_skills');
 
             // Level image.
-            $mform->addElement('filemanager', "levels[$i][image]", get_string('levelsimage', 'tool_skills', $i),
-                null, self::level_image_options());
+            $mform->addElement(
+                'filemanager',
+                "levels[$i][image]",
+                get_string('levelsimage', 'tool_skills', $i),
+                null,
+                self::level_image_options()
+            );
             $mform->addHelpButton("levels[$i][image]", 'levelsimage', 'tool_skills');
         }
         // Action buttons.
@@ -239,7 +244,6 @@ class skills_form extends \moodleform {
         foreach ($filemanagers as $configname => $filearea) {
             // For all levels in this skill (iterate the actual keys to stay index-agnostic).
             foreach ($defaultvalues->levels as $i => $level) {
-
                 if (empty($level)) {
                     continue;
                 }
@@ -249,7 +253,12 @@ class skills_form extends \moodleform {
                 $levelid = $level['id'] ?? 0;
                 // Store the draft files to area files.
                 file_prepare_draft_area(
-                    $draftitemid, $context->id, 'tool_skills', $filearea, $levelid, self::level_image_options()
+                    $draftitemid,
+                    $context->id,
+                    'tool_skills',
+                    $filearea,
+                    $levelid,
+                    self::level_image_options()
                 );
                 $defaultvalues->levels[$i][$configname] = $draftitemid;
             }

@@ -131,7 +131,7 @@ final class courseskills_test extends \advanced_testcase {
         $skill3 = $this->create_skill();
         $this->assign_skill_to_course($course->id, $skill1, 1);
         $this->assign_skill_to_course($course->id, $skill2, 1);
-        $this->assign_skill_to_course($course->id, $skill3, 0); // disabled
+        $this->assign_skill_to_course($course->id, $skill3, 0); // Disabled.
 
         $result = courseskills::get($course->id)->get_instance_skills();
         $this->assertCount(2, $result);

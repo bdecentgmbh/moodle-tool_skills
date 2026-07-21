@@ -35,7 +35,6 @@ require_once($CFG->dirroot . '/admin/tool/skills/lib.php');
  * @covers ::tool_skills_myprofile_navigation
  */
 final class lib_test extends \advanced_testcase {
-
     /**
      * Create a course with an enabled skill, enrol the user and award some points.
      *

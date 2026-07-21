@@ -414,7 +414,7 @@ final class skills_test extends \advanced_testcase {
             'levels'       => [
                 1 => ['name' => 'Bronze', 'points' => 10, 'status' => 1, 'color' => ''],
                 2 => ['name' => 'Silver', 'points' => 20, 'status' => 1, 'color' => ''],
-                3 => ['name' => 'Gold',   'points' => 30, 'status' => 1, 'color' => ''],
+                3 => ['name' => 'Gold', 'points' => 30, 'status' => 1, 'color' => ''],
             ],
         ];
         $skillid = skills::manage_instance($formdata);

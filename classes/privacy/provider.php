@@ -186,8 +186,10 @@ class provider implements
         $skillcourses = $DB->get_records('tool_skills_courses', ['courseid' => $context->instanceid]);
         $affectedskills = [];
         foreach ($skillcourses as $skillcourse) {
-            $logs = $DB->get_records('tool_skills_awardlogs',
-                ['methodid' => $skillcourse->id, 'method' => 'course', 'userid' => $userid]);
+            $logs = $DB->get_records(
+                'tool_skills_awardlogs',
+                ['methodid' => $skillcourse->id, 'method' => 'course', 'userid' => $userid]
+            );
             foreach ($logs as $log) {
                 $affectedskills[$log->skill] = $log->skill;
                 // Remove this course's contribution from the user's cumulative skill points.
@@ -196,8 +198,10 @@ class provider implements
                     $DB->set_field('tool_skills_userpoints', 'points', $points->points - $log->points, ['id' => $points->id]);
                 }
             }
-            $DB->delete_records('tool_skills_awardlogs',
-                ['methodid' => $skillcourse->id, 'method' => 'course', 'userid' => $userid]);
+            $DB->delete_records(
+                'tool_skills_awardlogs',
+                ['methodid' => $skillcourse->id, 'method' => 'course', 'userid' => $userid]
+            );
         }
 
         // Drop userpoints rows that no longer have any supporting award log for this user.

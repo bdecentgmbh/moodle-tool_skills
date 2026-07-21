@@ -73,8 +73,8 @@ final class course_form_test extends \advanced_testcase {
      * @return course_form
      */
     private function build_form(array $formdata): course_form {
-        // moodleform validates the sesskey from the request globals (not the ajax data) once the
-        // _qf__ submit marker is present, so seed it there. resetAfterTest restores the superglobals.
+        // The moodleform base validates the sesskey from the request globals (not the ajax data) once
+        // the _qf__ submit marker is present, so seed it there. resetAfterTest restores the superglobals.
         $_POST['sesskey'] = sesskey();
         $_GET['sesskey'] = sesskey();
         return new course_form(null, null, 'post', '', null, true, $formdata);
