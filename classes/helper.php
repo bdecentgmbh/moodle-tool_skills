@@ -232,4 +232,169 @@ class helper {
         }
         return $result ?? '';
     }
+
+    /**
+     * Build the "Skills earned" profile template context for a user.
+     *
+     * Produces the data consumed by the tool_skills/profile_skills Mustache template: one entry per
+     * skill the user is working towards, each with its earned/total points, current level (name,
+     * colour, image) and the per-course points breakdown.
+     *
+     * @param int $userid The user to build the skills summary for.
+     * @return array Template context: ['hasskills' => bool, 'skills' => array, 'uniqid' => string].
+     */
+    public static function get_user_profile_skills_context(int $userid): array {
+
+        $records = \tool_skills\user::get($userid)->get_user_skills();
+
+        // Group the per-course records by their skill.
+        $byskill = [];
+        $skillobjs = [];
+        foreach ($records as $record) {
+            $byskill[$record->skill][] = $record;
+            $skillobjs[$record->skill] = $record->skillobj;
+        }
+
+        $canreport = has_capability('tool/skills:viewotherspoints', \context_system::instance());
+
+        $skills = [];
+        $index = 0;
+        foreach ($byskill as $skillid => $courserecords) {
+            $skill = $skillobjs[$skillid];
+            $data = $skill->get_data();
+            $totalpoints = (int) $skill->get_points_to_earnskill();
+            $userskill = $skill->get_user_skill($userid, false);
+            $earned = (int) ($userskill->points ?? 0);
+
+            // The current level is the highest level whose points threshold the user has reached.
+            $currentlevel = self::get_reached_level($data->levels ?? [], $earned);
+            $levelcolor = $currentlevel['color'] ?? '';
+            $levelimageurl = $currentlevel ? self::get_level_image_url((int) $currentlevel['id']) : '';
+
+            // Per-course points breakdown.
+            $courses = [];
+            foreach ($courserecords as $record) {
+                $skillcourse = $record->skillcourse;
+                $available = $skillcourse->get_points_earned_fromcourse();
+                $courseearned = (int) ($skillcourse->get_user_earned_points($userid) ?? 0);
+                $haspoints = is_numeric($available) && (int) $available > 0;
+                // Let addons contribute their own per-course content (e.g. activity breakdown).
+                $addon = '';
+                self::extend_addons_add_user_points_content($addon, $record);
+                $courses[] = [
+                    'coursename' => format_string($skillcourse->get_course()->fullname),
+                    'courseurl' => (new \moodle_url('/course/view.php', ['id' => $record->courseid]))->out(false),
+                    'haspoints' => $haspoints,
+                    'earned' => $courseearned,
+                    'available' => (int) $available,
+                    'iscomplete' => $haspoints && $courseearned >= (int) $available,
+                    'hasaddoncontent' => $addon !== '',
+                    'addoncontent' => $addon,
+                ];
+            }
+
+            $skills[] = [
+                'skillid' => (int) $skillid,
+                'name' => $skill->get_name(),
+                'hascolor' => !empty($data->color),
+                'color' => $data->color ?? '',
+                'hascurrentlevel' => (bool) $currentlevel,
+                'currentlevelname' => $currentlevel ? format_string($currentlevel['name']) : '',
+                'hascurrentlevelcolor' => !empty($levelcolor),
+                'currentlevelcolor' => $levelcolor,
+                'currentleveltextcolor' => $levelcolor ? self::readable_text_color($levelcolor) : '',
+                'haslevelimage' => $levelimageurl !== '',
+                'levelimageurl' => $levelimageurl,
+                'earned' => $earned,
+                'hastotalpoints' => $totalpoints > 0,
+                'pointstocomplete' => $totalpoints,
+                'haslearningtime' => !empty($data->learningtime),
+                'learningtime' => !empty($data->learningtime) ? format_time($data->learningtime) : '',
+                'hascourses' => !empty($courses),
+                'courses' => $courses,
+                'hasreport' => $canreport,
+                'reporturl' => (new \moodle_url('/admin/tool/skills/manage/usersreport.php', ['id' => $skillid]))->out(false),
+                // Expand the first skill by default so the panel is not empty on open.
+                'expanded' => $index === 0,
+            ];
+            $index++;
+        }
+
+        return [
+            'hasskills' => !empty($skills),
+            'skills' => $skills,
+            'uniqid' => \html_writer::random_id('toolskills'),
+        ];
+    }
+
+    /**
+     * Return the highest level whose points threshold the given earned points reach.
+     *
+     * @param array $levels Levels keyed 1..N, each an array with at least 'id', 'name', 'color', 'points'.
+     * @param int $earned The user's earned points for the skill.
+     * @return array|null The reached level record, or null if none is reached.
+     */
+    protected static function get_reached_level(array $levels, int $earned): ?array {
+        $levels = array_values($levels);
+        usort($levels, fn($a, $b) => ((int) ($a['points'] ?? 0)) <=> ((int) ($b['points'] ?? 0)));
+        $reached = null;
+        foreach ($levels as $level) {
+            if ($earned >= (int) ($level['points'] ?? 0)) {
+                $reached = $level;
+            }
+        }
+        return $reached;
+    }
+
+    /**
+     * Build the pluginfile URL for a level's image, or an empty string when it has none.
+     *
+     * @param int $levelid The tool_skills_levels id.
+     * @return string The image URL, or '' if no image is set.
+     */
+    protected static function get_level_image_url(int $levelid): string {
+        $files = get_file_storage()->get_area_files(
+            \context_system::instance()->id,
+            'tool_skills',
+            'levelimage',
+            $levelid,
+            'itemid, filepath, filename',
+            false
+        );
+        if (empty($files)) {
+            return '';
+        }
+        $file = reset($files);
+        return \moodle_url::make_pluginfile_url(
+            $file->get_contextid(),
+            $file->get_component(),
+            $file->get_filearea(),
+            $file->get_itemid(),
+            $file->get_filepath(),
+            $file->get_filename(),
+            false
+        )->out(false);
+    }
+
+    /**
+     * Pick black or white text for readable contrast against a hex background colour.
+     *
+     * @param string $hex A '#rgb' or '#rrggbb' colour (already validated on input).
+     * @return string '#000000' or '#ffffff'.
+     */
+    protected static function readable_text_color(string $hex): string {
+        $hex = ltrim($hex, '#');
+        if (strlen($hex) === 3) {
+            $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+        }
+        if (strlen($hex) !== 6 || !ctype_xdigit($hex)) {
+            return '#000000';
+        }
+        $r = hexdec(substr($hex, 0, 2));
+        $g = hexdec(substr($hex, 2, 2));
+        $b = hexdec(substr($hex, 4, 2));
+        // Relative luminance (perceptual weights); light backgrounds get dark text.
+        $luminance = (0.299 * $r + 0.587 * $g + 0.114 * $b) / 255;
+        return $luminance > 0.6 ? '#000000' : '#ffffff';
+    }
 }

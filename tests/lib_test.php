@@ -83,42 +83,41 @@ final class lib_test extends \advanced_testcase {
     }
 
     /**
-     * Return the keys of any per-skill nodes added to the tree (keyed "skill_<skillid>").
+     * Whether the "Skills earned" accordion node was added to the tree.
      *
      * @param \core_user\output\myprofile\tree $tree
-     * @return string[]
+     * @return bool
      */
-    private function skill_node_keys(\core_user\output\myprofile\tree $tree): array {
-        return array_values(array_filter(
-            array_keys($tree->__get('nodes')),
-            fn($key) => strpos($key, 'skill_') === 0
-        ));
+    private function has_skills_node(\core_user\output\myprofile\tree $tree): bool {
+        return array_key_exists('toolskills_earned', $tree->__get('nodes'));
     }
 
     /**
-     * A per-skill node is shown on the user's own profile, with the course breakdown in its content.
+     * The "Skills earned" accordion is shown on the user's own profile, with the skill and course
+     * breakdown rendered from the tool_skills/profile_skills template.
      *
      * The navigation callback surfaces the current user's own skills, so the profile owner must be the
-     * logged-in user. Nodes are keyed "skill_<skillid>", not a single combined node.
+     * logged-in user.
      */
     public function test_node_shown_on_own_profile(): void {
         $this->resetAfterTest(true);
-        [$user, $course, $skillid] = $this->setup_user_with_skill();
+        [$user, $course] = $this->setup_user_with_skill();
         $this->setUser($user);
 
         $tree = $this->run_callback($user, true, $course);
         $nodes = $tree->__get('nodes');
 
-        $this->assertArrayHasKey('skill_' . $skillid, $nodes);
-        $content = $nodes['skill_' . $skillid]->content;
-        // The skill name and the per-course breakdown (name + earned points) must be present.
+        $this->assertArrayHasKey('toolskills_earned', $nodes);
+        $content = $nodes['toolskills_earned']->content;
+        // Rendered as a Bootstrap accordion of the skill, its level and its course breakdown.
+        $this->assertStringContainsString('toolskills-profile-skills accordion', $content);
         $this->assertStringContainsString('Communication', $content);
+        $this->assertStringContainsString('Level 1', $content);
         $this->assertStringContainsString(format_string($course->fullname), $content);
-        $this->assertStringContainsString(get_string('earned', 'tool_skills'), $content);
     }
 
     /**
-     * No skill node is shown on another user's profile when the viewer lacks the capability.
+     * No skills node is shown on another user's profile when the viewer lacks the capability.
      */
     public function test_node_hidden_for_other_user_without_capability(): void {
         $this->resetAfterTest(true);
@@ -127,7 +126,7 @@ final class lib_test extends \advanced_testcase {
         $this->setUser($this->getDataGenerator()->create_user());
 
         $tree = $this->run_callback($user, false, $course);
-        $this->assertEmpty($this->skill_node_keys($tree));
+        $this->assertFalse($this->has_skills_node($tree));
     }
 
     /**
@@ -141,6 +140,6 @@ final class lib_test extends \advanced_testcase {
         $this->setAdminUser();
 
         $tree = $this->run_callback($user, false, $course);
-        $this->assertEmpty($this->skill_node_keys($tree));
+        $this->assertFalse($this->has_skills_node($tree));
     }
 }
