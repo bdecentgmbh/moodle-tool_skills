@@ -141,7 +141,7 @@ class user {
     /**
      * Remove the user skills points list.
      *
-     * @return void
+     * @return bool
      */
     public function remove_user_skillpoints() {
         global $DB;
@@ -171,6 +171,8 @@ class user {
         if (!$withdata) {
             return $list;
         }
+
+        return $list;
     }
 
     /**
@@ -178,7 +180,7 @@ class user {
      *
      * @param string $method
      * @param int $methodid
-     * @return void
+     * @return int|null
      */
     public function get_user_award_by_method(string $method, int $methodid) {
         global $DB;

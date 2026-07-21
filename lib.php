@@ -241,4 +241,6 @@ function tool_skills_pluginfile($course, $cm, $context, $filearea, $args, $force
 
         send_stored_file($file, null, 0, $forcedownload, $options);
     }
+
+    return false;
 }

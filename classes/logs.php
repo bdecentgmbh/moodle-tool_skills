@@ -57,7 +57,7 @@ class logs {
      * @param int $methodid Method id. ID of the table.
      * @param string $method Method of the allocation, Course and activity methods are available current now.
      * @param int $status Type of the points awarded. 1 for increase, 0 for negative points.
-     * @return void
+     * @return \stdClass|false The log record, or false if not found.
      */
     public function get_log(int $skillid, int $userid, int $methodid, string $method, int $status = 1) {
         global $DB;
