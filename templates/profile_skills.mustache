@@ -1,0 +1,130 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_skills/profile_skills
+
+    Skills earned block on the user profile page.
+
+    Classes required for JS:
+    * none
+
+    Context variables required for this template:
+    * skills - Array of skills, each with name, colour, points, current level, image and courses.
+
+    Example context (json):
+    {
+        "skills": [
+            {
+                "name": "Communication",
+                "identitykey": "communication",
+                "hascolor": true,
+                "color": "#3b82f6",
+                "pointscompletetext": "Points to complete this skill: 100",
+                "earned": 75,
+                "haslearningtime": true,
+                "learningtime": "90 days",
+                "hascurrentlevel": true,
+                "currentlevelname": "Advanced",
+                "hascurrentlevelcolor": true,
+                "currentlevelcolor": "#22c55e",
+                "currentleveltextcolor": "#ffffff",
+                "haslevelimage": true,
+                "levelimageurl": "https://example.com/pluginfile.php/1/tool_skills/levelimage/12/badge.png",
+                "hasreport": true,
+                "reporturl": "https://example.com/admin/tool/skills/manage/usersreport.php?id=5",
+                "courses": [
+                    {
+                        "courseurl": "https://example.com/course/view.php?id=2",
+                        "coursename": "Intro course",
+                        "hasuponcompletion": true,
+                        "uponcompletionlabel": "Points upto ",
+                        "uponcompletionresult": "9",
+                        "maxpoints": 9,
+                        "earned": 9,
+                        "addoncontent": ""
+                    }
+                ]
+            }
+        ]
+    }
+}}
+<div class="toolskills-profile-skills">
+    {{#skills}}
+    <details class="toolskill-card{{#hascurrentlevel}} has-level{{/hascurrentlevel}}"
+        {{#hascolor}}style="border-left-color: {{color}};"{{/hascolor}}>
+        <summary class="toolskill-summary">
+            {{#haslevelimage}}
+            <img class="toolskill-level-img" src="{{levelimageurl}}" alt="{{currentlevelname}}" role="presentation">
+            {{/haslevelimage}}
+            <span class="toolskill-name skill-{{identitykey}}">{{{name}}}</span>
+            {{#hascurrentlevel}}
+            <span class="toolskill-level-badge"
+                {{#hascurrentlevelcolor}}style="background-color: {{currentlevelcolor}}; color: {{currentleveltextcolor}};"{{/hascurrentlevelcolor}}
+                title="{{#str}}currentlevel, tool_skills{{/str}}">{{{currentlevelname}}}</span>
+            {{/hascurrentlevel}}
+            <span class="toolskill-points" title="{{#str}}earned, tool_skills{{/str}}: {{earned}}{{#hastotalpoints}} / {{pointstocomplete}}{{/hastotalpoints}}">
+                <span class="toolskill-earned-points">{{earned}}</span>{{#hastotalpoints}}<span class="toolskill-total-points">/{{pointstocomplete}}</span>{{/hastotalpoints}}
+            </span>
+        </summary>
+        <div class="toolskill-body">
+            {{#haslearningtime}}
+            <p class="toolskill-learningtime">{{#str}}learningtime, tool_skills{{/str}}: {{learningtime}}</p>
+            {{/haslearningtime}}
+            {{#courses.0}}
+            <ul class="toolskill-courses">
+                {{#courses}}
+                <li class="toolskill-course">
+                    <div class="toolskill-course-head">
+                        <a class="toolskill-course-name" href="{{courseurl}}">{{{coursename}}}</a>
+                        {{#hastotal}}
+                        <span class="toolskill-chip{{#totalcomplete}} is-complete{{/totalcomplete}}" title="{{#str}}earned, tool_skills{{/str}}: {{totalearned}} / {{totalavailable}}">{{totalearned}} / {{totalavailable}}</span>
+                        {{/hastotal}}
+                    </div>
+                    {{#hascourseaward}}
+                    <div class="toolskill-coursecomplete">
+                        <span class="toolskill-coursecomplete-label">{{#str}}completecourse, tool_skills{{/str}}</span>
+                        {{#islevel}}
+                        <span class="toolskill-leveltag" title="{{#str}}currentlevel, tool_skills{{/str}}">{{{levelname}}}</span>
+                        {{/islevel}}
+                        {{#cchaspoints}}
+                        <span class="toolskill-chip toolskill-chip-sm{{#cccomplete}} is-complete{{/cccomplete}}" title="{{#str}}earned, tool_skills{{/str}}: {{ccearned}} / {{ccpoints}}">{{ccearned}} / {{ccpoints}}</span>
+                        {{/cchaspoints}}
+                    </div>
+                    {{/hascourseaward}}
+                    {{#hasactivities}}
+                    <ul class="toolskill-activities">
+                        {{#activities}}
+                        <li>
+                            <a class="toolskill-course-name" href="{{url}}">{{{name}}}</a>
+                            {{#haspoints}}
+                            <span class="toolskill-chip toolskill-chip-sm{{#iscomplete}} is-complete{{/iscomplete}}" title="{{#str}}earned, tool_skills{{/str}}: {{earned}} / {{available}}">{{earned}} / {{available}}</span>
+                            {{/haspoints}}
+                        </li>
+                        {{/activities}}
+                    </ul>
+                    {{/hasactivities}}
+                </li>
+                {{/courses}}
+            </ul>
+            {{/courses.0}}
+            {{#hasreport}}
+            <a class="toolskill-report" href="{{reporturl}}">{{#str}}usersreport, tool_skills{{/str}}</a>
+            {{/hasreport}}
+        </div>
+    </details>
+    {{/skills}}
+</div>

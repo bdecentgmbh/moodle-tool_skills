@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/formslib.php');
 
 use html_writer;
+use context_system;
 use tool_skills\skills;
 
 /**
@@ -45,6 +46,14 @@ class skills_form extends \moodleform {
         global $DB, $PAGE, $CFG;
 
         $mform = $this->_form;
+
+        // Register the custom color picker form element.
+        require_once($CFG->dirroot . '/admin/tool/skills/form/element-colorpicker.php');
+        \MoodleQuickForm::registerElementType(
+            'tool_skills_colorpicker',
+            $CFG->dirroot . '/admin/tool/skills/form/element-colorpicker.php',
+            'moodlequickform_toolskills_colorpicker'
+        );
 
         // Current skill id to edit.
         $mform->addElement('hidden', 'id', 0);
@@ -96,6 +105,11 @@ class skills_form extends \moodleform {
         );
         $cate->setMultiple(true);
         $mform->addHelpButton('categories', 'availableincoursecategories', 'tool_skills');
+
+        // Skill color element.
+        $mform->addElement('tool_skills_colorpicker', 'color', get_string('skillcolor', 'tool_skills'));
+        $mform->setType('color', PARAM_TEXT);
+        $mform->addHelpButton('color', 'skillcolor', 'tool_skills');
 
         // Levels setup for this skills.
         $mform->addElement('header', 'skilllevels', get_string('skillslevels', 'tool_skills'));
@@ -157,9 +171,89 @@ class skills_form extends \moodleform {
             if ($mform->getElementValue("levels[$i][points]") === null) {
                 $mform->setDefault("levels[$i][points]", ($i - 1) * 10);
             }
+
+            // Level color.
+            $mform->addElement('tool_skills_colorpicker', "levels[$i][color]", get_string('levelscolor', 'tool_skills', $i), '');
+            $mform->setType("levels[$i][color]", PARAM_TEXT);
+            $mform->addHelpButton("levels[$i][color]", 'levelscolor', 'tool_skills');
+
+            // Level image.
+            $mform->addElement('filemanager', "levels[$i][image]", get_string('levelsimage', 'tool_skills', $i),
+                null, self::level_image_options());
+            $mform->addHelpButton("levels[$i][image]", 'levelsimage', 'tool_skills');
         }
         // Action buttons.
         $this->add_action_buttons();
+    }
+
+    /**
+     * Filemanager/draft-area options for the per-level image. Shared between the form element,
+     * the draft area preparation and the file saving in level::manage_level_instance() so they
+     * stay consistent.
+     *
+     * @return array
+     */
+    public static function level_image_options(): array {
+        return [
+            'subdirs' => 0,
+            'maxfiles' => 1,
+            'accepted_types' => ['web_image'],
+        ];
+    }
+
+    /**
+     * Load in existing data as form defaults. Preprocesses the level image draft areas
+     * before passing the data to the parent set_data().
+     *
+     * @param \stdClass|array $defaultvalues object or array of default values
+     */
+    public function set_data($defaultvalues) {
+
+        $this->data_preprocessing($defaultvalues); // Include to store the files.
+
+        parent::set_data($defaultvalues);
+    }
+
+    /**
+     * Process the level image draft areas before the form defaults are set.
+     *
+     * @param  mixed $defaultvalues default values
+     * @return void
+     */
+    public function data_preprocessing(&$defaultvalues) {
+        // System context.
+        $context = context_system::instance();
+
+        // Convert to object, file manager methods require the objects.
+        $defaultvalues = (object) $defaultvalues;
+
+        $filemanagers = [
+            'image' => 'levelimage',
+        ];
+
+        if (empty($defaultvalues->levels) || !is_array($defaultvalues->levels)) {
+            return;
+        }
+
+        // Prepare the file manager fields to store images.
+        foreach ($filemanagers as $configname => $filearea) {
+            // For all levels in this skill (iterate the actual keys to stay index-agnostic).
+            foreach ($defaultvalues->levels as $i => $level) {
+
+                if (empty($level)) {
+                    continue;
+                }
+                // Draft item id.
+                $draftitemid = file_get_submitted_draft_itemid($filearea);
+                // Use the level id as item id.
+                $levelid = $level['id'] ?? 0;
+                // Store the draft files to area files.
+                file_prepare_draft_area(
+                    $draftitemid, $context->id, 'tool_skills', $filearea, $levelid, self::level_image_options()
+                );
+                $defaultvalues->levels[$i][$configname] = $draftitemid;
+            }
+        }
     }
 
     /**

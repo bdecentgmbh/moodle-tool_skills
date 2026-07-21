@@ -207,6 +207,15 @@ class level extends skills {
                 $levelid = $DB->insert_record('tool_skills_levels', $level);
             }
 
+            // Save the level image. Must happen after the insert so new levels are keyed by their
+            // real id; the draft item id is carried on the submitted level data as the "image" field.
+            if (isset($level->image)) {
+                file_save_draft_area_files(
+                    $level->image, context_system::instance()->id, 'tool_skills', 'levelimage', $levelid,
+                    \tool_skills\form\skills_form::level_image_options()
+                );
+            }
+
             $levelslist[] = $levelid;
         }
 
