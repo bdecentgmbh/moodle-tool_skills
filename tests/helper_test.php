@@ -114,13 +114,17 @@ final class helper_test extends \advanced_testcase {
      */
     public function test_get_user_completedskills_returns_completed_skills(): void {
         $user    = $this->getDataGenerator()->create_user();
+        // get_user_completedskills() only considers skills from courses the user is enrolled in.
+        $course  = $this->getDataGenerator()->create_course();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
         $skillid = $this->create_skill();
-        $this->create_level($skillid, 100); // Max = 100 pts.
+        $this->create_courseskill($course->id, $skillid, 100); // Skill assigned to the course; max level = 100 pts.
         $this->insert_userpoints($skillid, $user->id, 100);
 
         $result = helper::get_user_completedskills($user->id);
         $this->assertNotEmpty($result);
-        $this->assertContains($skillid, $result);
+        // Loose comparison: skill ids come back from the DB as strings.
+        $this->assertContainsEquals($skillid, $result);
     }
 
     /**
@@ -128,8 +132,10 @@ final class helper_test extends \advanced_testcase {
      */
     public function test_get_user_completedskills_excludes_incomplete(): void {
         $user    = $this->getDataGenerator()->create_user();
+        $course  = $this->getDataGenerator()->create_course();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
         $skillid = $this->create_skill();
-        $this->create_level($skillid, 100);
+        $this->create_courseskill($course->id, $skillid, 100); // Max level = 100 pts.
         $this->insert_userpoints($skillid, $user->id, 50); // Only 50%.
 
         $result = helper::get_user_completedskills($user->id);

@@ -101,11 +101,24 @@ final class courseskills_test extends \advanced_testcase {
     }
 
     /**
-     * Mark a course complete for a user via the completion API.
+     * Mark a course complete for a user at the data level.
+     *
+     * These are unit tests of manage_course_completions(), which is invoked directly below, so the
+     * completion state is written straight to {course_completions} rather than through the completion
+     * API. That keeps is_course_complete() returning true without firing the course_completed event
+     * (whose observer would award the points a second time).
      */
     private function complete_course(\stdClass $course, \stdClass $user): void {
-        $cinfo = new \completion_info($course);
-        $cinfo->mark_course_completions([$user->id]);
+        global $DB;
+
+        $DB->insert_record('course_completions', (object)[
+            'userid'        => $user->id,
+            'course'        => $course->id,
+            'timeenrolled'  => time(),
+            'timestarted'   => time(),
+            'timecompleted' => time(),
+            'reaggregate'   => 0,
+        ]);
     }
 
     /**
