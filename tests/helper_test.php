@@ -37,6 +37,9 @@ final class helper_test extends \advanced_testcase {
 
     /**
      * Create the DB fixtures needed by most tests.
+     *
+     * @param int $points
+     * @return int
      */
     private function create_skill(int $points = 0): int {
         global $DB;

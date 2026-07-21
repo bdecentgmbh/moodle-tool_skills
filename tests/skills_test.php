@@ -234,6 +234,10 @@ final class skills_test extends \advanced_testcase {
     /**
      * Helper to build a minimal allocation_method stub for point operations.
      * Returns a courseskills instance with the skill instance set.
+     *
+     * @param int $courseid
+     * @param int $skillid
+     * @return courseskills
      */
     private function make_skillobj(int $courseid, int $skillid): courseskills {
         $courseskillid = $this->create_courseskill($courseid, $skillid);

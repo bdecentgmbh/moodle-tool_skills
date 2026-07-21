@@ -63,6 +63,8 @@ final class courseskills_test extends \advanced_testcase {
     /**
      * Insert a minimal skill level record and return its id.
      *
+     * @param int $skillid
+     * @param int $points
      * @return int
      */
     private function create_level(int $skillid, int $points): int {
@@ -79,6 +81,14 @@ final class courseskills_test extends \advanced_testcase {
 
     /**
      * Insert a tool_skills_courses record and return its id.
+     *
+     * @param int $courseid
+     * @param int $skillid
+     * @param int $status
+     * @param int $uponcompletion
+     * @param int $points
+     * @param int $level
+     * @return int
      */
     private function assign_skill_to_course(
         int $courseid,
@@ -107,6 +117,9 @@ final class courseskills_test extends \advanced_testcase {
      * completion state is written straight to {course_completions} rather than through the completion
      * API. That keeps is_course_complete() returning true without firing the course_completed event
      * (whose observer would award the points a second time).
+     *
+     * @param \stdClass $course
+     * @param \stdClass $user
      */
     private function complete_course(\stdClass $course, \stdClass $user): void {
         global $DB;

@@ -51,6 +51,9 @@ final class privacy_test extends \core_privacy\tests\provider_testcase {
      *   - A tool_skills_awardlogs record
      *
      * Returns an object with properties: course, skill, user, courseskillid.
+     *
+     * @param \stdClass|null $user
+     * @return \stdClass
      */
     private function create_full_fixture(\stdClass $user = null): \stdClass {
         global $DB;
