@@ -103,18 +103,22 @@
                 data-bs-toggle="collapse" data-bs-target="#toolskill-collapse-{{uniqid}}-{{skillid}}"
                 aria-expanded="{{#expanded}}true{{/expanded}}{{^expanded}}false{{/expanded}}"
                 aria-controls="toolskill-collapse-{{uniqid}}-{{skillid}}">
-                <span class="toolskill-summary d-flex align-items-center flex-wrap w-100">
+                <span class="toolskill-summary d-flex align-items-start gap-2">
                     {{#haslevelimage}}
-                    <img class="toolskill-level-img me-2" src="{{levelimageurl}}" alt="{{currentlevelname}}">
+                    <img class="toolskill-level-img" src="{{levelimageurl}}" alt="{{currentlevelname}}">
                     {{/haslevelimage}}
-                    <span class="toolskill-name fw-bold">{{{name}}}</span>
-                    {{#hascurrentlevel}}
-                    <span class="badge rounded-pill toolskill-level-badge ms-2"
-                        {{#hascurrentlevelcolor}}style="background-color: {{currentlevelcolor}}; color: {{currentleveltextcolor}};"{{/hascurrentlevelcolor}}>{{{currentlevelname}}}</span>
-                    {{/hascurrentlevel}}
-                    <span class="toolskill-points ms-auto ps-2 text-nowrap"
-                        title="{{#str}}earned, tool_skills{{/str}}: {{earned}}{{#hastotalpoints}} / {{pointstocomplete}}{{/hastotalpoints}}">
-                        <span class="toolskill-earned fw-bold fs-5">{{earned}}</span>{{#hastotalpoints}}<span class="toolskill-total text-muted">/{{pointstocomplete}}</span>{{/hastotalpoints}}
+                    <span class="toolskill-info">
+                        <span class="toolskill-name fw-bold">{{{name}}}</span>
+                        <span class="toolskill-meta d-flex align-items-center flex-wrap gap-2 mt-1">
+                            {{#hascurrentlevel}}
+                            <span class="badge rounded-pill toolskill-level-badge"
+                                {{#hascurrentlevelcolor}}style="background-color: {{currentlevelcolor}}; color: {{currentleveltextcolor}};"{{/hascurrentlevelcolor}}>{{{currentlevelname}}}</span>
+                            {{/hascurrentlevel}}
+                            <span class="toolskill-points"
+                                title="{{#str}}earned, tool_skills{{/str}}: {{earned}}{{#hastotalpoints}} / {{pointstocomplete}}{{/hastotalpoints}}">
+                                <span class="toolskill-earned fw-bold fs-5">{{earned}}</span>{{#hastotalpoints}}<span class="toolskill-total text-muted">/{{pointstocomplete}}</span>{{/hastotalpoints}}
+                            </span>
+                        </span>
                     </span>
                 </span>
             </button>

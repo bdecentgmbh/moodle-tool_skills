@@ -86,6 +86,10 @@ body.module-skills .activity-header {
 /* Profile "Skills earned" accordion. */
 .toolskills-profile-skills.accordion {
     --bs-accordion-btn-padding-y: 0.75rem;
+    /* Pin the active-header appearance so it renders the same across Moodle/Bootstrap versions. */
+    --bs-accordion-active-bg: transparent;
+    --bs-accordion-active-color: inherit;
+    --bs-accordion-btn-focus-box-shadow: none;
 }
 .toolskills-profile-skills .toolskill-card {
     margin-bottom: 0.5rem;
@@ -94,16 +98,26 @@ body.module-skills .activity-header {
     overflow: hidden;
 }
 .toolskills-profile-skills .accordion-button {
-    background-color: transparent;
+    /* Space between the summary column and the collapse arrow so long names never touch it. */
+    column-gap: 0.75rem;
 }
-.toolskills-profile-skills .accordion-button:not(.collapsed) {
-    box-shadow: none;
+.toolskills-profile-skills .toolskill-summary {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.toolskills-profile-skills .toolskill-info {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.toolskills-profile-skills .toolskill-name {
+    display: block;
+    overflow-wrap: anywhere;
 }
 .toolskills-profile-skills .toolskill-level-img {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: 6px;
     flex: 0 0 auto;
 }
 .toolskills-profile-skills .toolskill-chip,
