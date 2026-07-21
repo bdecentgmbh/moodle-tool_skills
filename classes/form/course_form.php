@@ -88,6 +88,7 @@ class course_form extends \core_form\dynamic_form {
 
         // Completion points element.
         $mform->addElement('text', 'points', get_string('completionpoints', 'tool_skills'));
+        $mform->setType('points', PARAM_INT);
         $mform->hideIf('points', 'uponcompletion', 'neq', skills::COMPLETIONPOINTS);
         $mform->addHelpButton('points', 'completionpoints', 'tool_skills');
 
@@ -130,18 +131,25 @@ class course_form extends \core_form\dynamic_form {
         // Get the submitted content data.
         $record = (object) $this->get_data();
 
-        if (isset($record->id) && $record->id != '' && $DB->record_exists('tool_skills_courses', ['id' => $record->id])) {
-            // Level id to update.
-            $skillcourseid = $record->id;
-            // Time modified the level.
+        // Never trust the submitted primary key or courseid for the write target. The caller was only
+        // authorised (see check_access_for_dynamic_submission) against the courseid request parameter,
+        // so resolve the row from that course and the skill, mirroring update_status(). This prevents a
+        // teacher in one course from targeting another course's tool_skills_courses row via a crafted id.
+        $courseid = $this->optional_param('courseid', 0, PARAM_INT);
+        $record->courseid = $courseid;
+
+        $existing = $DB->get_record('tool_skills_courses', ['skill' => $record->skill, 'courseid' => $courseid]);
+        if ($existing) {
+            // Update the existing course skill record for this course.
+            $record->id = $existing->id;
             $record->timemodified = time();
-            // Update the level record.
             $DB->update_record('tool_skills_courses', $record);
         } else {
             // New record add the created time.
+            unset($record->id);
             $record->timecreated = time();
             // Insert the record of the new skill.
-            $skillcourseid = $DB->insert_record('tool_skills_courses', $record);
+            $DB->insert_record('tool_skills_courses', $record);
         }
         // Increase or decrease the course points based on the updated course skill data.
         courseskills::get($record->courseid)->manage_users_completion($record->skill, $record->status);

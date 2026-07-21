@@ -140,11 +140,18 @@ class courseskills extends \tool_skills\allocation_method {
     public function remove_instance_skills() {
         global $DB;
 
+        // Capture the course skill instance ids before deleting them, so their award logs can be
+        // cleared by the correct methodid (the tool_skills_courses id, not the course id).
+        $skillcourseids = $DB->get_fieldset_select('tool_skills_courses', 'id', 'courseid = :courseid',
+            ['courseid' => $this->courseid]);
+
         $DB->delete_records('tool_skills_courses', ['courseid' => $this->courseid]);
 
         \tool_skills\helper::extend_addons_remove_course_instance($this->courseid);
 
-        $this->get_logs()->delete_method_log($this->courseid, 'course');
+        foreach ($skillcourseids as $skillcourseid) {
+            $this->get_logs()->delete_method_log($skillcourseid, 'course');
+        }
     }
 
     /**
