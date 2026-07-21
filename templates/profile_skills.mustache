@@ -1,0 +1,156 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_skills/profile_skills
+
+    Skills earned accordion shown on the user profile ("Skills earned" category).
+
+    Each skill is a Bootstrap 5 accordion panel: the header shows the current level image, the skill
+    name, the current level badge and the earned/total points; the body lists the courses that award
+    the skill with their points, and a link to the users-points report. Skill and level colours are
+    validated to a #rgb/#rrggbb hex on input, so it is safe to interpolate them into the inline styles.
+
+    Classes required for JS:
+    * none (uses Bootstrap 5 collapse via data-bs-* attributes)
+
+    Context variables required for this template:
+    * uniqid - Unique string to namespace the accordion element ids.
+    * skills - Array of skills, each:
+        * skillid, identitykey, name, hascolor, color
+        * hascurrentlevel, currentlevelname, hascurrentlevelcolor, currentlevelcolor, currentleveltextcolor
+        * haslevelimage, levelimageurl
+        * earned, hastotalpoints, pointstocomplete
+        * haslearningtime, learningtime
+        * hascourses, courses (coursename, courseurl, courseclass, haspoints, hasgoal, earned, available,
+          iscomplete, hasaddoncontent, addoncontent)
+        * hasreport, reporturl, expanded
+
+    Example context (json):
+    {
+        "uniqid": "abc123",
+        "skills": [
+            {
+                "skillid": 5,
+                "identitykey": "myfirstskill",
+                "name": "My first skill",
+                "hascolor": true,
+                "color": "#22c55e",
+                "hascurrentlevel": true,
+                "currentlevelname": "Level 2",
+                "hascurrentlevelcolor": true,
+                "currentlevelcolor": "#22c55e",
+                "currentleveltextcolor": "#000000",
+                "haslevelimage": true,
+                "levelimageurl": "https://example.com/pluginfile.php/1/tool_skills/levelimage/12/badge.png",
+                "earned": 10,
+                "hastotalpoints": true,
+                "pointstocomplete": 20,
+                "haslearningtime": true,
+                "learningtime": "90 days",
+                "hascourses": true,
+                "courses": [
+                    {
+                        "coursename": "My first 5.2 course",
+                        "courseurl": "https://example.com/course/view.php?id=2",
+                        "courseclass": "toolskill-course-first52",
+                        "haspoints": false,
+                        "hasgoal": false,
+                        "earned": 0,
+                        "available": 0,
+                        "iscomplete": false,
+                        "hasaddoncontent": false,
+                        "addoncontent": ""
+                    },
+                    {
+                        "coursename": "Kick 5.2",
+                        "courseurl": "https://example.com/course/view.php?id=3",
+                        "courseclass": "toolskill-course-kick52",
+                        "haspoints": true,
+                        "hasgoal": true,
+                        "earned": 0,
+                        "available": 33,
+                        "iscomplete": false,
+                        "hasaddoncontent": false,
+                        "addoncontent": ""
+                    }
+                ],
+                "hasreport": true,
+                "reporturl": "https://example.com/admin/tool/skills/manage/usersreport.php?id=5",
+                "expanded": true
+            }
+        ]
+    }
+}}
+<div class="toolskills-profile-skills accordion" id="toolskills-accordion-{{uniqid}}">
+    {{#skills}}
+    <div class="accordion-item toolskill-card skill-{{identitykey}}"{{#hascolor}} style="border-inline-start: 4px solid {{color}};"{{/hascolor}}>
+        <h3 class="accordion-header" id="toolskill-heading-{{uniqid}}-{{skillid}}">
+            <button class="accordion-button{{^expanded}} collapsed{{/expanded}}" type="button"
+                data-bs-toggle="collapse" data-bs-target="#toolskill-collapse-{{uniqid}}-{{skillid}}"
+                aria-expanded="{{#expanded}}true{{/expanded}}{{^expanded}}false{{/expanded}}"
+                aria-controls="toolskill-collapse-{{uniqid}}-{{skillid}}">
+                <span class="toolskill-summary d-flex align-items-start gap-2">
+                    {{#haslevelimage}}
+                    <img class="toolskill-level-img" src="{{levelimageurl}}" alt="{{currentlevelname}}">
+                    {{/haslevelimage}}
+                    <span class="toolskill-info">
+                        <span class="toolskill-name fw-bold">{{{name}}}</span>
+                        <span class="toolskill-meta d-flex align-items-center flex-wrap gap-2 mt-1">
+                            {{#hascurrentlevel}}
+                            <span class="badge rounded-pill toolskill-level-badge"
+                                {{#hascurrentlevelcolor}}style="background-color: {{currentlevelcolor}}; color: {{currentleveltextcolor}};"{{/hascurrentlevelcolor}}>{{{currentlevelname}}}</span>
+                            {{/hascurrentlevel}}
+                            <span class="toolskill-points"
+                                title="{{#str}}earned, tool_skills{{/str}}: {{earned}}{{#hastotalpoints}} / {{pointstocomplete}}{{/hastotalpoints}}">
+                                <span class="toolskill-earned fw-bold fs-5">{{earned}}</span>{{#hastotalpoints}}<span class="toolskill-total text-muted">/{{pointstocomplete}}</span>{{/hastotalpoints}}
+                            </span>
+                        </span>
+                    </span>
+                </span>
+            </button>
+        </h3>
+        <div id="toolskill-collapse-{{uniqid}}-{{skillid}}"
+            class="accordion-collapse collapse{{#expanded}} show{{/expanded}}"
+            aria-labelledby="toolskill-heading-{{uniqid}}-{{skillid}}"
+            data-bs-parent="#toolskills-accordion-{{uniqid}}">
+            <div class="accordion-body toolskill-body">
+                {{#haslearningtime}}
+                <p class="toolskill-learningtime text-muted mb-2">{{#str}}learningtime, tool_skills{{/str}}: {{learningtime}}</p>
+                {{/haslearningtime}}
+                {{#hascourses}}
+                <ul class="toolskill-courses list-unstyled mb-2">
+                    {{#courses}}
+                    <li class="toolskill-course {{courseclass}} d-flex align-items-center justify-content-between gap-2 py-1">
+                        <a href="{{courseurl}}">{{{coursename}}}</a>
+                        {{#haspoints}}
+                        <span class="badge rounded-pill toolskill-chip{{#iscomplete}} toolskill-chip-complete{{/iscomplete}}">{{earned}}{{#hasgoal}} / {{available}}{{/hasgoal}}</span>
+                        {{/haspoints}}
+                    </li>
+                    {{#hasaddoncontent}}
+                    <li class="toolskill-addon">{{{addoncontent}}}</li>
+                    {{/hasaddoncontent}}
+                    {{/courses}}
+                </ul>
+                {{/hascourses}}
+                {{#hasreport}}
+                <a class="toolskill-report" href="{{reporturl}}">{{#str}}usersreport, tool_skills{{/str}}</a>
+                {{/hasreport}}
+            </div>
+        </div>
+    </div>
+    {{/skills}}
+</div>

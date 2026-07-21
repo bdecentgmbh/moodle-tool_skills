@@ -69,9 +69,6 @@ class provider implements
         ];
         $collection->add_database_table('tool_skills_awardlogs', $awardlogsmetadata, 'privacy:metadata:awardlogs');
 
-        // Added moodle subsystems used in tool skills.
-        $collection->add_subsystem_link('core_message', [], 'privacy:metadata:userpointsexplanation');
-
         return $collection;
     }
 
@@ -133,22 +130,18 @@ class provider implements
      * @param approved_userlist $userlist The approved context and user information to delete information for.
      */
     public static function delete_data_for_users(approved_userlist $userlist) {
-        global $DB;
 
         $context = $userlist->get_context();
-        $course = $DB->get_record('course', ['id' => $context->instanceid]);
 
         if (empty($userlist->count())) {
-            return false;
+            return;
         }
 
-        [$userinsql, $userinparams] = $DB->get_in_or_equal($userlist->get_userids(), SQL_PARAMS_NAMED);
-
-        $params = $userinparams;
-        $sql = " userid {$userinsql} ";
-
-        $DB->delete_records_select('tool_skills_awardlogs', $sql, $params);
-        $DB->delete_records_select('tool_skills_userpoints', $sql, $params);
+        // Scope the deletion to the approved course context only, so a user's data in other
+        // courses is left untouched.
+        foreach ($userlist->get_userids() as $userid) {
+            self::delete_user_data_in_context($userid, $context);
+        }
     }
 
     /**
@@ -165,8 +158,54 @@ class provider implements
 
         $userid = $contextlist->get_user()->id;
         foreach ($contextlist->get_contexts() as $context) {
-            $DB->delete_records('tool_skills_awardlogs', ['userid' => $userid]);
-            $DB->delete_records('tool_skills_userpoints', ['userid' => $userid]);
+            // Only remove the user's data within each approved course context.
+            self::delete_user_data_in_context($userid, $context);
+        }
+    }
+
+    /**
+     * Remove a single user's course-skill award data within one course context.
+     *
+     * Award logs for the course's skill instances are deleted, this course's contribution is
+     * subtracted from the user's cumulative per-skill points, and a userpoints row is removed
+     * once it no longer has any supporting award log for the user.
+     *
+     * @param int $userid The user whose data should be removed.
+     * @param \context $context The course context to scope the deletion to.
+     */
+    protected static function delete_user_data_in_context(int $userid, \context $context) {
+        global $DB;
+
+        if ($context->contextlevel != CONTEXT_COURSE) {
+            return;
+        }
+
+        $skillcourses = $DB->get_records('tool_skills_courses', ['courseid' => $context->instanceid]);
+        $affectedskills = [];
+        foreach ($skillcourses as $skillcourse) {
+            $logs = $DB->get_records(
+                'tool_skills_awardlogs',
+                ['methodid' => $skillcourse->id, 'method' => 'course', 'userid' => $userid]
+            );
+            foreach ($logs as $log) {
+                $affectedskills[$log->skill] = $log->skill;
+                // Remove this course's contribution from the user's cumulative skill points.
+                $points = $DB->get_record('tool_skills_userpoints', ['skill' => $log->skill, 'userid' => $userid]);
+                if ($points) {
+                    $DB->set_field('tool_skills_userpoints', 'points', $points->points - $log->points, ['id' => $points->id]);
+                }
+            }
+            $DB->delete_records(
+                'tool_skills_awardlogs',
+                ['methodid' => $skillcourse->id, 'method' => 'course', 'userid' => $userid]
+            );
+        }
+
+        // Drop userpoints rows that no longer have any supporting award log for this user.
+        foreach ($affectedskills as $skillid) {
+            if (!$DB->record_exists('tool_skills_awardlogs', ['skill' => $skillid, 'userid' => $userid])) {
+                $DB->delete_records('tool_skills_userpoints', ['skill' => $skillid, 'userid' => $userid]);
+            }
         }
     }
 
@@ -187,16 +226,28 @@ class provider implements
             return;
         }
 
-        $courses = $DB->get_records('tool_skills_courses', ['courseid' => $course->id]);
-        foreach ($courses as $skillcourse) {
-            $log = $DB->get_record('tool_skills_awardlogs', ['methodid' => $skillcourse->id, 'method' => 'course']);
-            $points = $DB->get_record('tool_skills_userpoints', ['skill' => $log->skill, 'userid' => $log->userid]);
+        $skillcourses = $DB->get_records('tool_skills_courses', ['courseid' => $course->id]);
+        $affected = [];
+        foreach ($skillcourses as $skillcourse) {
+            // Every award log recorded for this course skill instance (one per completing user).
+            $logs = $DB->get_records('tool_skills_awardlogs', ['methodid' => $skillcourse->id, 'method' => 'course']);
+            foreach ($logs as $log) {
+                $affected[$log->skill . ':' . $log->userid] = ['skill' => $log->skill, 'userid' => $log->userid];
+                // Remove this course's contribution from the user's cumulative skill points.
+                $points = $DB->get_record('tool_skills_userpoints', ['skill' => $log->skill, 'userid' => $log->userid]);
+                if ($points) {
+                    $DB->set_field('tool_skills_userpoints', 'points', $points->points - $log->points, ['id' => $points->id]);
+                }
+            }
+            // Delete the award logs for this course skill instance (using the correct methodid).
+            $DB->delete_records('tool_skills_awardlogs', ['methodid' => $skillcourse->id, 'method' => 'course']);
+        }
 
-            // Find and remove the points awarded for this user from this course.
-            $point = $points->points - $log->points;
-            $DB->set_field('tool_skills_userpoints', 'points', $point, ['id' => $points->id]);
-
-            (new \tool_skills\logs())->delete_method_log($course->id, 'course'); // Remove the log.
+        // Drop userpoints rows that no longer have any supporting award log.
+        foreach ($affected as $key) {
+            if (!$DB->record_exists('tool_skills_awardlogs', ['skill' => $key['skill'], 'userid' => $key['userid']])) {
+                $DB->delete_records('tool_skills_userpoints', ['skill' => $key['skill'], 'userid' => $key['userid']]);
+            }
         }
     }
 

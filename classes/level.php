@@ -78,7 +78,7 @@ class level extends skills {
         // Set the skill id for this instance.
         $this->levelid = $levelid;
         // Generate the skill record.
-        $this->levelrecord = $this->fetch_record();
+        $this->levelrecord = $this->fetch_record() ?? new stdClass();
 
         $this->data = $this->levelrecord;
 
@@ -132,15 +132,6 @@ class level extends skills {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Duplicate the skill and its levels.
-     *
-     * @return bool
-     */
-    public function duplicate() {
-        return true;
     }
 
     /**
@@ -205,6 +196,19 @@ class level extends skills {
                 $level->timecreated = time();
                 // Insert the record of the new skill.
                 $levelid = $DB->insert_record('tool_skills_levels', $level);
+            }
+
+            // Save the level image. Must happen after the insert so new levels are keyed by their
+            // real id; the draft item id is carried on the submitted level data as the "image" field.
+            if (isset($level->image)) {
+                file_save_draft_area_files(
+                    $level->image,
+                    context_system::instance()->id,
+                    'tool_skills',
+                    'levelimage',
+                    $levelid,
+                    \tool_skills\form\skills_form::level_image_options()
+                );
             }
 
             $levelslist[] = $levelid;

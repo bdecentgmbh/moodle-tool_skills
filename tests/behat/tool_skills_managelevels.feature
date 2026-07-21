@@ -62,12 +62,12 @@ Feature: Allocate points to users, need to manage levels and assign skills to co
     And I log out
     And I am on the "Course 1" course page logged in as student1
     And I am on the "student1" "user > profile" page
-    And I should see "Earned: 0"
+    And I should see "0" in the ".toolskill-earned" "css_element"
     And I am on "Course 1" course homepage
     And I press "Mark as done"
     And I wait until "Done" "button" exists
     And I am on the "student1" "user > profile" page
-    Then I should see "Earned: 200"
+    Then I should see "200" in the ".toolskill-earned" "css_element"
 
   @javascript
   Scenario: Set the user points to reach level
@@ -82,12 +82,12 @@ Feature: Allocate points to users, need to manage levels and assign skills to co
     And I log out
     And I am on the "Course 1" course page logged in as student1
     And I am on the "student1" "user > profile" page
-    And I should see "Earned: 0"
+    And I should see "0" in the ".toolskill-earned" "css_element"
     And I am on "Course 1" course homepage
     And I press "Mark as done"
     And I wait until "Done" "button" exists
     And I am on the "student1" "user > profile" page
-    Then I should see "Earned: 20"
+    Then I should see "20" in the ".toolskill-earned" "css_element"
     When I log in as "admin"
     And I navigate to "Course 2" course skills
     And I click on ".skill-course-actions .action-edit" "css_element"
@@ -100,7 +100,7 @@ Feature: Allocate points to users, need to manage levels and assign skills to co
     And I press "Mark as done"
     And I wait until "Done" "button" exists
     And I am on the "student1" "user > profile" page
-    Then I should see "Earned: 20"
+    Then I should see "20" in the ".toolskill-earned" "css_element"
 
   @javascript
   Scenario: Force the user points to the level
@@ -117,7 +117,7 @@ Feature: Allocate points to users, need to manage levels and assign skills to co
     And I press "Mark as done"
     And I wait until "Done" "button" exists
     And I am on the "student1" "user > profile" page
-    Then I should see "Earned: 30"
+    Then I should see "30" in the ".toolskill-earned" "css_element"
     When I log in as "admin"
     And I navigate to "Course 2" course skills
     And I click on ".skill-course-actions .action-edit" "css_element"
@@ -134,7 +134,7 @@ Feature: Allocate points to users, need to manage levels and assign skills to co
     And I press "Mark as done"
     And I wait until "Done" "button" exists
     And I am on the "student1" "user > profile" page
-    Then I should see "Earned: 20" in the ".skills-points-C2" "css_element"
+    Then I should see "20" in the ".toolskill-course-C2" "css_element"
 
   @javascript
   Scenario: Set the negative points to the level
@@ -151,7 +151,7 @@ Feature: Allocate points to users, need to manage levels and assign skills to co
     And I press "Mark as done"
     And I wait until "Done" "button" exists
     And I am on the "student1" "user > profile" page
-    Then I should see "Earned: 30"
+    Then I should see "30" in the ".toolskill-earned" "css_element"
     When I log in as "admin"
     And I navigate to "Course 2" course skills
     And I click on ".skill-course-actions .action-edit" "css_element"
@@ -168,5 +168,5 @@ Feature: Allocate points to users, need to manage levels and assign skills to co
     And I press "Mark as done"
     And I wait until "Done" "button" exists
     And I am on the "student1" "user > profile" page
-    Then I should see "Earned: -50" in the ".skills-points-C2" "css_element"
-    And I should see "Earned: -20" in the ".skill-beginner" "css_element"
+    Then I should see "-50" in the ".toolskill-course-C2" "css_element"
+    And I should see "-20" in the ".skill-beginner" "css_element"

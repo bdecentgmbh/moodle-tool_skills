@@ -140,11 +140,22 @@ class courseskills extends \tool_skills\allocation_method {
     public function remove_instance_skills() {
         global $DB;
 
+        // Capture the course skill instance ids before deleting them, so their award logs can be
+        // cleared by the correct methodid (the tool_skills_courses id, not the course id).
+        $skillcourseids = $DB->get_fieldset_select(
+            'tool_skills_courses',
+            'id',
+            'courseid = :courseid',
+            ['courseid' => $this->courseid]
+        );
+
         $DB->delete_records('tool_skills_courses', ['courseid' => $this->courseid]);
 
         \tool_skills\helper::extend_addons_remove_course_instance($this->courseid);
 
-        $this->get_logs()->delete_method_log($this->courseid, 'course');
+        foreach ($skillcourseids as $skillcourseid) {
+            $this->get_logs()->delete_method_log($skillcourseid, 'course');
+        }
     }
 
     /**
@@ -361,7 +372,7 @@ class courseskills extends \tool_skills\allocation_method {
      * @return void
      */
     public function manage_users_completion(int $skillid, bool $status) {
-        global $CFG;
+        global $CFG, $DB;
 
         require_once($CFG->dirroot . '/lib/enrollib.php');
         $context = \context_course::instance($this->courseid);
@@ -377,11 +388,55 @@ class courseskills extends \tool_skills\allocation_method {
             $status = 0;
         }
 
-        // Enrolled users.
-        $enrolledusers = get_enrolled_users($context);
-        foreach ($enrolledusers as $user) {
+        // Only users who have completed the course can gain or lose skill points, so process just the
+        // enrolled users that have a course-completion record instead of fanning out over every
+        // enrolment. A recordset keeps memory bounded on large courses.
+        [$esql, $eparams] = get_enrolled_sql($context);
+        $sql = "SELECT u.id
+                  FROM {user} u
+                  JOIN ($esql) je ON je.id = u.id
+                  JOIN {course_completions} cc ON cc.userid = u.id
+                       AND cc.course = :completioncourse AND cc.timecompleted IS NOT NULL";
+        $rs = $DB->get_recordset_sql($sql, $eparams + ['completioncourse' => $this->courseid]);
+        foreach ($rs as $user) {
             $this->manage_course_completions($user->id, $skills, $status);
         }
+        $rs->close();
+    }
+
+    /**
+     * Whether a skill may be assigned to a course: it must be active, not archived, and either
+     * global or available to the course's category (mirrors course_skills_table::query_db).
+     *
+     * @param int $skillid
+     * @param int $courseid
+     * @return bool
+     */
+    public static function is_skill_available_for_course(int $skillid, int $courseid): bool {
+        global $DB;
+
+        $skill = $DB->get_record('tool_skills', ['id' => $skillid]);
+        if (!$skill || $skill->archived == 1 || $skill->status == 0) {
+            return false;
+        }
+        $categories = $skill->categories ? json_decode($skill->categories) : [];
+        if (empty($categories)) {
+            return true;
+        }
+        return in_array(get_course($courseid)->category, $categories);
+    }
+
+    /**
+     * Whether the given level belongs to the given skill.
+     *
+     * @param int $levelid
+     * @param int $skillid
+     * @return bool
+     */
+    public static function level_belongs_to_skill(int $levelid, int $skillid): bool {
+        global $DB;
+
+        return $DB->record_exists('tool_skills_levels', ['id' => $levelid, 'skill' => $skillid]);
     }
 
     /**

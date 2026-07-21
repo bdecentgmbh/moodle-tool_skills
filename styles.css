@@ -79,13 +79,59 @@ body.behat-site .toolskills-status-switch input.custom-control-input {
     padding-top: 40px;
 }
 
-#page-user-profile li.contentnode.toolskill-courses-points {
-    padding-top: 20px;
-}
 body.module-skills .activity-header {
     display: none;
 }
-/* Profile page user completion result. */
-#page-user-profile li.contentnode.toolskill-courses-points span.course-completion-result {
+
+/* Profile "Skills earned" accordion. */
+.toolskills-profile-skills.accordion {
+    --bs-accordion-btn-padding-y: 0.75rem;
+    /* Pin the active-header appearance so it renders the same across Moodle/Bootstrap versions. */
+    --bs-accordion-active-bg: transparent;
+    --bs-accordion-active-color: inherit;
+    --bs-accordion-btn-focus-box-shadow: none;
+}
+.toolskills-profile-skills .toolskill-card {
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    overflow: hidden;
+}
+.toolskills-profile-skills .accordion-button {
+    /* Space between the summary column and the collapse arrow so long names never touch it. */
+    column-gap: 0.75rem;
+}
+.toolskills-profile-skills .toolskill-summary {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.toolskills-profile-skills .toolskill-info {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.toolskills-profile-skills .toolskill-name {
+    display: block;
+    overflow-wrap: anywhere;
+}
+.toolskills-profile-skills .toolskill-level-img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex: 0 0 auto;
+}
+.toolskills-profile-skills .toolskill-chip,
+.toolskills-profile-skills .toolskill-level-badge {
     font-weight: 600;
+}
+.toolskills-profile-skills .toolskill-chip {
+    background-color: var(--bs-secondary-bg, #e9ecef);
+    color: var(--bs-secondary-color, #495057);
+}
+.toolskills-profile-skills .toolskill-chip-complete {
+    background-color: var(--bs-success-bg-subtle, #d1e7dd);
+    color: var(--bs-success-text-emphasis, #0f5132);
+}
+.toolskills-profile-skills .toolskill-courses .toolskill-course + .toolskill-course {
+    border-top: 1px solid var(--bs-border-color-translucent, rgba(0, 0, 0, 0.075));
 }

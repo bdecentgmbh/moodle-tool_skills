@@ -166,8 +166,9 @@ class course_skills_table extends \table_sql {
     public function col_actions(stdClass $row): string {
         global $OUTPUT, $CFG;
 
-        // Base url to edit the skills.
-        $baseurl = new \moodle_url('/admin/tool/skills/manage/editcourse.php', [
+        // Base url to edit the skills. Editing normally happens in the JS modal (see data-target below);
+        // this is the no-JS fallback, pointed at an existing page so it degrades to the list instead of a 404.
+        $baseurl = new \moodle_url('/admin/tool/skills/manage/courselist.php', [
             'skill' => $row->id,
             'courseid' => $row->courseid ?: $this->courseid,
             'sesskey' => \sesskey(),

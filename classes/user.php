@@ -223,6 +223,10 @@ class user {
      */
     public function get_user_percentage(int $skillid, $points) {
         $skillpoint = skills::get($skillid)->get_points_to_earnskill();
+        if ($skillpoint <= 0) {
+            // A skill with no levels has no points target, so there is no percentage to compute.
+            return '0%';
+        }
         $percentage = ($points / $skillpoint) * 100;
         return ((int) $percentage) . '%';
     }

@@ -33,10 +33,19 @@ if ($hassiteconfig) {
     // Include the external page setting to manage skills.
     $automation = new admin_externalpage(
         'manageskills',
-        get_string('skills', 'tool_skills', null, true),
+        get_string('manageskills', 'tool_skills'),
         new moodle_url('/admin/tool/skills/manage/list.php'),
         'tool/skills:manage'
     );
 
-    $ADMIN->add('tools', $automation);
+    $ADMIN->add('skills', $automation);
+
+    // Load admin settings for all installed skilladdon subplugins.
+    // Moodle does not iterate subplugin types in admin/settings/plugins.php,
+    // so the parent plugin must trigger this manually.
+    $skilladdonplugins = core_plugin_manager::instance()->get_plugins_of_type('skilladdon');
+    foreach ($skilladdonplugins as $skilladdonplugin) {
+        /** @var \tool_skills\plugininfo\skilladdon $skilladdonplugin */
+        $skilladdonplugin->load_settings($ADMIN, 'skills', $hassiteconfig);
+    }
 }

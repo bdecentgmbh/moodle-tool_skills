@@ -127,7 +127,7 @@ class skills {
         // Set the skill id for this instance.
         $this->skillid = $skillid;
         // Generate the skill record.
-        $this->skillrecord = $this->fetch_skill_record();
+        $this->skillrecord = $this->fetch_skill_record() ?? new stdClass();
 
         $this->data = $this->update_data_structure();
 
@@ -198,7 +198,11 @@ class skills {
         // Decode the categories.
         $data->categories = $data->categories ? json_decode($data->categories) : [];
 
-        $data->levels = array_values(array_map(fn($r) => (array) $r, $this->get_levels()));
+        // Re-key the levels from 1 to match the 1-indexed level fields rendered by the form
+        // (levels[1], levels[2], ...). Using array_values() here (0-indexed) shifts every level
+        // by one on edit, dropping the first level and orphaning its files.
+        $levels = array_values(array_map(fn($r) => (array) $r, $this->get_levels()));
+        $data->levels = $levels ? array_combine(range(1, count($levels)), $levels) : [];
 
         $levelscount = count($data->levels);
         $data->levelsrecordscount = $levelscount;
@@ -281,15 +285,6 @@ class skills {
         global $DB;
 
         $DB->update_record('tool_skills', ['id' => $this->skillid, 'archived' => 0, 'timearchived' => null]);
-    }
-
-    /**
-     * Duplicate the skill and its levels.
-     *
-     * @return bool
-     */
-    public function duplicate() {
-        return true;
     }
 
     /**

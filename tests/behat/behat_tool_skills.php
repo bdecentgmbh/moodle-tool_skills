@@ -43,7 +43,7 @@ class behat_tool_skills extends behat_base {
     public function i_navigate_to_skills() {
         $this->execute(
             'behat_navigation::i_navigate_to_in_site_administration',
-            ["Plugins > Admin tools > Skills"]
+            ["Plugins > Admin tools > Skills > Manage skills"]
         );
     }
 
@@ -70,7 +70,7 @@ class behat_tool_skills extends behat_base {
 
         $this->execute(
             'behat_navigation::i_navigate_to_in_site_administration',
-            ["Plugins > Admin tools > Skills"]
+            ["Plugins > Admin tools > Skills > Manage skills"]
         );
         $this->execute("behat_general::i_click_on", ["Create skill", "button"]);
         $this->execute('behat_forms::i_set_the_following_fields_to_these_values', [$data]);

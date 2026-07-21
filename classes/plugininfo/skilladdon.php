@@ -54,6 +54,30 @@ class skilladdon extends \core\plugininfo\base {
     }
 
     /**
+     * Load the subplugin's settings.php into the admin tree.
+     *
+     * The base class implementation is a no-op, so we must provide our own
+     * to allow each skilladdon subplugin to register admin pages.
+     *
+     * @param \part_of_admin_tree $adminroot
+     * @param string $parentnodename
+     * @param bool $hassiteconfig
+     */
+    public function load_settings(\part_of_admin_tree $adminroot, $parentnodename, $hassiteconfig) {
+        global $CFG, $USER, $DB, $OUTPUT, $PAGE; // In case settings.php wants to refer to them.
+        $ADMIN = $adminroot; // May be used in settings.php.
+        $plugininfo = $this; // Also can be used inside settings.php.
+
+        if (!$this->is_installed_and_upgraded()) {
+            return;
+        }
+
+        if (file_exists($this->full_path('settings.php'))) {
+            include($this->full_path('settings.php'));
+        }
+    }
+
+    /**
      * Get the list of action plugins with its base class.
      *
      * @param string $method
