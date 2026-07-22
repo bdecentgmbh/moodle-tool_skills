@@ -536,35 +536,35 @@ class skills {
         $record = clone $formdata;
         $record->categories = json_encode($record->categories);
 
+        $isupdate = isset($formdata->id) && $formdata->id != '' && $DB->record_exists('tool_skills', ['id' => $formdata->id]);
+
+        // Reject a duplicate identity key before opening the transaction, so we never redirect while a
+        // delegated transaction is still open (which would raise a rollback debugging notice).
+        if ($isupdate) {
+            $duplicate = $DB->record_exists_sql(
+                'SELECT * FROM {tool_skills} WHERE identitykey = :identitykey AND id <> :skillid',
+                ['skillid' => $formdata->id, 'identitykey' => $record->identitykey]
+            );
+        } else {
+            $duplicate = $DB->record_exists('tool_skills', ['identitykey' => $record->identitykey]);
+        }
+        if ($duplicate) {
+            redirect($PAGE->url, get_string('error:identityexists', 'tool_skills'));
+        }
+
         // Start the database transaction.
         $transaction = $DB->start_delegated_transaction();
 
-        if (isset($formdata->id) && $formdata->id != '' && $DB->record_exists('tool_skills', ['id' => $formdata->id])) {
+        if ($isupdate) {
             // ID of the modified skill.
             $skillid = $formdata->id;
-            // Verify the identity key is exists.
-            $identitysql = 'SELECT * FROM {tool_skills} WHERE identitykey =:identitykey AND id <> :skillid';
-
-            // Record exists then stop inserting and redirect with error message.
-            if ($DB->record_exists_sql($identitysql, ['skillid' => $skillid, 'identitykey' => $record->identitykey])) {
-                // Redirect to the current page with error message.
-                redirect($PAGE->url, get_string('error:identityexists', 'tool_skills'));
-            }
             // Time modified the skill.
             $record->timemodified = time();
-
             // Update the skill record.
             $DB->update_record('tool_skills', $record);
         } else {
             // New record add the created time.
             $record->timecreated = time();
-
-            // Record exists then stop inserting and redirect with error message.
-            if ($DB->record_exists('tool_skills', ['identitykey' => $record->identitykey])) {
-                // Redirect to the current page with error message.
-                redirect($PAGE->url, get_string('error:identityexists', 'tool_skills'));
-            }
-
             // Insert the record of the new skill.
             $skillid = $DB->insert_record('tool_skills', $record);
         }

@@ -6,7 +6,7 @@ Moodle admin tool plugin to manage skills
 
 # Requirements
 
-This plugin requires Moodle 4.x
+This plugin requires Moodle 4.5 or later and is supported on Moodle 4.5 up to 5.2.
 
 # Motivation for this plugin
 

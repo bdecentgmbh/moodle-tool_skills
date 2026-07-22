@@ -86,5 +86,30 @@ function xmldb_tool_skills_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026061500, 'tool', 'skills');
     }
 
+    if ($oldversion < 2026072101) {
+        // Add indexes on the award-log lookup columns (queried on every completion) and on levels.skill.
+        $table = new xmldb_table('tool_skills_awardlogs');
+        $index = new xmldb_index(
+            'skill-userid-method-methodid',
+            XMLDB_INDEX_NOTUNIQUE,
+            ['skill', 'userid', 'method', 'methodid']
+        );
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        $index = new xmldb_index('methodid-method', XMLDB_INDEX_NOTUNIQUE, ['methodid', 'method']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        $table = new xmldb_table('tool_skills_levels');
+        $index = new xmldb_index('skill', XMLDB_INDEX_NOTUNIQUE, ['skill']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        upgrade_plugin_savepoint(true, 2026072101, 'tool', 'skills');
+    }
+
     return true;
 }

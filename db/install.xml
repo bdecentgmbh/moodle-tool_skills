@@ -39,6 +39,9 @@
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="skill" UNIQUE="false" FIELDS="skill"/>
+      </INDEXES>
     </TABLE>
     <TABLE NAME="tool_skills_courses" COMMENT="Table to maintain the applied skills for courses.">
       <FIELDS>
@@ -83,6 +86,10 @@
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="skill-userid-method-methodid" UNIQUE="false" FIELDS="skill, userid, method, methodid"/>
+        <INDEX NAME="methodid-method" UNIQUE="false" FIELDS="methodid, method"/>
+      </INDEXES>
     </TABLE>
   </TABLES>
 </XMLDB>
