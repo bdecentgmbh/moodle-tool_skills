@@ -35,6 +35,16 @@ Full documentation is in the [`docs/`](docs/README.md) folder:
 
 This plugin is developed and tested on Moodle Core's Boost theme. It should also work with Boost child themes, including Moodle Core's Classic theme. However, we can't support any other theme than Boost.
 
+# Skill addons
+
+Optional, commercially licensed addons extend Skills with activity-based points (activityskills), Report Builder datasources (reports), Dash widgets (levelvisuals, progress) and skill decay (decay). They are sub-plugins of type `skilladdon` installed under `admin/tool/skills/addon/<name>`.
+
+Their source lives in private repositories and is referenced from this repository as git submodules in `.gitmodules`; only the submodule commit is recorded here, never the addon code. Consequences:
+
+- Customers with addon access install the *Skills bundle* zip, which contains this plugin with the addons in place.
+- The Moodle plugins directory zip and the GitHub release zip of this repository contain the core plugin only.
+- Developers with repository access clone with `git clone --recurse-submodules`. A plain clone leaves empty directories under `addon/`, which Moodle reports as plugins with a missing `version.php`; run `git submodule update --init` or remove the empty directories.
+
 # Plugin repositories
 
 This plugin will be published and regularly updated in the Moodle plugins repository: https://moodle.org/plugins/tool_skills
