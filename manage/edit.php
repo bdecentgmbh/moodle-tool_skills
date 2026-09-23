@@ -68,7 +68,7 @@ $form = new \tool_skills\form\skills_form(null, ['id' => $id]);
 // If the form was submitted.
 if ($data = $form->get_data()) {
     // Handle form results.
-    $menuid = \tool_skills\skills::manage_instance($data);
+    $skillid = \tool_skills\skills::manage_instance($data);
 
     // Redirect to skills list.
     redirect($listurl);

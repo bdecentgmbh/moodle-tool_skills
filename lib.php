@@ -43,7 +43,7 @@ function tool_skills_extend_navigation_course(navigation_node $navigation, stdCl
         $url = new moodle_url('/admin/tool/skills/manage/courselist.php', [
             'courseid' => $id,
         ]);
-        $node = $navigation->create(get_string('manageskills', 'tool_skills'), $url, navigation_node::TYPE_SETTING, null, null);
+        $node = $navigation->create(get_string('skills', 'tool_skills'), $url, navigation_node::TYPE_SETTING, null, null);
         $node->add_class('manage-tool-skills');
         $node->set_force_into_more_menu(false);
         $node->set_show_in_secondary_navigation(true);
@@ -58,7 +58,7 @@ function tool_skills_extend_navigation_course(navigation_node $navigation, stdCl
 }
 
 /**
- * Defines learningtools nodes for my profile navigation tree.
+ * Adds the "Skills" category with the "Skills earned" panel to the user profile navigation tree.
  *
  * @param \core_user\output\myprofile\tree $tree Tree object
  * @param stdClass $user user object
@@ -70,7 +70,7 @@ function tool_skills_extend_navigation_course(navigation_node $navigation, stdCl
 function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $course) {
     global $USER, $OUTPUT;
 
-    // Get the learningtools category.
+    // Get or create the Skills profile category.
     if (!array_key_exists('toolskills', $tree->__get('categories'))) {
         // Create the category.
         $categoryname = get_string('skillprofilecategory', 'tool_skills');
