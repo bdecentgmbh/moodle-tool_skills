@@ -25,7 +25,7 @@
     validated to a #rgb/#rrggbb hex on input, so it is safe to interpolate them into the inline styles.
 
     Classes required for JS:
-    * none (uses Bootstrap 5 collapse via data-bs-* attributes)
+    * none (Bootstrap collapse; both data-bs-* (Moodle 5.x) and data-* (Moodle 4.5) attributes are set)
 
     Context variables required for this template:
     * uniqid - Unique string to namespace the accordion element ids.
@@ -101,6 +101,7 @@
         <h3 class="accordion-header" id="toolskill-heading-{{uniqid}}-{{skillid}}">
             <button class="accordion-button{{^expanded}} collapsed{{/expanded}}" type="button"
                 data-bs-toggle="collapse" data-bs-target="#toolskill-collapse-{{uniqid}}-{{skillid}}"
+                data-toggle="collapse" data-target="#toolskill-collapse-{{uniqid}}-{{skillid}}"
                 aria-expanded="{{#expanded}}true{{/expanded}}{{^expanded}}false{{/expanded}}"
                 aria-controls="toolskill-collapse-{{uniqid}}-{{skillid}}">
                 <span class="toolskill-summary d-flex align-items-start gap-2">
@@ -126,7 +127,7 @@
         <div id="toolskill-collapse-{{uniqid}}-{{skillid}}"
             class="accordion-collapse collapse{{#expanded}} show{{/expanded}}"
             aria-labelledby="toolskill-heading-{{uniqid}}-{{skillid}}"
-            data-bs-parent="#toolskills-accordion-{{uniqid}}">
+            data-bs-parent="#toolskills-accordion-{{uniqid}}" data-parent="#toolskills-accordion-{{uniqid}}">
             <div class="accordion-body toolskill-body">
                 {{#haslearningtime}}
                 <p class="toolskill-learningtime text-muted mb-2">{{#str}}learningtime, tool_skills{{/str}}: {{learningtime}}</p>
