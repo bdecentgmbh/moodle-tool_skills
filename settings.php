@@ -31,14 +31,14 @@ if ($hassiteconfig) {
     $settings = null; // Reset the settings.
 
     // Include the external page setting to manage skills.
-    $automation = new admin_externalpage(
+    $managepage = new admin_externalpage(
         'manageskills',
         get_string('manageskills', 'tool_skills'),
         new moodle_url('/admin/tool/skills/manage/list.php'),
         'tool/skills:manage'
     );
 
-    $ADMIN->add('skills', $automation);
+    $ADMIN->add('skills', $managepage);
 
     // Load admin settings for all installed skilladdon subplugins.
     // Moodle does not iterate subplugin types in admin/settings/plugins.php,

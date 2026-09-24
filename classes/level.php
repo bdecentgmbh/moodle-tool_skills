@@ -165,7 +165,7 @@ class level extends skills {
     public static function manage_level_instance(\tool_skills\skills $skill, array $levels) {
         global $DB, $PAGE;
 
-        // Verfiy the current user has capability to manage skills.
+        // Verify the current user has the capability to manage skills.
         require_capability('tool/skills:manage', context_system::instance());
 
         // No levels to update.

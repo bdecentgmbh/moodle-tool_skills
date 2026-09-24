@@ -55,8 +55,7 @@ class behat_tool_skills extends behat_base {
      */
     public function i_navigate_to_course_skills($coursename) {
         $this->execute('behat_navigation::i_am_on_course_homepage', [$coursename]);
-        $this->execute('behat_general::i_click_on_in_the', ["More", "link", '.secondary-navigation', "css_element"]);
-        $this->execute('behat_general::i_click_on', ["Manage skills", "link"]);
+        $this->execute('behat_navigation::i_navigate_to_in_current_page_administration', ["Skills"]);
     }
 
     /**
