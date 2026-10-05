@@ -1,0 +1,15 @@
+[submodule "addon/activityskills"]
+	path = addon/activityskills
+	url = git@github.com:bdecentgmbh/moodle-skilladdon_activityskills.git
+[submodule "addon/reports"]
+	path = addon/reports
+	url = git@github.com:bdecentgmbh/moodle-skilladdon_reports.git
+[submodule "addon/levelvisuals"]
+	path = addon/levelvisuals
+	url = git@github.com:bdecentgmbh/moodle-skilladdon_levelvisuals.git
+[submodule "addon/progress"]
+	path = addon/progress
+	url = git@github.com:bdecentgmbh/moodle-skilladdon_progress.git
+[submodule "addon/decay"]
+	path = addon/decay
+	url = git@github.com:bdecentgmbh/moodle-skilladdon_decay.git

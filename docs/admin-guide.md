@@ -1,4 +1,4 @@
-# Administrator guide
+# Skills — Administrator guide
 
 This guide covers installing Skills and managing skills, levels and categories site-wide. It applies
 to **administrators** and to anyone with the **`tool/skills:manage`** capability (granted to the
@@ -15,6 +15,7 @@ to **administrators** and to anyone with the **`tool/skills:manage`** capability
 - [Managing existing skills](#managing-existing-skills)
 - [Availability and course categories](#availability-and-course-categories)
 - [Privacy](#privacy)
+- [Addons](#addons)
 
 ## Installation
 
@@ -40,7 +41,8 @@ Install Skills like any other Moodle plugin, either through the plugin installer
 
 After installation, manage skills under **Site administration > Plugins > Admin tools > Skills**
 (the page is titled **Manage skills**). This is where you create skills, add their levels, and set
-their availability.
+their availability. Teachers reach the course-level configuration through **Skills** in a course's
+secondary navigation (see the [Teacher guide](teacher-guide.md)).
 
 The **Manage skills** page has two tabs:
 
@@ -114,3 +116,20 @@ enabled on a course, so a skill can never be attached to a course outside its al
 Skills implements the Moodle Privacy API. It stores, per user, the points earned for each skill and a
 log of how those points were awarded (which course or activity). These records are exported and
 deleted through Moodle's standard data-request tooling, scoped to the relevant course context.
+
+## Addons
+
+Skill addons extend the plugin and are installed under `admin/tool/skills/addon/<name>`. Their
+settings pages appear next to **Manage skills** under **Site administration > Plugins > Admin tools >
+Skills**, and each addon ships its own guides in its `docs/` folder:
+
+- **Activity skills** — award points, levels or grade-based points when an activity is completed.
+- **Reports** — a *Skills* datasource for Report builder.
+- **Level visuals** and **Progress** — Dash widgets for learners' dashboards.
+- **Decay** — rules that reduce points over time, with a planned queue, manual decay and an audit log.
+
+When upgrading from Skills Pro 1.1, the addons that were bundled in the Pro package are now separate
+plugins in the same folder. Replacing the whole `admin/tool/skills` folder with the Skills bundle and
+running the upgrade migrates everything; two addons were renamed (`skill_levelvisuals` to
+`levelvisuals`, `skillprogress` to `progress`) and their settings and Dash blocks are carried over
+automatically.

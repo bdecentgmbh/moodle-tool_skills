@@ -50,5 +50,12 @@ Thumbs.db
 
 phpunit.xml
 
-# tool_skills addon subplugins are distributed separately; never track them in the free repo.
+# Skill addons live in private repositories and are wired in as git submodules (see .gitmodules).
+# Git only records the submodule commit here, never the addon code. Any other directory under
+# addon/ is ignored so addon code can never be committed to this repository by accident.
 /addon/*/
+!/addon/activityskills/
+!/addon/reports/
+!/addon/levelvisuals/
+!/addon/progress/
+!/addon/decay/

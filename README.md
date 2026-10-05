@@ -2,15 +2,18 @@
 
 # Skills
 
-Moodle admin tool plugin to manage skills
+Moodle admin tool plugin to define skills, award points for them through course and activity
+completion, and show learners the skills they have earned.
 
 # Requirements
 
-This plugin requires Moodle 4.5 or later and is supported on Moodle 4.5 up to 5.2.
+This plugin requires Moodle 4.5 or later and is supported on Moodle 4.5 up to 5.3.
 
 # Motivation for this plugin
 
-We believe that Moodle's competency system is too complex for many organisations. At the same time, just using course completions and badges is often not enough. With this plugin, organisations have a simple tool at their disposal to can manage skills across their moodle site.
+We believe that Moodle's competency system is too complex for many organisations. At the same time,
+just using course completions and badges is often not enough. With this plugin, organisations have a
+simple tool at their disposal to manage skills across their Moodle site.
 
 # Installation
 
@@ -19,42 +22,95 @@ See http://docs.moodle.org/en/Installing_plugins for details on installing Moodl
 
 # Quick start guide
 
-Admins or users with the capability tool/skills:manage (by default given to managers) need to create skills under Site Administration > Plugins > Tools > Skills and make them available either globally or for specific course categories.
+Admins or users with the capability tool/skills:manage (by default given to managers) create skills
+under Site administration > Plugins > Admin tools > Skills > Manage skills and make them available
+either globally or for specific course categories.
 
-Teachers (or users with the capability tool/skills:managecourseskillslist) can then manage skills in their course from the "Manage skills" page which is found in the secondary navigation of the course. From there, teachers can then enable specific skills and configure how many points students earn upon completion of the course.
+Teachers (or users with the capability tool/skills:managecourseskillslist) then open **Skills** in the
+secondary navigation of their course. From there they enable specific skills and configure how many
+points students earn upon completion of the course.
+
+Learners see the skills they have earned, their current level and the contributing courses under
+**Skills earned** on their profile.
 
 # Documentation
 
-Full documentation is in the [`docs/`](docs/README.md) folder:
+Full documentation is in the [`docs/`](docs/README.md) folder and is also readable inside Moodle with
+the Documentation Center (tool_mdocs):
 
-- [Administrator guide](docs/admin-guide.md) — install the plugin and create/manage skills, levels and categories site-wide.
-- [Teacher guide](docs/teacher-guide.md) — enable skills in a course and configure what course completion awards.
-- [Manager guide](docs/manager-guide.md) — manage skills site-wide, assign them in courses, and view users' points reports.
+- [Administrator guide](docs/admin-guide.md) — install the plugin and create/manage skills, levels and
+  categories site-wide.
+- [Teacher guide](docs/teacher-guide.md) — enable skills in a course and configure what course
+  completion awards.
+- [Manager guide](docs/manager-guide.md) — manage skills site-wide, assign them in courses, and view
+  users' points reports.
+
+Changes between releases are listed in [CHANGES.md](CHANGES.md).
 
 # Theme support
 
-This plugin is developed and tested on Moodle Core's Boost theme. It should also work with Boost child themes, including Moodle Core's Classic theme. However, we can't support any other theme than Boost.
+This plugin is developed and tested on Moodle Core's Boost theme. It should also work with Boost child
+themes, including Moodle Core's Classic theme. However, we can't support any other theme than Boost.
+
+# Skill addons
+
+Optional, commercially licensed addons extend Skills. They are sub-plugins of type `skilladdon`
+installed under `admin/tool/skills/addon/<name>`, and each ships its own documentation in its `docs/`
+folder:
+
+| Addon | Adds |
+| --- | --- |
+| Activity skills (`skilladdon_activityskills`) | Points, levels or grade-based points awarded on **activity** completion, configured per activity under **Skills** in the activity navigation. |
+| Reports (`skilladdon_reports`) | A **Skills** datasource for Report builder: skills, levels, per-user points, activities and activity completion. |
+| Level visuals (`skilladdon_levelvisuals`) | A Dash widget showing a learner's current level per skill. |
+| Progress (`skilladdon_progress`) | A Dash widget showing a learner's points, progress and next level per skill. |
+| Decay (`skilladdon_decay`) | Rules that reduce skill points over time for recertification models, with a planned queue, manual decay and an audit log. |
+
+The addons' source lives in private repositories and is referenced from this repository as git
+submodules in `.gitmodules`; only the submodule commit is recorded here, never the addon code.
+
+- Customers with addon access install the *Skills bundle* zip, which contains this plugin with the
+  addons in place.
+- The Moodle plugins directory zip and the GitHub release zip of this repository contain the core
+  plugin only.
+- Developers with repository access clone with `git clone --recurse-submodules`. A plain clone leaves
+  empty directories under `addon/`, which Moodle reports as plugins with a missing `version.php`; run
+  `git submodule update --init` or remove the empty directories.
 
 # Plugin repositories
 
-This plugin will be published and regularly updated in the Moodle plugins repository: https://moodle.org/plugins/tool_skills
+This plugin will be published and regularly updated in the Moodle plugins repository:
+https://moodle.org/plugins/tool_skills
 The latest development version can be found on Github: https://github.com/bdecentgmbh/moodle-tool_skills
 
 # Bug and problem reports / Support requests
 
-This plugin is carefully developed and thoroughly tested, but bugs and problems can always appear. Please report bugs and problems on Github: https://github.com/bdecentgmbh/moodle-tool_skills/issues We will do our best to solve your problems, but please note that due to limited resources we can't always provide per-case support.
+This plugin is carefully developed and thoroughly tested, but bugs and problems can always appear.
+Please report bugs and problems on Github: https://github.com/bdecentgmbh/moodle-tool_skills/issues
+We will do our best to solve your problems, but please note that due to limited resources we can't
+always provide per-case support.
 
 # Feature proposals
 
-Please issue feature proposals on Github: https://github.com/bdecentgmbh/moodle-tool_skills/issues Please create pull requests on Github: https://github.com/bdecentgmbh/moodle-tool_skills/pulls We are always interested to read about your feature proposals or even get a pull request from you, but please accept that we can handle your issues only as feature proposals and not as feature requests.
+Please issue feature proposals on Github: https://github.com/bdecentgmbh/moodle-tool_skills/issues
+Please create pull requests on Github: https://github.com/bdecentgmbh/moodle-tool_skills/pulls
+We are always interested to read about your feature proposals or even get a pull request from you,
+but please accept that we can handle your issues only as feature proposals and not as feature requests.
 
 # Moodle release support
 
-This plugin is maintained for the two most recent major releases of Moodle as well as the most recent LTS release of Moodle. If you are running a legacy version of Moodle, but want or need to run the latest version of this plugin, you can get the latest version of the plugin, remove the line starting with $plugin->requires from version.php and use this latest plugin version then on your legacy Moodle. However, please note that you will run this setup completely at your own risk. We can't support this approach in any way and there is an undeniable risk for erratic behavior.
+This plugin is maintained for the two most recent major releases of Moodle as well as the most recent
+LTS release of Moodle. If you are running a legacy version of Moodle, but want or need to run the
+latest version of this plugin, you can get the latest version of the plugin, remove the line starting
+with $plugin->requires from version.php and use this latest plugin version then on your legacy Moodle.
+However, please note that you will run this setup completely at your own risk. We can't support this
+approach in any way and there is an undeniable risk for erratic behavior.
 
 # Translating this plugin
 
-This Moodle plugin is shipped with an english language pack only. All translations into other languages must be managed through AMOS (https://lang.moodle.org) by what they will become part of Moodle's official language pack.
+This Moodle plugin is shipped with an english language pack only. All translations into other
+languages must be managed through AMOS (https://lang.moodle.org) by what they will become part of
+Moodle's official language pack.
 
 # Copyright
 

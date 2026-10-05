@@ -83,6 +83,16 @@ class course_skills_table extends \table_sql {
     }
 
     /**
+     * Skills are listed in creation order; the table is not sortable and without this the row order
+     * would depend on the database.
+     *
+     * @return string
+     */
+    public function get_sql_sort() {
+        return 's.id ASC';
+    }
+
+    /**
      * Get the skills list.
      *
      * @param int $pagesize

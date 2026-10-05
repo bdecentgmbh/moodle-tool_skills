@@ -38,15 +38,13 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
       | Level #1 point  | 10       |
     And ".skill-item-actions input[type=\"checkbox\"]:checked" "css_element" should exist in the "beginner" "table_row"
     Then I am on "Course 1" course homepage
-    And I click on "More" "link" in the ".secondary-navigation" "css_element"
-    And I click on "Manage skills" "link"
+    And I navigate to "Skills" in current page administration
     Then I should see "Beginner"
     And I navigate to skills
     And I click on ".skill-item-actions .toolskills-status-switch" "css_element" in the "beginner" "table_row"
     And ".skill-item-actions .toolskills-status-switch.action-show" "css_element" should exist in the "beginner" "table_row"
     Then I am on "Course 1" course homepage
-    And I click on "More" "link" in the ".secondary-navigation" "css_element"
-    And I click on "Manage skills" "link"
+    And I navigate to "Skills" in current page administration
     Then I should not see "Beginner"
 
   @javascript
@@ -112,8 +110,7 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
       | Level #1 name   | beginner |
       | Level #1 point  | 20       |
     Then I am on "Course 1" course homepage
-    And I click on "More" "link" in the ".secondary-navigation" "css_element"
-    And I click on "Manage skills" "link"
+    And I navigate to "Skills" in current page administration
     Then I should see "Critical thinker"
     And I navigate to skills
     And I click on ".skill-item-actions .action-archive" "css_element" in the "critical-thinker" "table_row"
@@ -123,8 +120,7 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
     And I should see "delete" message confirmation
     And I navigate to confirmation
     Then I am on "Course 1" course homepage
-    And I click on "More" "link" in the ".secondary-navigation" "css_element"
-    And I click on "Manage skills" "link"
+    And I navigate to "Skills" in current page administration
     And I should not see "Critical thinker"
 
   @javascript
@@ -145,7 +141,7 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
       | Level #3 name | Level 3 |
     And I press "Save changes"
     Then I am on "Course 1" course homepage
-    And I navigate to "Manage skills" in current page administration
+    And I navigate to "Skills" in current page administration
     And I should see "Beginner"
     And I click on ".skill-course-actions .action-edit" "css_element"
     And I should see "Set course skills" in the ".modal-header" "css_element"

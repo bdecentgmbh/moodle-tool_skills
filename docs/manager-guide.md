@@ -1,4 +1,4 @@
-# Manager guide
+# Skills — Manager guide
 
 Managers have the widest view of Skills. By default the **manager** role holds all three Skills
 capabilities, so a manager can do everything an administrator does with skills (short of installing
@@ -12,7 +12,7 @@ For step-by-step detail, follow the links to the other guides.
 | Task | Capability | Where | Guide |
 | --- | --- | --- | --- |
 | Create, edit, archive and delete skills and levels site-wide | `tool/skills:manage` | Site administration > Plugins > Admin tools > Skills | [Administrator guide](admin-guide.md) |
-| Enable skills in a course and configure completion awards | `tool/skills:managecourseskillslist` | A course > **Manage skills** | [Teacher guide](teacher-guide.md) |
+| Enable skills in a course and configure completion awards | `tool/skills:managecourseskillslist` | A course > **Skills** | [Teacher guide](teacher-guide.md) |
 | View every user's points for a skill | `tool/skills:viewotherspoints` | Users-points report (below) | this guide |
 
 Because you hold `tool/skills:managecourseskillslist` in every course, you can manage the skills of
@@ -31,7 +31,7 @@ capability is enough, and it is granted to managers by default.
 
 ## Assigning skills in courses
 
-In any course, open **Manage skills** from the secondary navigation to enable skills and choose what
+In any course, open **Skills** from the secondary navigation to enable skills and choose what
 course completion awards (Points, Set level or Force level). The [Teacher guide](teacher-guide.md)
 describes each option in detail.
 

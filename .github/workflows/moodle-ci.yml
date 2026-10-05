@@ -1,5 +1,17 @@
 name: Moodle Plugin CI
-on: [pull_request]
+
+# Runs on every push to main and on every pull request (feature branches are tested through
+# their pull request only).
+#
+# Scope: the free tool_skills core only. The skill addons under addon/ are private git submodules;
+# they are NOT checked out here (submodules: false) and each addon repository runs its own CI against
+# the matching tool_skills branch. Uninitialised submodules leave empty directories behind, which
+# Moodle would treat as broken plugins, so they are removed before the install step.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   canary:
@@ -7,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16
+        image: postgres:17
         env:
           POSTGRES_USER: 'postgres'
           POSTGRES_HOST_AUTH_METHOD: 'trust'
@@ -19,6 +31,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: plugin
+          submodules: false
+      - name: Remove empty addon submodule placeholders
+        run: find plugin/addon -mindepth 1 -maxdepth 1 -type d -empty -exec rmdir {} + || true
       - name: Setup PHP 8.2
         uses: shivammathur/setup-php@v2
         with:
@@ -62,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16
+        image: postgres:17
         env:
           POSTGRES_USER: 'postgres'
           POSTGRES_HOST_AUTH_METHOD: 'trust'
@@ -70,7 +85,7 @@ jobs:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
       mariadb:
-        image: mariadb:10
+        image: mariadb:11.4
         env:
           MYSQL_USER: 'root'
           MYSQL_ALLOW_EMPTY_PASSWORD: "true"
@@ -78,11 +93,19 @@ jobs:
           MYSQL_COLLATION_SERVER: "utf8mb4_unicode_ci"
         ports:
           - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval 10s --health-timeout 5s --health-retries 3
+        options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval 10s --health-timeout 5s --health-retries 3
     strategy:
       fail-fast: false
       matrix:
         include:
+          # Moodle 5.3 is not yet released; its code is on the main branch. Switch to
+          # MOODLE_503_STABLE once that branch exists.
+          - php: '8.4'
+            moodle-branch: 'main'
+            database: 'mariadb'
+          - php: '8.4'
+            moodle-branch: 'main'
+            database: 'pgsql'
           - php: '8.4'
             moodle-branch: 'MOODLE_502_STABLE'
             database: 'mariadb'
@@ -112,6 +135,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: plugin
+          submodules: false
+      - name: Remove empty addon submodule placeholders
+        run: find plugin/addon -mindepth 1 -maxdepth 1 -type d -empty -exec rmdir {} + || true
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:

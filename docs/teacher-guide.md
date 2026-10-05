@@ -1,4 +1,4 @@
-# Teacher guide
+# Skills — Teacher guide
 
 This guide covers enabling skills in your course and choosing what happens when learners complete it.
 It applies to **teachers** and **editing teachers**, and to anyone with the
@@ -19,7 +19,8 @@ your course awards and **how**.
 
 ## Opening the course skills page
 
-In your course, open **Manage skills** from the course's secondary navigation. This lists the skills
+In your course, open **Skills** from the course's secondary navigation (it may sit in the **More**
+menu). This lists the skills
 that are available to your course — that is, skills that are enabled site-wide and either global or
 allowed in your course's category.
 
@@ -41,7 +42,7 @@ The **Upon course completion** option determines what happens when a learner com
 
 | Option | Effect |
 | --- | --- |
-| **Nothing** | The course does not award skill points on completion. Use this when points should come from **activity** completion instead of course completion. |
+| **Nothing** | The course does not award skill points on completion. Use this when points should come from **activity** completion instead (requires the Activity skills addon). |
 | **Points** | Adds a fixed number of skill **points** on completion. A negative number **deducts** points. |
 | **Set level** | Adds just enough points to reach the chosen **level** — unless the learner already has more, in which case nothing changes. |
 | **Force level** | Sets the learner's points to exactly the chosen level's value, **regardless** of their current points. This can reduce a learner's points. |
@@ -76,3 +77,10 @@ expandable panel with:
 
 Points are awarded when the learner meets the completion condition you configured — so a learner who
 completes your course sees their points and level update on their profile.
+
+## Activity skills
+
+If the **Activity skills** addon is installed, each activity also has a **Skills** entry in its own
+secondary navigation, where you choose what completing that activity awards (points, points by grade,
+set level or force level). Activity points are added on top of the course award and are listed per
+activity on the learner's profile. See the addon's teacher guide in `addon/activityskills/docs/`.
