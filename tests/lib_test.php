@@ -30,9 +30,11 @@ global $CFG;
 require_once($CFG->dirroot . '/admin/tool/skills/lib.php');
 
 /**
- * Unit tests for the "Skills earned" profile node visibility.
+ * Unit tests for the Skills profile section: visibility, display setting and hook pills.
  *
  * @covers ::tool_skills_myprofile_navigation
+ * @covers \tool_skills\helper::get_user_profile_skills_context
+ * @covers \tool_skills\helper::get_profile_display
  */
 final class lib_test extends \advanced_testcase {
     /**
@@ -83,7 +85,7 @@ final class lib_test extends \advanced_testcase {
     }
 
     /**
-     * Whether the "Skills earned" accordion node was added to the tree.
+     * Whether the skills panel node was added to the tree.
      *
      * @param \core_user\output\myprofile\tree $tree
      * @return bool
@@ -93,8 +95,8 @@ final class lib_test extends \advanced_testcase {
     }
 
     /**
-     * The "Skills earned" accordion is shown on the user's own profile, with the skill and course
-     * breakdown rendered from the tool_skills/profile_skills template.
+     * The skills accordion is shown on the user's own profile, with the skill and course breakdown
+     * rendered from the tool_skills/profile_skills template.
      *
      * The navigation callback surfaces the current user's own skills, so the profile owner must be the
      * logged-in user.
@@ -141,5 +143,130 @@ final class lib_test extends \advanced_testcase {
 
         $tree = $this->run_callback($user, false, $course);
         $this->assertFalse($this->has_skills_node($tree));
+    }
+
+    /**
+     * The profile category is called "Skills".
+     */
+    public function test_category_is_called_skills(): void {
+        $this->resetAfterTest(true);
+        [$user, $course] = $this->setup_user_with_skill();
+        $this->setUser($user);
+
+        $tree = $this->run_callback($user, true, $course);
+        $this->assertSame('Skills', $tree->__get('categories')['toolskills']->title);
+    }
+
+    /**
+     * Until the setting is saved, the detailed display (the behaviour before the setting existed) is used.
+     */
+    public function test_detailed_display_is_the_default(): void {
+        $this->resetAfterTest(true);
+        unset_config('profiledisplay', 'tool_skills');
+        $this->assertSame(helper::PROFILEDISPLAY_DETAILED, helper::get_profile_display());
+
+        [$user, $course] = $this->setup_user_with_skill();
+        $this->setUser($user);
+        $content = $this->run_callback($user, true, $course)->__get('nodes')['toolskills_earned']->content;
+        $this->assertStringContainsString('toolskills-profile-skills accordion', $content);
+        $this->assertStringContainsString('toolskill-course', $content);
+    }
+
+    /**
+     * With "Skill totals only" each skill shows its level and points, but no course rows and no accordion.
+     */
+    public function test_totals_display_hides_courses(): void {
+        $this->resetAfterTest(true);
+        set_config('profiledisplay', helper::PROFILEDISPLAY_TOTALS, 'tool_skills');
+        [$user, $course] = $this->setup_user_with_skill();
+        $this->setUser($user);
+
+        $content = $this->run_callback($user, true, $course)->__get('nodes')['toolskills_earned']->content;
+        $this->assertStringContainsString('toolskills-profile-totals', $content);
+        $this->assertStringContainsString('Communication', $content);
+        $this->assertStringContainsString('Level 1', $content);
+        $this->assertStringContainsString('toolskill-earned', $content);
+        $this->assertStringNotContainsString('accordion-item', $content);
+        $this->assertStringNotContainsString('accordion-button', $content);
+        $this->assertStringNotContainsString('toolskill-course', $content);
+        $this->assertStringNotContainsString(format_string($course->fullname), $content);
+    }
+
+    /**
+     * With the display disabled there is no Skills section at all, not even the "Manage skills" link.
+     */
+    public function test_disabled_display_removes_section(): void {
+        $this->resetAfterTest(true);
+        set_config('profiledisplay', helper::PROFILEDISPLAY_DISABLED, 'tool_skills');
+        $this->setAdminUser();
+        $admin = get_admin();
+        $course = $this->getDataGenerator()->create_course();
+
+        $tree = $this->run_callback($admin, true, $course);
+        $this->assertArrayNotHasKey('toolskills', $tree->__get('categories'));
+        $this->assertEmpty($tree->__get('nodes'));
+    }
+
+    /**
+     * Pills added through the extend_profile_skill hook are rendered below the summary as popover triggers, in both displays.
+     *
+     * @dataProvider display_provider
+     * @param int $display One of the helper::PROFILEDISPLAY_* constants that show the section.
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('display_provider')]
+    public function test_hook_pills_rendered(int $display): void {
+        $this->resetAfterTest(true);
+        set_config('profiledisplay', $display, 'tool_skills');
+        [$user, $course, $skillid] = $this->setup_user_with_skill();
+        $this->setUser($user);
+
+        $received = [];
+        $this->redirectHook(
+            \tool_skills\hook\extend_profile_skill::class,
+            function (\tool_skills\hook\extend_profile_skill $hook) use (&$received): void {
+                $received[] = [$hook->userid, $hook->skill->get_id(), $hook->points];
+                $hook->add_pill('skilladdon_decay', '−5 decay', '5 points removed by decay', 'warning');
+            }
+        );
+
+        $content = $this->run_callback($user, true, $course)->__get('nodes')['toolskills_earned']->content;
+        $this->assertSame([[(int) $user->id, (int) $skillid, 60]], $received);
+        $pillclasses = 'toolskill-pill toolskill-pill-skilladdon_decay toolskill-pill-variant-warning';
+        $this->assertStringContainsString($pillclasses, $content);
+        $this->assertStringContainsString('data-bs-toggle="popover"', $content);
+        $this->assertStringContainsString('data-bs-content="5 points removed by decay"', $content);
+        $this->assertStringContainsString('data-content="5 points removed by decay"', $content);
+        $this->assertStringContainsString('−5 decay', $content);
+    }
+
+    /**
+     * Displays that show the Skills section.
+     *
+     * @return array
+     */
+    public static function display_provider(): array {
+        return [
+            'detailed' => [helper::PROFILEDISPLAY_DETAILED],
+            'totals only' => [helper::PROFILEDISPLAY_TOTALS],
+        ];
+    }
+
+    /**
+     * Pill labels and titles are plain text and escaped when rendered.
+     */
+    public function test_hook_pills_are_escaped(): void {
+        $this->resetAfterTest(true);
+        [$user, $course] = $this->setup_user_with_skill();
+        $this->setUser($user);
+
+        $this->redirectHook(
+            \tool_skills\hook\extend_profile_skill::class,
+            fn(\tool_skills\hook\extend_profile_skill $hook) => $hook->add_pill('test', '<b>x</b>', '"quoted"')
+        );
+
+        $content = $this->run_callback($user, true, $course)->__get('nodes')['toolskills_earned']->content;
+        $this->assertStringNotContainsString('<b>x</b>', $content);
+        $this->assertStringContainsString('&lt;b&gt;x&lt;/b&gt;', $content);
+        $this->assertStringContainsString('data-bs-content="&quot;quoted&quot;"', $content);
     }
 }

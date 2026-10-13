@@ -31,6 +31,24 @@ use single_button;
  */
 class helper {
     /**
+     * Skills section on the user profile: not shown.
+     * @var int
+     */
+    public const PROFILEDISPLAY_DISABLED = 0;
+
+    /**
+     * Skills section on the user profile: each skill with its courses and activities.
+     * @var int
+     */
+    public const PROFILEDISPLAY_DETAILED = 1;
+
+    /**
+     * Skills section on the user profile: the total of each skill only, without course and activity rows.
+     * @var int
+     */
+    public const PROFILEDISPLAY_TOTALS = 2;
+
+    /**
      * Generate the button which is displayed on top of the templates table. Helps to create templates.
      *
      * @param string $tab Currently selected tab of the skills list. (active or archive)
@@ -234,16 +252,28 @@ class helper {
     }
 
     /**
-     * Build the "Skills earned" profile template context for a user.
+     * What the Skills section of the user profile shows, from the tool_skills/profiledisplay setting.
+     *
+     * @return int One of the PROFILEDISPLAY_* constants; PROFILEDISPLAY_DETAILED until the setting is saved.
+     */
+    public static function get_profile_display(): int {
+        $display = get_config('tool_skills', 'profiledisplay');
+        return $display === false ? self::PROFILEDISPLAY_DETAILED : (int) $display;
+    }
+
+    /**
+     * Build the Skills profile template context for a user.
      *
      * Produces the data consumed by the tool_skills/profile_skills Mustache template: one entry per
      * skill the user is working towards, each with its earned/total points, current level (name,
-     * colour, image) and the per-course points breakdown.
+     * colour, image), the pills added by plugins through the extend_profile_skill hook and, unless only
+     * the totals are shown, the per-course points breakdown.
      *
      * @param int $userid The user to build the skills summary for.
-     * @return array Template context: ['hasskills' => bool, 'skills' => array, 'uniqid' => string].
+     * @param bool $detailed Include the per-course (and addon per-activity) breakdown.
+     * @return array Template context: ['hasskills' => bool, 'detailed' => bool, 'skills' => array, 'uniqid' => string].
      */
-    public static function get_user_profile_skills_context(int $userid): array {
+    public static function get_user_profile_skills_context(int $userid, bool $detailed = true): array {
 
         $records = \tool_skills\user::get($userid)->get_user_skills();
 
@@ -271,8 +301,16 @@ class helper {
             $levelcolor = $currentlevel['color'] ?? '';
             $levelimageurl = $currentlevel ? self::get_level_image_url((int) $currentlevel['id']) : '';
 
-            // Per-course points breakdown.
+            // Let plugins add pills next to the points, e.g. points removed by decay or the user's target.
+            $hook = new \tool_skills\hook\extend_profile_skill($userid, $skill, $earned);
+            \core\di::get(\core\hook\manager::class)->dispatch($hook);
+            $pills = $hook->get_pills();
+
+            // Per-course points breakdown, left out when only the totals are shown.
             $courses = [];
+            if (!$detailed) {
+                $courserecords = [];
+            }
             foreach ($courserecords as $record) {
                 $skillcourse = $record->skillcourse;
                 $course = $skillcourse->get_course();
@@ -316,12 +354,16 @@ class helper {
                 'earned' => $earned,
                 'hastotalpoints' => $totalpoints > 0,
                 'pointstocomplete' => $totalpoints,
+                'haspills' => !empty($pills),
+                'pills' => $pills,
                 'haslearningtime' => !empty($data->learningtime),
                 'learningtime' => !empty($data->learningtime) ? format_time($data->learningtime) : '',
                 'hascourses' => !empty($courses),
                 'courses' => $courses,
                 'hasreport' => $canreport,
                 'reporturl' => (new \moodle_url('/admin/tool/skills/manage/usersreport.php', ['id' => $skillid]))->out(false),
+                // The totals-only cards show a body only for the learning time or the report link.
+                'hasbody' => !empty($data->learningtime) || $canreport,
                 // Expand the first skill by default so the panel is not empty on open.
                 'expanded' => $index === 0,
             ];
@@ -330,6 +372,7 @@ class helper {
 
         return [
             'hasskills' => !empty($skills),
+            'detailed' => $detailed,
             'skills' => $skills,
             'uniqid' => \html_writer::random_id('toolskills'),
         ];

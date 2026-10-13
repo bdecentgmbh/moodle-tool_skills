@@ -1,5 +1,18 @@
 # Changes
 
+## 1.2.1 (2026101300)
+
+- The profile section *Skills earned* is now called **Skills**.
+- New setting *Skills on the user profile* (Site administration > Plugins > Admin tools > Skills >
+  General settings): skills with courses and activities (as before, the default), skill totals only
+  (no course and activity rows), or disabled (no Skills section on the profile).
+- New hook `\tool_skills\hook\extend_profile_skill`: plugins can add pills below a skill's points in
+  the profile Skills section, for example the points removed by decay or a target. A pill's details open
+  in a popover when it is tapped, clicked or activated with the keyboard, also on touch devices. See the
+  new developer guide.
+- Behat step `the user "…" has "…" points for the skill "…"` for the addons' suites (previously
+  defined by each addon, which clashed when several were installed).
+
 ## 1.2 (2026092300)
 
 - Moodle 5.2 and 5.3 support; Moodle 4.5 remains the minimum.

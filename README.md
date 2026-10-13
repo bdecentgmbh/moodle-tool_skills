@@ -30,8 +30,10 @@ Teachers (or users with the capability tool/skills:managecourseskillslist) then 
 secondary navigation of their course. From there they enable specific skills and configure how many
 points students earn upon completion of the course.
 
-Learners see the skills they have earned, their current level and the contributing courses under
-**Skills earned** on their profile.
+Learners see their skills, their current level and the contributing courses under **Skills** on
+their profile. Administrators choose whether that section lists the courses and activities, shows the
+totals per skill only, or is hidden (Site administration > Plugins > Admin tools > Skills > General
+settings).
 
 # Documentation
 
@@ -44,6 +46,8 @@ the Documentation Center (tool_mdocs):
   completion awards.
 - [Manager guide](docs/manager-guide.md) — manage skills site-wide, assign them in courses, and view
   users' points reports.
+- [Developer guide](docs/developer-guide.md) — add pills to the profile Skills section from another
+  plugin through a hook.
 
 Changes between releases are listed in [CHANGES.md](CHANGES.md).
 
