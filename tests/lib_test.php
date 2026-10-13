@@ -154,7 +154,10 @@ final class lib_test extends \advanced_testcase {
         $this->setUser($user);
 
         $tree = $this->run_callback($user, true, $course);
-        $this->assertSame('Skills', $tree->__get('categories')['toolskills']->title);
+        $category = $tree->__get('categories')['toolskills'];
+        $this->assertSame('Skills', $category->title);
+        // Leading space: Moodle 4.5 appends the classes to its own without a separator.
+        $this->assertSame(' toolskills-profile-category', $category->classes);
     }
 
     /**
