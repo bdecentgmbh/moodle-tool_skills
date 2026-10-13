@@ -19,8 +19,8 @@ or adjust a learner's points.
   level, points earned, learning time and the courses that contribute (or the totals only, or nothing,
   as the administrator chooses).
 - **Reports** — view every user's points for a skill.
-- **Addons** — optional add-ons for activity-based points, Report builder datasources, Dash widgets
-  and skill decay. Each addon documents itself in its own `docs/` folder; see the
+- **Addons** — optional add-ons for activity-based points, Report builder datasources, Dash widgets,
+  skill decay and skill targets. Each addon documents itself in its own `docs/` folder; see the
   [addons overview](#addons) below.
 - **Privacy** — full Privacy (GDPR) API support for the points and award-log data the plugin stores.
 
@@ -59,6 +59,7 @@ or adjust a learner's points.
 | Level visuals | Dash widget: a learner's current level per skill | `addon/levelvisuals/docs/` |
 | Progress | Dash widget: points, progress and next level per skill | `addon/progress/docs/` |
 | Decay | Rules that reduce points over time, with queue, manual decay and audit log | `addon/decay/docs/` |
+| Targets | Level or points targets per cohort with deadlines, recorded achievements and a report source | `addon/targets/docs/` |
 
 Addons are installed under `admin/tool/skills/addon/<name>` and appear in the Documentation Center
 together with this plugin.

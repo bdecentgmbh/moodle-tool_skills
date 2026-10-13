@@ -143,6 +143,7 @@ Skills**, and each addon ships its own guides in its `docs/` folder:
 - **Reports** — a *Skills* datasource for Report builder.
 - **Level visuals** and **Progress** — Dash widgets for learners' dashboards.
 - **Decay** — rules that reduce points over time, with a planned queue, manual decay and an audit log.
+- **Targets** — level or points targets per cohort, with fixed or relative deadlines and recorded achievements.
 
 When upgrading from Skills Pro 1.1, the addons that were bundled in the Pro package are now separate
 plugins in the same folder. Replacing the whole `admin/tool/skills` folder with the Skills bundle and

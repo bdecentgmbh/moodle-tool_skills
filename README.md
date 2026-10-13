@@ -69,6 +69,7 @@ folder:
 | Level visuals (`skilladdon_levelvisuals`) | A Dash widget showing a learner's current level per skill. |
 | Progress (`skilladdon_progress`) | A Dash widget showing a learner's points, progress and next level per skill. |
 | Decay (`skilladdon_decay`) | Rules that reduce skill points over time for recertification models, with a planned queue, manual decay and an audit log. |
+| Targets (`skilladdon_targets`) | Skill targets per cohort: a level or a number of points to reach, optionally by a fixed or relative deadline; records each member's achievement and adds a Report builder source. |
 
 The addons' source lives in private repositories and is referenced from this repository as git
 submodules in `.gitmodules`; only the submodule commit is recorded here, never the addon code.

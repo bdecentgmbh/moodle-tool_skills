@@ -13,3 +13,6 @@
 [submodule "addon/decay"]
 	path = addon/decay
 	url = git@github.com:bdecentgmbh/moodle-skilladdon_decay.git
+[submodule "addon/targets"]
+	path = addon/targets
+	url = git@github.com:bdecentgmbh/moodle-skilladdon_targets.git

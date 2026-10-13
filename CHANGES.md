@@ -10,6 +10,7 @@
   the profile Skills section, for example the points removed by decay or a target. A pill's details open
   in a popover when it is tapped, clicked or activated with the keyboard, also on touch devices. See the
   new developer guide.
+- The Targets addon (`skilladdon_targets`) is included as a git submodule like the other addons.
 - Behat step `the user "…" has "…" points for the skill "…"` for the addons' suites (previously
   defined by each addon, which clashed when several were installed).
 

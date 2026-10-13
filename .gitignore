@@ -59,3 +59,4 @@ phpunit.xml
 !/addon/levelvisuals/
 !/addon/progress/
 !/addon/decay/
+!/addon/targets/
