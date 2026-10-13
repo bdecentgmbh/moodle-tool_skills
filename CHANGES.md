@@ -11,6 +11,7 @@
   in a popover when it is tapped, clicked or activated with the keyboard, also on touch devices. See the
   new developer guide.
 - The Targets addon (`skilladdon_targets`) is included as a git submodule like the other addons.
+- Pills of a collapsed skill are no longer partly covered by the skill's header.
 - Behat step `the user "…" has "…" points for the skill "…"` for the addons' suites (previously
   defined by each addon, which clashed when several were installed).
 

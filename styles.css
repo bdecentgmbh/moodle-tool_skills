@@ -139,7 +139,7 @@ body.module-skills .activity-header {
 /* Pills added by plugins through the extend_profile_skill hook, in a row below the summary and aligned with
    the skill name. Pills with a title open a popover; the pointer cursor also makes iOS deliver the tap. */
 .toolskills-profile-skills .toolskill-pills {
-    margin-top: -0.25rem;
+    /* No negative margin: the collapsed accordion button is painted above the row and would cover the pills. */
     padding: 0 1.25rem 0.75rem;
 }
 /* The pills belong to the header: draw the separator above the panel body instead of below the button. */
