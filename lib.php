@@ -82,11 +82,12 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
     if (!array_key_exists('toolskills', $tree->__get('categories'))) {
         // Create the category.
         $categoryname = get_string('skillprofilecategory', 'tool_skills');
+        // The leading space is needed on Moodle 4.5, whose renderer appends the classes without a separator.
         $category = new core_user\output\myprofile\category(
             'toolskills',
             $categoryname,
             'privacyandpolicies',
-            'toolskills-profile-category'
+            ' toolskills-profile-category'
         );
         $tree->add_category($category);
     } else {
