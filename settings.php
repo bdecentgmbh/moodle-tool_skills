@@ -40,6 +40,24 @@ if ($hassiteconfig) {
 
     $ADMIN->add('skills', $managepage);
 
+    // General settings.
+    $generalpage = new admin_settingpage('tool_skills_settings', new lang_string('generalsettings', 'tool_skills'));
+    if ($ADMIN->fulltree) {
+        // What the Skills section of the user profile shows.
+        $generalpage->add(new admin_setting_configselect(
+            'tool_skills/profiledisplay',
+            new lang_string('profiledisplay', 'tool_skills'),
+            new lang_string('profiledisplay_desc', 'tool_skills'),
+            \tool_skills\helper::PROFILEDISPLAY_DETAILED,
+            [
+                \tool_skills\helper::PROFILEDISPLAY_DETAILED => new lang_string('profiledisplaydetailed', 'tool_skills'),
+                \tool_skills\helper::PROFILEDISPLAY_TOTALS => new lang_string('profiledisplaytotals', 'tool_skills'),
+                \tool_skills\helper::PROFILEDISPLAY_DISABLED => new lang_string('disabled', 'tool_skills'),
+            ]
+        ));
+    }
+    $ADMIN->add('skills', $generalpage);
+
     // Load admin settings for all installed skilladdon subplugins.
     // Moodle does not iterate subplugin types in admin/settings/plugins.php,
     // so the parent plugin must trigger this manually.

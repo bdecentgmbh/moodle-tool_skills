@@ -14,6 +14,7 @@ to **administrators** and to anyone with the **`tool/skills:manage`** capability
 - [Adding levels](#adding-levels)
 - [Managing existing skills](#managing-existing-skills)
 - [Availability and course categories](#availability-and-course-categories)
+- [Skills on the user profile](#skills-on-the-user-profile)
 - [Privacy](#privacy)
 - [Addons](#addons)
 
@@ -64,7 +65,7 @@ Select **Create skill** on the **Active skills** tab and complete the form.
 | **Description** | A longer explanation of the skill, for administrative reference. |
 | **Status** | **Enabled** — the skill is added to all courses that match its category setting and can be configured by teachers. **Disabled** — the skill is not added to any course and cannot be used. |
 | **Learning time** | The time expected to complete this skill within a course. It is shown to learners on their profile. |
-| **Skill colour** | A colour used to represent the skill (for example, the accent shown on the learner's *Skills earned* panel). Enter a hex value such as `#3b82f6`, or leave it empty. |
+| **Skill colour** | A colour used to represent the skill (for example, the accent shown in the *Skills* section of the learner's profile). Enter a hex value such as `#3b82f6`, or leave it empty. |
 | **Available in course categories** | Restrict the skill to courses in the selected categories. Leave empty to make the skill available in **every** category. See [Availability](#availability-and-course-categories). |
 
 ## Adding levels
@@ -110,6 +111,21 @@ The **Available in course categories** setting controls where a skill can be use
 
 This restriction is enforced both when the skill list is shown in a course **and** when a skill is
 enabled on a course, so a skill can never be attached to a course outside its allowed categories.
+
+## Skills on the user profile
+
+Learners see their skills in the **Skills** section of their own profile. Choose how much it shows under
+**Site administration > Plugins > Admin tools > Skills > General settings**, setting **Skills on the user
+profile**:
+
+| Option | The Skills section shows |
+| --- | --- |
+| **Skills with courses and activities** (default) | Each skill with its current level, points and learning time, expandable to the courses that award it with the points earned there, and, with the Activity skills addon, the activities. |
+| **Skill totals only** | Each skill with its current level, points and learning time, without the course and activity rows. |
+| **Disabled** | Nothing: the profile has no Skills section, also not the **Manage skills** link for managers. |
+
+Addons can add small badges ("pills") below a skill's points in both displays, for example the points
+removed by decay. Tapping or clicking a pill shows its details.
 
 ## Privacy
 

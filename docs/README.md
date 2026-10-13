@@ -15,8 +15,9 @@ or adjust a learner's points.
   threshold, colour and image.
 - **Award points on completion** — link a skill to a course and choose what completing the course
   does: add points, or move/force the learner to a level.
-- **Learner progress** — learners see a *Skills earned* panel on their profile with their current
-  level, points earned, learning time and the courses that contribute.
+- **Learner progress** — learners see a *Skills* section on their profile with their current
+  level, points earned, learning time and the courses that contribute (or the totals only, or nothing,
+  as the administrator chooses).
 - **Reports** — view every user's points for a skill.
 - **Addons** — optional add-ons for activity-based points, Report builder datasources, Dash widgets
   and skill decay. Each addon documents itself in its own `docs/` folder; see the
@@ -39,6 +40,7 @@ or adjust a learner's points.
 | **Administrator** | Install the plugin and create/manage skills, levels and categories site-wide | [Administrator guide](admin-guide.md) |
 | **Teacher / editing teacher** | Enable skills in your course and decide what completion awards | [Teacher guide](teacher-guide.md) |
 | **Manager** | Do both of the above across the site, and view users' points reports | [Manager guide](manager-guide.md) |
+| **Developer** | Extend the Skills section of the profile from another plugin | [Developer guide](developer-guide.md) |
 
 ## Capabilities at a glance
 

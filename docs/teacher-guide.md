@@ -68,12 +68,15 @@ selected.
 
 ## What learners see
 
-Learners see their skills on their **profile**, under **Skills earned**. Each skill is shown as an
-expandable panel with:
+Learners see their skills on their **profile**, under **Skills**. By default each skill is shown as
+an expandable panel with:
 
 - the skill's **current level** (name, colour and image) and its **learning time**;
 - the **points earned** out of the total needed to fully earn the skill;
 - the **courses** contributing to the skill, each with the points earned there.
+
+Your administrator may show only the totals per skill (without the course rows) or hide the section;
+see *Skills on the user profile* in the [Administrator guide](admin-guide.md).
 
 Points are awarded when the learner meets the completion condition you configured — so a learner who
 completes your course sees their points and level update on their profile.
