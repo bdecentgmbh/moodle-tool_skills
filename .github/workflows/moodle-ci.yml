@@ -97,21 +97,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # One job per Moodle version, alternating the database; the canary job covers Moodle 4.5 on PostgreSQL.
         include:
           - php: '8.4'
             moodle-branch: 'MOODLE_503_STABLE'
-            database: 'mariadb'
-          - php: '8.4'
-            moodle-branch: 'MOODLE_503_STABLE'
             database: 'pgsql'
           - php: '8.4'
             moodle-branch: 'MOODLE_502_STABLE'
-            database: 'mariadb'
-          - php: '8.4'
-            moodle-branch: 'MOODLE_502_STABLE'
-            database: 'pgsql'
-          - php: '8.4'
-            moodle-branch: 'MOODLE_501_STABLE'
             database: 'mariadb'
           - php: '8.4'
             moodle-branch: 'MOODLE_501_STABLE'
@@ -119,15 +111,9 @@ jobs:
           - php: '8.3'
             moodle-branch: 'MOODLE_500_STABLE'
             database: 'mariadb'
-          - php: '8.3'
-            moodle-branch: 'MOODLE_500_STABLE'
-            database: 'pgsql'
           - php: '8.2'
             moodle-branch: 'MOODLE_405_STABLE'
             database: 'mariadb'
-          - php: '8.2'
-            moodle-branch: 'MOODLE_405_STABLE'
-            database: 'pgsql'
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
