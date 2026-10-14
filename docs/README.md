@@ -1,7 +1,8 @@
 # Skills — documentation
 
 *Skills* (`tool_skills`) is a Moodle admin-tool plugin for defining skills, awarding points for them
-through course (and activity) completion, and showing learners the skills they have earned.
+through course completion (and, with the Activity skills addon, activity completion), and showing
+learners the skills they have earned.
 
 Instead of Moodle's full competency framework — which is more than many organisations need — Skills
 gives you a lightweight way to model achievement: define a skill, split it into up to 10 levels with
@@ -14,17 +15,21 @@ or adjust a learner's points.
   threshold, colour and image.
 - **Award points on completion** — link a skill to a course and choose what completing the course
   does: add points, or move/force the learner to a level.
-- **Learner progress** — learners see a *Skills earned* panel on their profile with their current
-  level, points earned, learning time and the courses that contribute.
+- **Learner progress** — learners see a *Skills* section on their profile with their current
+  level, points earned, learning time and the courses that contribute (or the totals only, or nothing,
+  as the administrator chooses).
 - **Reports** — view every user's points for a skill.
+- **Addons** — optional add-ons for activity-based points, Report builder datasources, Dash widgets,
+  skill decay and skill targets. Each addon documents itself in its own `docs/` folder; see the
+  [addons overview](#addons) below.
 - **Privacy** — full Privacy (GDPR) API support for the points and award-log data the plugin stores.
 
 ## How it fits together
 
 1. An **administrator** (or **manager**) creates a skill, adds its levels, and makes it available
    globally or to specific course categories.
-2. A **teacher** (or manager) opens a course, enables the skill, and chooses what course completion
-   awards.
+2. A **teacher** (or manager) opens **Skills** in the course navigation, enables the skill, and chooses
+   what course completion awards.
 3. A **learner** completes the course, earns the configured points, and sees the skill, level and
    progress on their profile.
 
@@ -35,6 +40,7 @@ or adjust a learner's points.
 | **Administrator** | Install the plugin and create/manage skills, levels and categories site-wide | [Administrator guide](admin-guide.md) |
 | **Teacher / editing teacher** | Enable skills in your course and decide what completion awards | [Teacher guide](teacher-guide.md) |
 | **Manager** | Do both of the above across the site, and view users' points reports | [Manager guide](manager-guide.md) |
+| **Developer** | Extend the Skills section of the profile from another plugin | [Developer guide](developer-guide.md) |
 
 ## Capabilities at a glance
 
@@ -44,9 +50,23 @@ or adjust a learner's points.
 | `tool/skills:managecourseskillslist` | Teacher, editing teacher, manager | Enable and configure skills within a course |
 | `tool/skills:viewotherspoints` | Manager | View the users-points report for a skill |
 
+## Addons
+
+| Addon | What it adds | Documentation |
+| --- | --- | --- |
+| Activity skills | Points, levels or grade-based points on **activity** completion | `addon/activityskills/docs/` |
+| Reports | A **Skills** datasource for Report builder | `addon/reports/docs/` |
+| Level visuals | Dash widget: a learner's current level per skill | `addon/levelvisuals/docs/` |
+| Progress | Dash widget: points, progress and next level per skill | `addon/progress/docs/` |
+| Decay | Rules that reduce points over time, with queue, manual decay and audit log | `addon/decay/docs/` |
+| Targets | Level or points targets per cohort with deadlines, recorded achievements and a report source | `addon/targets/docs/` |
+
+Addons are installed under `admin/tool/skills/addon/<name>` and appear in the Documentation Center
+together with this plugin.
+
 ## Requirements & support
 
-- Moodle 4.5 and later (tested through Moodle 5.1).
+- Moodle 4.5 and later (tested through Moodle 5.3).
 - Developed and tested on the Boost theme and Boost child themes (including Classic).
 
 For bug reports and feature proposals, see the project on

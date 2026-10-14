@@ -43,7 +43,7 @@ function tool_skills_extend_navigation_course(navigation_node $navigation, stdCl
         $url = new moodle_url('/admin/tool/skills/manage/courselist.php', [
             'courseid' => $id,
         ]);
-        $node = $navigation->create(get_string('manageskills', 'tool_skills'), $url, navigation_node::TYPE_SETTING, null, null);
+        $node = $navigation->create(get_string('skills', 'tool_skills'), $url, navigation_node::TYPE_SETTING, null, null);
         $node->add_class('manage-tool-skills');
         $node->set_force_into_more_menu(false);
         $node->set_show_in_secondary_navigation(true);
@@ -58,7 +58,10 @@ function tool_skills_extend_navigation_course(navigation_node $navigation, stdCl
 }
 
 /**
- * Defines learningtools nodes for my profile navigation tree.
+ * Adds the "Skills" category with the user's skills panel to the user profile navigation tree.
+ *
+ * The tool_skills/profiledisplay setting decides whether the category is added at all and whether the
+ * panel lists the courses and activities of each skill or the skill totals only.
  *
  * @param \core_user\output\myprofile\tree $tree Tree object
  * @param stdClass $user user object
@@ -70,11 +73,22 @@ function tool_skills_extend_navigation_course(navigation_node $navigation, stdCl
 function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $course) {
     global $USER, $OUTPUT;
 
-    // Get the learningtools category.
+    $display = \tool_skills\helper::get_profile_display();
+    if ($display === \tool_skills\helper::PROFILEDISPLAY_DISABLED) {
+        return true;
+    }
+
+    // Get or create the Skills profile category.
     if (!array_key_exists('toolskills', $tree->__get('categories'))) {
         // Create the category.
         $categoryname = get_string('skillprofilecategory', 'tool_skills');
-        $category = new core_user\output\myprofile\category('toolskills', $categoryname, 'privacyandpolicies');
+        // The leading space is needed on Moodle 4.5, whose renderer appends the classes without a separator.
+        $category = new core_user\output\myprofile\category(
+            'toolskills',
+            $categoryname,
+            'privacyandpolicies',
+            ' toolskills-profile-category'
+        );
         $tree->add_category($category);
     } else {
         // Get the existing category.
@@ -84,8 +98,11 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
     if ($iscurrentuser) {
         $systemcontext = \context_system::instance();
 
-        // Render the "Skills earned" accordion of the user's skills.
-        $skillscontext = \tool_skills\helper::get_user_profile_skills_context($USER->id);
+        // Render the panel of the user's skills: an accordion with the course breakdown, or the totals only.
+        $skillscontext = \tool_skills\helper::get_user_profile_skills_context(
+            $USER->id,
+            $display === \tool_skills\helper::PROFILEDISPLAY_DETAILED
+        );
         if (!empty($skillscontext['hasskills'])) {
             $content = $OUTPUT->render_from_template('tool_skills/profile_skills', $skillscontext);
             $skillsnode = new core_user\output\myprofile\node(

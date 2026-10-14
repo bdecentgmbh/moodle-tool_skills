@@ -31,14 +31,32 @@ if ($hassiteconfig) {
     $settings = null; // Reset the settings.
 
     // Include the external page setting to manage skills.
-    $automation = new admin_externalpage(
+    $managepage = new admin_externalpage(
         'manageskills',
         get_string('manageskills', 'tool_skills'),
         new moodle_url('/admin/tool/skills/manage/list.php'),
         'tool/skills:manage'
     );
 
-    $ADMIN->add('skills', $automation);
+    $ADMIN->add('skills', $managepage);
+
+    // General settings.
+    $generalpage = new admin_settingpage('tool_skills_settings', new lang_string('generalsettings', 'tool_skills'));
+    if ($ADMIN->fulltree) {
+        // What the Skills section of the user profile shows.
+        $generalpage->add(new admin_setting_configselect(
+            'tool_skills/profiledisplay',
+            new lang_string('profiledisplay', 'tool_skills'),
+            new lang_string('profiledisplay_desc', 'tool_skills'),
+            \tool_skills\helper::PROFILEDISPLAY_DETAILED,
+            [
+                \tool_skills\helper::PROFILEDISPLAY_DETAILED => new lang_string('profiledisplaydetailed', 'tool_skills'),
+                \tool_skills\helper::PROFILEDISPLAY_TOTALS => new lang_string('profiledisplaytotals', 'tool_skills'),
+                \tool_skills\helper::PROFILEDISPLAY_DISABLED => new lang_string('disabled', 'tool_skills'),
+            ]
+        ));
+    }
+    $ADMIN->add('skills', $generalpage);
 
     // Load admin settings for all installed skilladdon subplugins.
     // Moodle does not iterate subplugin types in admin/settings/plugins.php,

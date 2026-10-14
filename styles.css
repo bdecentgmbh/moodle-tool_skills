@@ -83,7 +83,7 @@ body.module-skills .activity-header {
     display: none;
 }
 
-/* Profile "Skills earned" accordion. */
+/* Profile Skills panel: accordion (detailed display) or static cards (totals only). */
 .toolskills-profile-skills.accordion {
     --bs-accordion-btn-padding-y: 0.75rem;
     /* Pin the active-header appearance so it renders the same across Moodle/Bootstrap versions. */
@@ -121,7 +121,8 @@ body.module-skills .activity-header {
     flex: 0 0 auto;
 }
 .toolskills-profile-skills .toolskill-chip,
-.toolskills-profile-skills .toolskill-level-badge {
+.toolskills-profile-skills .toolskill-level-badge,
+.toolskills-profile-skills .toolskill-pill {
     font-weight: 600;
 }
 .toolskills-profile-skills .toolskill-chip {
@@ -134,4 +135,55 @@ body.module-skills .activity-header {
 }
 .toolskills-profile-skills .toolskill-courses .toolskill-course + .toolskill-course {
     border-top: 1px solid var(--bs-border-color-translucent, rgba(0, 0, 0, 0.075));
+}
+/* Pills added by plugins through the extend_profile_skill hook, in a row below the summary and aligned with
+   the skill name. Pills with a title open a popover; the pointer cursor also makes iOS deliver the tap. */
+.toolskills-profile-skills .toolskill-pills {
+    /* No negative margin: the collapsed accordion button is painted above the row and would cover the pills. */
+    padding: 0 1.25rem 0.75rem;
+}
+/* The pills belong to the header: draw the separator above the panel body instead of below the button. */
+.toolskills-profile-skills .accordion-button:not(.collapsed) {
+    box-shadow: none;
+}
+.toolskills-profile-skills .accordion-body {
+    border-top: 1px solid var(--bs-accordion-border-color, var(--bs-border-color));
+}
+.toolskills-profile-skills .toolskill-pills-indent {
+    padding-inline-start: calc(1.25rem + 40px + 0.5rem);
+}
+.toolskills-profile-skills a.toolskill-pill {
+    cursor: pointer;
+    text-decoration: none;
+}
+.toolskills-profile-skills .toolskill-pill-variant-secondary {
+    background-color: var(--bs-secondary-bg, #e9ecef);
+    color: var(--bs-secondary-color, #495057);
+}
+.toolskills-profile-skills .toolskill-pill-variant-info {
+    background-color: var(--bs-info-bg-subtle, #cff4fc);
+    color: var(--bs-info-text-emphasis, #055160);
+}
+.toolskills-profile-skills .toolskill-pill-variant-success {
+    background-color: var(--bs-success-bg-subtle, #d1e7dd);
+    color: var(--bs-success-text-emphasis, #0f5132);
+}
+.toolskills-profile-skills .toolskill-pill-variant-warning {
+    background-color: var(--bs-warning-bg-subtle, #fff3cd);
+    color: var(--bs-warning-text-emphasis, #664d03);
+}
+.toolskills-profile-skills .toolskill-pill-variant-danger {
+    background-color: var(--bs-danger-bg-subtle, #f8d7da);
+    color: var(--bs-danger-text-emphasis, #842029);
+}
+/* Totals-only display: the card header matches the accordion button without being one. */
+.toolskills-profile-totals .toolskill-header {
+    margin: 0;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+}
+.toolskills-profile-totals .toolskill-body {
+    padding: 0 1.25rem 0.75rem;
 }

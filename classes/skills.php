@@ -530,7 +530,7 @@ class skills {
     public static function manage_instance($formdata) {
         global $DB, $PAGE;
 
-        // Verfiy the current user has capability to manage skills.
+        // Verify the current user has the capability to manage skills.
         require_capability('tool/skills:manage', context_system::instance());
 
         $record = clone $formdata;

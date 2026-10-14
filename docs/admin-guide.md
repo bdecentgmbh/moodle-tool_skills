@@ -1,4 +1,4 @@
-# Administrator guide
+# Skills — Administrator guide
 
 This guide covers installing Skills and managing skills, levels and categories site-wide. It applies
 to **administrators** and to anyone with the **`tool/skills:manage`** capability (granted to the
@@ -14,7 +14,9 @@ to **administrators** and to anyone with the **`tool/skills:manage`** capability
 - [Adding levels](#adding-levels)
 - [Managing existing skills](#managing-existing-skills)
 - [Availability and course categories](#availability-and-course-categories)
+- [Skills on the user profile](#skills-on-the-user-profile)
 - [Privacy](#privacy)
+- [Addons](#addons)
 
 ## Installation
 
@@ -40,7 +42,8 @@ Install Skills like any other Moodle plugin, either through the plugin installer
 
 After installation, manage skills under **Site administration > Plugins > Admin tools > Skills**
 (the page is titled **Manage skills**). This is where you create skills, add their levels, and set
-their availability.
+their availability. Teachers reach the course-level configuration through **Skills** in a course's
+secondary navigation (see the [Teacher guide](teacher-guide.md)).
 
 The **Manage skills** page has two tabs:
 
@@ -62,7 +65,7 @@ Select **Create skill** on the **Active skills** tab and complete the form.
 | **Description** | A longer explanation of the skill, for administrative reference. |
 | **Status** | **Enabled** — the skill is added to all courses that match its category setting and can be configured by teachers. **Disabled** — the skill is not added to any course and cannot be used. |
 | **Learning time** | The time expected to complete this skill within a course. It is shown to learners on their profile. |
-| **Skill colour** | A colour used to represent the skill (for example, the accent shown on the learner's *Skills earned* panel). Enter a hex value such as `#3b82f6`, or leave it empty. |
+| **Skill colour** | A colour used to represent the skill (for example, the accent shown in the *Skills* section of the learner's profile). Enter a hex value such as `#3b82f6`, or leave it empty. |
 | **Available in course categories** | Restrict the skill to courses in the selected categories. Leave empty to make the skill available in **every** category. See [Availability](#availability-and-course-categories). |
 
 ## Adding levels
@@ -109,8 +112,41 @@ The **Available in course categories** setting controls where a skill can be use
 This restriction is enforced both when the skill list is shown in a course **and** when a skill is
 enabled on a course, so a skill can never be attached to a course outside its allowed categories.
 
+## Skills on the user profile
+
+Learners see their skills in the **Skills** section of their own profile. Choose how much it shows under
+**Site administration > Plugins > Admin tools > Skills > General settings**, setting **Skills on the user
+profile**:
+
+| Option | The Skills section shows |
+| --- | --- |
+| **Skills with courses and activities** (default) | Each skill with its current level, points and learning time, expandable to the courses that award it with the points earned there, and, with the Activity skills addon, the activities. |
+| **Skill totals only** | Each skill with its current level, points and learning time, without the course and activity rows. |
+| **Disabled** | Nothing: the profile has no Skills section, also not the **Manage skills** link for managers. |
+
+Addons can add small badges ("pills") below a skill's points in both displays, for example the points
+removed by decay. Tapping or clicking a pill shows its details.
+
 ## Privacy
 
 Skills implements the Moodle Privacy API. It stores, per user, the points earned for each skill and a
 log of how those points were awarded (which course or activity). These records are exported and
 deleted through Moodle's standard data-request tooling, scoped to the relevant course context.
+
+## Addons
+
+Skill addons extend the plugin and are installed under `admin/tool/skills/addon/<name>`. Their
+settings pages appear next to **Manage skills** under **Site administration > Plugins > Admin tools >
+Skills**, and each addon ships its own guides in its `docs/` folder:
+
+- **Activity skills** — award points, levels or grade-based points when an activity is completed.
+- **Reports** — a *Skills* datasource for Report builder.
+- **Level visuals** and **Progress** — Dash widgets for learners' dashboards.
+- **Decay** — rules that reduce points over time, with a planned queue, manual decay and an audit log.
+- **Targets** — level or points targets per cohort, with fixed or relative deadlines and recorded achievements.
+
+When upgrading from Skills Pro 1.1, the addons that were bundled in the Pro package are now separate
+plugins in the same folder. Replacing the whole `admin/tool/skills` folder with the Skills bundle and
+running the upgrade migrates everything; two addons were renamed (`skill_levelvisuals` to
+`levelvisuals`, `skillprogress` to `progress`) and their settings and Dash blocks are carried over
+automatically.

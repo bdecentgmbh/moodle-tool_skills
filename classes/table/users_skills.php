@@ -103,10 +103,10 @@ class users_skills extends \table_sql implements dynamic_table {
      */
     public function query_db($pagesize, $useinitialsbar = true) {
 
-        // Select only the user-picture identity fields (id aliased so each row's id is the user id)
-        // plus the earned points; avoids over-fetching {user} secret columns and the fragile id
-        // collision that the previous "usp.*, s.*, u.*" relied on.
-        $userfields = \core_user\fields::for_userpic()->get_sql('u', false, '', '', false);
+        // Select the earned points plus the user-picture identity fields (u.id first, so each row's id
+        // is the user id); avoids over-fetching {user} secret columns. The field list comes with its
+        // leading comma.
+        $userfields = \core_user\fields::for_userpic()->get_sql('u', false);
         $select = 'usp.points AS points' . $userfields->selects;
 
         $from = '{tool_skills_userpoints} usp

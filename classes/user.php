@@ -127,7 +127,7 @@ class user {
             $point->skillcourse = courseskills::get($point->courseid);
             $point->skillcourse->set_skill_instance($point->id);
 
-            // Extend addons to inlcude its skill data.
+            // Let addons include their skill data.
             \tool_skills\helper::extend_addons_add_userskills_data($point);
 
             $point->userpoints = $DB->get_record('tool_skills_userpoints', ['skill' => $point->skill, 'userid' => $this->userid]);

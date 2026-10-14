@@ -1,0 +1,59 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_skills/profile_skill_pills
+
+    Pills of one skill in the Skills section of the user profile, added by plugins through the
+    \tool_skills\hook\extend_profile_skill hook. A pill with a title shows it in a popover when it is
+    tapped, clicked or activated with the keyboard (the same markup as Moodle's help icons, so it also
+    works on touch devices); pills without a title are plain badges. Labels and titles are plain text.
+
+    Classes required for JS:
+    * none (popovers are enabled by theme_boost for data-bs-toggle (Moodle 5.x) and data-toggle (Moodle 4.5))
+
+    Context variables required for this template:
+    * pills - Array of pills, each: name, label, title, variant
+
+    Example context (json):
+    {
+        "pills": [
+            {
+                "name": "skilladdon_decay",
+                "label": "−5 decay",
+                "title": "5 points removed by decay",
+                "variant": "warning"
+            },
+            {
+                "name": "example",
+                "label": "Plain badge",
+                "title": "",
+                "variant": "secondary"
+            }
+        ]
+    }
+}}
+{{#pills}}
+{{#title}}
+<a class="badge rounded-pill toolskill-pill toolskill-pill-{{name}} toolskill-pill-variant-{{variant}}" role="button" tabindex="0"
+    data-bs-toggle="popover" data-toggle="popover" data-bs-trigger="focus" data-trigger="focus"
+    data-bs-placement="bottom" data-placement="bottom" data-bs-container="body" data-container="body"
+    data-bs-content="{{title}}" data-content="{{title}}">{{label}}</a>
+{{/title}}
+{{^title}}
+<span class="badge rounded-pill toolskill-pill toolskill-pill-{{name}} toolskill-pill-variant-{{variant}}">{{label}}</span>
+{{/title}}
+{{/pills}}

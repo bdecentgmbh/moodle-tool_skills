@@ -55,8 +55,7 @@ class behat_tool_skills extends behat_base {
      */
     public function i_navigate_to_course_skills($coursename) {
         $this->execute('behat_navigation::i_am_on_course_homepage', [$coursename]);
-        $this->execute('behat_general::i_click_on_in_the', ["More", "link", '.secondary-navigation', "css_element"]);
-        $this->execute('behat_general::i_click_on', ["Manage skills", "link"]);
+        $this->execute('behat_navigation::i_navigate_to_in_current_page_administration', ["Skills"]);
     }
 
     /**
@@ -106,5 +105,22 @@ class behat_tool_skills extends behat_base {
             "Are you sure! do you want to $messagetext this skill and its levels",
             $cssclass, "css_element",
         ]);
+    }
+
+    /**
+     * Set a user's points for a skill, identified by its key. Sets the balance directly, without an award log entry.
+     *
+     * Shared by the addons' Behat suites, so it lives here rather than in each addon.
+     *
+     * @Given /^the user "(?P<username>(?:[^"]|\\")*)" has "(?P<points>\d+)" points for the skill "(?P<key>(?:[^"]|\\")*)"$/
+     * @param string $username
+     * @param int $points
+     * @param string $key The skill's identity key.
+     */
+    public function the_user_has_points_for_the_skill(string $username, int $points, string $key): void {
+        global $DB;
+        $userid = (int) $DB->get_field('user', 'id', ['username' => $username], MUST_EXIST);
+        $skillid = (int) $DB->get_field('tool_skills', 'id', ['identitykey' => $key], MUST_EXIST);
+        \tool_skills\skills::get($skillid)->set_userskill_points($userid, $points);
     }
 }

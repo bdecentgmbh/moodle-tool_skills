@@ -1,0 +1,67 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_skills/profile_skill_summary
+
+    Summary line of one skill in the Skills section of the user profile: the current level image, the
+    skill name, the current level badge and the earned/total points. Used inside the accordion button of
+    the detailed display and as the card header of the totals-only display of tool_skills/profile_skills.
+    The pills are rendered outside the summary (tool_skills/profile_skill_pills), as they can be
+    activated and must not sit inside the accordion button. Level colours are validated to a
+    #rgb/#rrggbb hex on input, so it is safe to interpolate them into the inline style.
+
+    Classes required for JS:
+    * none
+
+    Context variables required for this template:
+    * name, hascurrentlevel, currentlevelname, hascurrentlevelcolor, currentlevelcolor, currentleveltextcolor
+    * haslevelimage, levelimageurl
+    * earned, hastotalpoints, pointstocomplete
+
+    Example context (json):
+    {
+        "name": "My first skill",
+        "hascurrentlevel": true,
+        "currentlevelname": "Level 2",
+        "hascurrentlevelcolor": true,
+        "currentlevelcolor": "#22c55e",
+        "currentleveltextcolor": "#000000",
+        "haslevelimage": false,
+        "levelimageurl": "",
+        "earned": 10,
+        "hastotalpoints": true,
+        "pointstocomplete": 20
+    }
+}}
+<span class="toolskill-summary d-flex align-items-start gap-2">
+    {{#haslevelimage}}
+    <img class="toolskill-level-img" src="{{levelimageurl}}" alt="{{currentlevelname}}">
+    {{/haslevelimage}}
+    <span class="toolskill-info">
+        <span class="toolskill-name fw-bold">{{{name}}}</span>
+        <span class="toolskill-meta d-flex align-items-center flex-wrap gap-2 mt-1">
+            {{#hascurrentlevel}}
+            <span class="badge rounded-pill toolskill-level-badge"
+                {{#hascurrentlevelcolor}}style="background-color: {{currentlevelcolor}}; color: {{currentleveltextcolor}};"{{/hascurrentlevelcolor}}>{{{currentlevelname}}}</span>
+            {{/hascurrentlevel}}
+            <span class="toolskill-points"
+                title="{{#str}}earned, tool_skills{{/str}}: {{earned}}{{#hastotalpoints}} / {{pointstocomplete}}{{/hastotalpoints}}">
+                <span class="toolskill-earned fw-bold fs-5">{{earned}}</span>{{#hastotalpoints}}<span class="toolskill-total text-muted">/{{pointstocomplete}}</span>{{/hastotalpoints}}
+            </span>
+        </span>
+    </span>
+</span>

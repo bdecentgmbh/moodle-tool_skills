@@ -39,7 +39,7 @@ define(['jquery', 'core/str', 'core_form/modalform'], function($, Str, ModalForm
             this.courseID = courseID;
 
             this.SELECTORS.root = '#tool_skills_list [data-skillid="' + this.skillID + '"]';
-            this.addActionListiners();
+            this.addActionListeners();
         }
 
         getRoot() {
@@ -68,7 +68,7 @@ define(['jquery', 'core/str', 'core_form/modalform'], function($, Str, ModalForm
         }
 
 
-        addActionListiners() {
+        addActionListeners() {
 
             var self = this;
 
@@ -82,7 +82,7 @@ define(['jquery', 'core/str', 'core_form/modalform'], function($, Str, ModalForm
         }
 
         /**
-         * Add event listenrs.
+         * Add event listeners.
          *
          * @param {Integer} courseID
          */

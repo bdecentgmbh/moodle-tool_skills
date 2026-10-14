@@ -1,0 +1,4 @@
+# The addons are private submodules. Keep their empty placeholders out of source archives (git archive,
+# the zips of GitHub releases), where Moodle would report them as plugins with a missing version.php.
+/addon/* export-ignore
+/addon/README.md -export-ignore
