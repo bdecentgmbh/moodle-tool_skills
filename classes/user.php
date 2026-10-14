@@ -146,6 +146,7 @@ class user {
     public function remove_user_skillpoints() {
         global $DB;
 
+        points_history::delete_user_history($this->userid);
         if ($DB->delete_records('tool_skills_userpoints', ['userid' => $this->userid])) {
             $this->logs->delete_user_log($this->userid);
             return true;

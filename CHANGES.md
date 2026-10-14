@@ -1,5 +1,20 @@
 # Changes
 
+## 1.4 (unreleased)
+
+- Points history: every change of a user's skill points is recorded with its time, reason (award,
+  revoke, decay, import, other), source (course, activity or decay rule, with its name at the time) and the
+  level before and after. Points earned before the update are imported once in the background; where the
+  import does not add up to a user's points, one correction row is added. The Reports addon reports on
+  it with its new *Skill points history* source.
+- Events: *Skill points changed* and *Skill level reached*, and *Skill created*, *updated*, *archived*,
+  *restored* and *deleted*.
+- Archiving and restoring a skill show their confirmation message again.
+- Privacy: the points history is exported and deleted in the user's context; the manager of a manual
+  change in the system context.
+- Developers: `skills::set_userskill_points()` takes a `points_change` describing the change; see the
+  developer guide.
+
 ## 1.3 (2026101400)
 
 Includes the changes of 1.2 R3 and 1.2 R4, which were released for this plugin only and not in a
