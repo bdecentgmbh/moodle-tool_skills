@@ -1,38 +1,59 @@
 # Changes
 
-## 1.2.1 (2026101300)
+## 1.3 (2026101400)
 
-- The profile section *Skills earned* is now called **Skills**.
+Includes the changes of 1.2 R3 and 1.2 R4, which were released for this plugin only and not in a
+Skills bundle.
+
+### Skills on the user profile
+
+- The profile section *Skills earned* is now called **Skills** and was redesigned: each skill shows its
+  current level with the level's colour and image, the points earned out of the total, and a
+  per-course breakdown with points chips. Addons can contribute per-course content (activity
+  breakdown).
 - New setting *Skills on the user profile* (Site administration > Plugins > Admin tools > Skills >
-  General settings): skills with courses and activities (as before, the default), skill totals only
-  (no course and activity rows), or disabled (no Skills section on the profile).
+  General settings): skills with courses and activities (the default), skill totals only (no course
+  and activity rows), or disabled (no Skills section on the profile).
 - New hook `\tool_skills\hook\extend_profile_skill`: plugins can add pills below a skill's points in
   the profile Skills section, for example the points removed by decay or a target. A pill's details open
   in a popover when it is tapped, clicked or activated with the keyboard, also on touch devices. See the
-  new developer guide.
-- The Targets addon (`skilladdon_targets`) is included as a git submodule like the other addons.
-- Pills of a collapsed skill are no longer partly covered by the skill's header.
-- The source zips of this repository (GitHub releases) no longer contain empty folders for the addon
-  submodules, which Moodle reported as plugins with a missing `version.php`.
-- Behat step `the user "…" has "…" points for the skill "…"` for the addons' suites (previously
-  defined by each addon, which clashed when several were installed).
+  developer guide.
+- The skill accordion works on Moodle 4.5, and pills of a collapsed skill are not covered by the
+  skill's header.
 
-## 1.2 (2026092300)
+### Skills and levels
+
+- Skills and levels can carry a colour and levels an image; a skill may have no levels at all (points
+  only). The level count now means the total number of levels.
+- The course and activity navigation entry is now called **Skills**.
+- The course skills list is always sorted the same way.
+- The users' points report no longer fails with a database error (a regression in 1.2 R3).
+
+### Addons
+
+- Skill addons are pulled in as git submodules of this repository, including the new Targets addon
+  (`skilladdon_targets`); only the submodule commits are recorded here, never the addon code.
+  Customers with addon access install the Skills bundle, which contains this plugin with the addons in
+  place. The former separate "Pro" repository no longer holds addon code.
+- The source zips of this repository (GitHub releases) contain no empty folders for the addon
+  submodules, which Moodle would report as plugins with a missing `version.php`.
+
+### Compatibility, security and quality
 
 - Moodle 5.2 and 5.3 support; Moodle 4.5 remains the minimum.
-- Skills and levels can carry a colour and levels an image; a skill may have no levels at all
-  (points only). The level count now means the total number of levels.
-- Redesigned *Skills earned* panel on the user profile: current level with colour and image, points
-  earned out of the total, and a per-course breakdown with points chips. Addons can contribute
-  per-course content (activity breakdown).
-- The course and activity navigation entry is now called **Skills**.
-- Skill addons are pulled in as git submodules of this repository; the former separate "Pro"
-  repository no longer holds addon code. Addon settings pages load under the Skills admin category.
-- Database indexes on the award log and level tables; deterministic ordering of the course skills
-  list.
-- Security hardening of the course skill form (write target resolved from the course, level checked
-  against the skill) and capability risk masks revisited.
-- PHPUnit suite added; Behat suites updated; CI runs on every push to main and on pull requests.
+- Security fixes: the course skill form resolves where it saves from the course and checks that the
+  level belongs to the skill; the risk flags of the capabilities were reviewed (MDL Shield findings).
+- Database indexes on the award log and level tables; the deprecated `db/subplugins.php` is removed.
+- PHPUnit suite added and Behat suites updated, with the Behat step
+  `the user "…" has "…" points for the skill "…"` for the addons' suites. CI runs on every push to
+  main and on pull requests, one job per Moodle version from 4.5 to 5.3.
+- Documentation per audience (administrator, manager, teacher and developer guides).
+
+## 1.2 (2026032400)
+
+- Moodle 4.5 is the minimum; Moodle 5.1 support.
+- Improved form to create skills.
+- 1.2 R2 (2026032401): PHPDoc fixes, missing language strings and file headers.
 
 ## 1.1
 
