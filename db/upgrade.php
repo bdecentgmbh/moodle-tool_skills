@@ -111,5 +111,45 @@ function xmldb_tool_skills_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026072101, 'tool', 'skills');
     }
 
+    if ($oldversion < 2026101401) {
+        // Points history: one row per change of a user's skill points.
+        $table = new xmldb_table('tool_skills_points_history');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('skill', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('points', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('oldpoints', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('newpoints', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('oldlevel', XMLDB_TYPE_INTEGER, '18', null, null, null, null);
+        $table->add_field('newlevel', XMLDB_TYPE_INTEGER, '18', null, null, null, null);
+        $table->add_field('reason', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('method', XMLDB_TYPE_CHAR, '20', null, null, null, null);
+        $table->add_field('methodid', XMLDB_TYPE_INTEGER, '18', null, null, null, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '18', null, null, null, null);
+        $table->add_field('cmid', XMLDB_TYPE_INTEGER, '18', null, null, null, null);
+        $table->add_field('sourcename', XMLDB_TYPE_CHAR, '1333', null, null, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('skill', XMLDB_KEY_FOREIGN, ['skill'], 'tool_skills', ['id']);
+        $table->add_key('userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_index('userid-skill-timecreated', XMLDB_INDEX_NOTUNIQUE, ['userid', 'skill', 'timecreated']);
+        $table->add_index('method-methodid', XMLDB_INDEX_NOTUNIQUE, ['method', 'methodid']);
+        $table->add_index('courseid', XMLDB_INDEX_NOTUNIQUE, ['courseid']);
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Changes are recorded from now on. Earlier points are imported from the award logs (and the logs of
+        // addons such as decay) in the background, once all plugins are upgraded.
+        if (!get_config('tool_skills', 'historystart')) {
+            set_config('historystart', time(), 'tool_skills');
+            \core\task\manager::queue_adhoc_task(new \tool_skills\task\import_points_history(), true);
+        }
+
+        upgrade_plugin_savepoint(true, 2026101401, 'tool', 'skills');
+    }
+
     return true;
 }

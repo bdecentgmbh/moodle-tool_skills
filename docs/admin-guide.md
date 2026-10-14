@@ -15,6 +15,7 @@ to **administrators** and to anyone with the **`tool/skills:manage`** capability
 - [Managing existing skills](#managing-existing-skills)
 - [Availability and course categories](#availability-and-course-categories)
 - [Skills on the user profile](#skills-on-the-user-profile)
+- [Points history](#points-history)
 - [Privacy](#privacy)
 - [Addons](#addons)
 
@@ -127,11 +128,29 @@ profile**:
 Addons can add small badges ("pills") below a skill's points in both displays, for example the points
 removed by decay. Tapping or clicking a pill shows its details.
 
+## Points history
+
+Skills records every change of a learner's points: when it happened, why (an award, points taken back
+when a course's points or a grade changed, decay), through which course, activity or decay rule, and the
+level before and after. Reports over any period use this history; with the Reports addon, build them on
+the **Skill points history** report source. Changes also appear in Moodle's logs as the events *Skill
+points changed* and *Skill level reached*, next to *Skill created*, *updated*, *archived*, *restored* and
+*deleted*.
+
+**Points from before the update to Skills 1.4** are imported once, in the background (cron must run).
+Before 1.4 Skills kept only the latest award per course or activity, so earlier periods can be
+approximate: a course completed twice counts once, on the later date. Where the imported changes do not
+add up to a learner's points at the time of the update, one correction row (reason *Import correction*)
+is added, dated when the history started. From the update on, every change is recorded exactly.
+
 ## Privacy
 
-Skills implements the Moodle Privacy API. It stores, per user, the points earned for each skill and a
-log of how those points were awarded (which course or activity). These records are exported and
-deleted through Moodle's standard data-request tooling, scoped to the relevant course context.
+Skills implements the Moodle Privacy API. It stores, per user, the points earned for each skill, a
+log of how those points were awarded (which course or activity), and the points history. The points and
+award logs are exported and deleted in the relevant course context; the points history in the user's
+own context (and with the course's data when a course context is deleted). A manager who made a
+manual change, such as a manual decay, is exported in the system context and removed from the history
+when their data is deleted.
 
 ## Addons
 

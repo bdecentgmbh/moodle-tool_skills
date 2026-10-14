@@ -95,6 +95,17 @@ class courseskills extends \tool_skills\allocation_method {
     }
 
     /**
+     * Course and name of the course for the points history.
+     *
+     * @return array [courseid, null, course full name]
+     */
+    protected function get_points_source(): array {
+        global $DB;
+        $name = $DB->get_field('course', 'fullname', ['id' => $this->courseid]);
+        return [(int) $this->courseid, null, $name === false ? null : $name];
+    }
+
+    /**
      * Fetch the skills assigned/enabled for this course.
      *
      * @param int $skillid Id of the skill.
@@ -301,7 +312,7 @@ class courseskills extends \tool_skills\allocation_method {
                 $skillpoint -= $currentpoints; // Remove the previously awarded course skill points.
 
                 // Update the skill point for the user.
-                $skill->set_userskill_points($userid, $skillpoint);
+                $skill->set_userskill_points($userid, $skillpoint, $this->get_points_change(points_history::REASON_REVOKE));
             }
         }
 
@@ -354,7 +365,7 @@ class courseskills extends \tool_skills\allocation_method {
             $skillpoint = $skill->get_user_skill($userid)->points;
             $skillpoint -= $currentpoints; // Remove the previously awarded course skill points.
             // Update the skill point for the user.
-            $skill->set_userskill_points($userid, $skillpoint);
+            $skill->set_userskill_points($userid, $skillpoint, $this->get_points_change(points_history::REASON_REVOKE));
             // Update the log of points earned from this instance to 0.
             $skill->create_user_point_award($this, $userid, 0);
         }
