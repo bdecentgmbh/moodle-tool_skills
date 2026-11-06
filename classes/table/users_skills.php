@@ -67,8 +67,8 @@ class users_skills extends \table_sql implements dynamic_table {
         $this->define_columns($columns);
         $this->define_headers($headers);
 
-        // Remove sorting for some fields.
-        $this->sortable(false);
+        // Most points first, so the pages keep their order.
+        $this->sortable(true, 'points', SORT_DESC);
 
         // Do not make the table collapsible.
         $this->collapsible(false);
@@ -103,11 +103,11 @@ class users_skills extends \table_sql implements dynamic_table {
      */
     public function query_db($pagesize, $useinitialsbar = true) {
 
-        // Select the earned points plus the user-picture identity fields (u.id first, so each row's id
-        // is the user id); avoids over-fetching {user} secret columns. The field list comes with its
-        // leading comma.
+        // Select the user-picture identity fields, which start with u.id, and the earned points; rows are
+        // keyed by their first column, so users with the same points stay separate rows. Avoids
+        // over-fetching {user} secret columns. The field list comes with its leading comma.
         $userfields = \core_user\fields::for_userpic()->get_sql('u', false);
-        $select = 'usp.points AS points' . $userfields->selects;
+        $select = ltrim($userfields->selects, ', ') . ', usp.points AS points';
 
         $from = '{tool_skills_userpoints} usp
         JOIN {user} u ON usp.userid = u.id' . $userfields->joins;

@@ -14,6 +14,8 @@
   heading: Overview, Participants' progress and Manage course skills.
 - Teachers' overview: each skill card says how the skill is earned in this course, links to its
   participants' progress and, with `tool/skills:viewcourseparticipants`, counts the learners per level.
+- Users-points report: users with the same points are each listed (only one of them was before), and the
+  report is sorted, most points first, by either column.
 - Points history: every change of a user's skill points is recorded with its time, reason (award,
   revoke, decay, import, other), source (course, activity or decay rule, with its name at the time) and the
   level before and after. Points earned before the update are imported once in the background; where the

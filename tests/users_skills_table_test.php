@@ -46,8 +46,10 @@ final class users_skills_table_test extends \advanced_testcase {
         $gen = $this->getDataGenerator();
         $anna = $gen->create_user(['firstname' => 'Anna', 'lastname' => 'Complete']);
         $ben = $gen->create_user(['firstname' => 'Ben', 'lastname' => 'Halfway']);
+        // Users with the same points are listed each.
+        $chloe = $gen->create_user(['firstname' => 'Chloe', 'lastname' => 'Starter']);
         $other = $gen->create_user(['firstname' => 'Nobody', 'lastname' => 'Elsewhere']);
-        foreach ([[$anna, 90], [$ben, 50]] as [$user, $points]) {
+        foreach ([[$ben, 50], [$anna, 90], [$chloe, 50]] as [$user, $points]) {
             $DB->insert_record('tool_skills_userpoints', (object) [
                 'skill' => $skillid, 'userid' => $user->id, 'points' => $points,
                 'timecreated' => time(), 'timemodified' => time(),
@@ -63,9 +65,12 @@ final class users_skills_table_test extends \advanced_testcase {
 
         $this->assertStringContainsString('Anna Complete', $html);
         $this->assertStringContainsString('Ben Halfway', $html);
+        $this->assertStringContainsString('Chloe Starter', $html);
         $this->assertStringNotContainsString('Nobody Elsewhere', $html);
         $this->assertStringContainsString('>90<', $html);
         $this->assertStringContainsString('>50<', $html);
-        $this->assertSame(2, $table->totalrows);
+        $this->assertSame(3, $table->totalrows);
+        // Most points first.
+        $this->assertLessThan(strpos($html, 'Ben Halfway'), strpos($html, 'Anna Complete'));
     }
 }
