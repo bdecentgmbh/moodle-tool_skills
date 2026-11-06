@@ -271,24 +271,87 @@ class helper {
      * @return bool
      */
     public static function can_view_course_page(\context_course $context): bool {
-        global $DB;
-
         if (has_capability('tool/skills:managecourseskillslist', $context)) {
             return true;
         }
-        if (
-            !has_capability('tool/skills:viewcourseskills', $context)
-            || self::get_profile_display() === self::PROFILEDISPLAY_DISABLED
-        ) {
-            return false;
-        }
-        return $DB->record_exists_sql(
-            'SELECT 1
+        return has_capability('tool/skills:viewcourseskills', $context)
+            && self::get_profile_display() !== self::PROFILEDISPLAY_DISABLED
+            && self::get_course_skills($context->instanceid);
+    }
+
+    /**
+     * The skills a course awards: enabled in the course, and enabled and not archived site-wide.
+     *
+     * @param int $courseid
+     * @return string[] Skill names, keyed by skill id, sorted by name.
+     */
+    public static function get_course_skills(int $courseid): array {
+        global $DB;
+
+        $names = $DB->get_records_sql_menu(
+            'SELECT s.id, s.name
                FROM {tool_skills_courses} sc
                JOIN {tool_skills} s ON s.id = sc.skill
-              WHERE sc.courseid = :courseid AND sc.status = 1 AND s.status = 1 AND s.archived = 0',
-            ['courseid' => $context->instanceid]
+              WHERE sc.courseid = :courseid AND sc.status = 1 AND s.status = 1 AND s.archived = 0
+           ORDER BY s.name',
+            ['courseid' => $courseid]
         );
+        return array_map('format_string', $names);
+    }
+
+    /**
+     * Whether the current user can open the Participants' progress page of a course.
+     *
+     * Everyone who manages the course's skills can, with the points from the course only; with
+     * tool/skills:viewcourseparticipants also the participants' levels and total points.
+     *
+     * @param \context_course $context
+     * @return bool
+     */
+    public static function can_view_course_participants(\context_course $context): bool {
+        return has_any_capability(['tool/skills:viewcourseparticipants', 'tool/skills:managecourseskillslist'], $context);
+    }
+
+    /**
+     * The tertiary navigation of a course's Skills pages, as on the Participants page: a menu of the pages
+     * the user can open, and outside the Manage page its button.
+     *
+     * @param \context_course $context
+     * @param string $current The current page: overview, progress or manage.
+     * @return string HTML, empty when the user can open the overview only.
+     */
+    public static function get_course_navigation(\context_course $context, string $current): string {
+        global $PAGE;
+
+        $params = ['courseid' => $context->instanceid];
+        $pages = ['overview' => [new \moodle_url('/admin/tool/skills/course.php', $params), 'overview']];
+        if (self::can_view_course_participants($context)) {
+            $pages['progress'] = [new \moodle_url('/admin/tool/skills/progress.php', $params), 'participantsprogress'];
+        }
+        $canmanage = has_capability('tool/skills:managecourseskillslist', $context);
+        if ($canmanage) {
+            $pages['manage'] = [new \moodle_url('/admin/tool/skills/manage/courselist.php', $params), 'managecourseskills'];
+        }
+        if (count($pages) < 2) {
+            return '';
+        }
+
+        $options = [];
+        foreach ($pages as [$url, $label]) {
+            $options[$url->out(false)] = get_string($label, 'tool_skills');
+        }
+        $menu = new \core\output\select_menu('toolskillsnavigation', $options, $pages[$current][0]->out(false), true);
+        $menu->set_label(get_string('coursenavigation', 'tool_skills'), ['class' => 'visually-hidden']);
+        $output = $PAGE->get_renderer('core');
+        $html = \html_writer::div(
+            $output->render_from_template('core/tertiary_navigation_selector', $menu->export_for_template($output)),
+            'navitem'
+        );
+        if ($canmanage && $current !== 'manage') {
+            $button = $output->single_button($pages['manage'][0], get_string('managecourseskills', 'tool_skills'), 'get');
+            $html .= \html_writer::div($button, 'navitem ms-auto');
+        }
+        return \html_writer::div($html, 'tertiary-navigation d-flex flex-wrap align-items-center gap-2 mb-3');
     }
 
     /**

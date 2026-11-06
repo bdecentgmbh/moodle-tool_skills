@@ -7,6 +7,11 @@
   what the course and its activities award, with the points earned there; teachers see what the course
   awards, and reach *Manage course skills* from there. New capability `tool/skills:viewcourseskills`
   (students, teachers, managers). Learners do not get the tab when the profile Skills section is disabled.
+- Participants' progress of a course: teachers follow the course's learners one skill at a time, with the
+  points from this course and, with the new capability `tool/skills:viewcourseparticipants` (teachers,
+  managers; personal data risk), their level and total points. Group filter, sorting, initials bar and
+  download. The course's Skills pages share a menu like the Participants page: Overview, Participants'
+  progress and Manage course skills.
 - Points history: every change of a user's skill points is recorded with its time, reason (award,
   revoke, decay, import, other), source (course, activity or decay rule, with its name at the time) and the
   level before and after. Points earned before the update are imported once in the background; where the

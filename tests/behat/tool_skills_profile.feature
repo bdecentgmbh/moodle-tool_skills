@@ -87,3 +87,13 @@ Feature: Skills section on the user profile
       | profiledisplay | 0 | tool_skills |
     When I am on the "Course 1" course page logged in as student1
     Then "Skills" "link" should not exist in the ".secondary-navigation" "css_element"
+
+  @javascript
+  Scenario: Teachers follow the participants' progress of a course
+    Given I log in as "admin"
+    And I am on "Course 1" course homepage
+    And I navigate to "Skills" in current page administration
+    When I set the field "Course skills navigation" to "Participants' progress"
+    Then I should see "Participants' progress" in the "#region-main h2" "css_element"
+    And I should see "Student First" in the "tool_skills_course_participants" "table"
+    And I should see "From this course" in the "tool_skills_course_participants" "table"

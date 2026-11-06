@@ -60,6 +60,18 @@ $capabilities = [
         ],
     ],
 
+    // See the levels and total points of a course's participants, which include points from other courses.
+    'tool/skills:viewcourseparticipants' => [
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_COURSE,
+        'riskbitmask' => RISK_PERSONAL,
+        'archetypes' => [
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+
     // Read-only capability to view other users' skill points report.
     'tool/skills:viewotherspoints' => [
         'captype' => 'read',

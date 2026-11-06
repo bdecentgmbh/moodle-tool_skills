@@ -44,15 +44,8 @@ $islearner = is_enrolled($context, $USER, 'moodle/course:isincompletionreports',
 $data = \tool_skills\helper::get_user_profile_skills_context($islearner ? $USER->id : 0, true, $course->id);
 
 echo $OUTPUT->header();
+echo \tool_skills\helper::get_course_navigation($context, 'overview');
 echo $OUTPUT->heading(get_string('skillsincourse', 'tool_skills'));
-
-if (has_capability('tool/skills:managecourseskillslist', $context)) {
-    echo html_writer::div($OUTPUT->single_button(
-        new moodle_url('/admin/tool/skills/manage/courselist.php', ['courseid' => $course->id]),
-        get_string('managecourseskills', 'tool_skills'),
-        'get'
-    ), 'mb-3');
-}
 
 if ($data['hasskills']) {
     echo html_writer::tag('p', get_string($islearner ? 'skillsincourse_learner' : 'skillsincourse_desc', 'tool_skills'));
