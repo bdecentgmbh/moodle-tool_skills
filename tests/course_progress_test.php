@@ -35,6 +35,7 @@ use tool_skills\table\course_participants_table;
  * @covers \tool_skills\helper::can_view_course_participants
  * @covers \tool_skills\helper::get_course_navigation
  * @covers \tool_skills\helper::get_course_skills
+ * @covers \tool_skills\helper::get_course_level_counts
  */
 final class course_progress_test extends \advanced_testcase {
     /**
@@ -181,5 +182,44 @@ final class course_progress_test extends \advanced_testcase {
             [$firstaid->get_id() => 'First aid', $safety->get_id() => 'Safety'],
             helper::get_course_skills($course->id)
         );
+    }
+
+    /**
+     * The teachers' overview counts the learners per level, without teachers; in separate groups only the
+     * members of the teacher's groups, and nothing for a skill without levels.
+     */
+    public function test_level_counts(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $gen = $this->getDataGenerator();
+        $course = $gen->create_course(['groupmode' => SEPARATEGROUPS, 'groupmodeforce' => 1]);
+        $context = \context_course::instance($course->id);
+        $teacher = $gen->create_and_enrol($course, 'teacher');
+        $skill = $this->create_skill('Safety', [$course->id]);
+        $group = $gen->create_group(['courseid' => $course->id]);
+        $gen->create_group_member(['groupid' => $group->id, 'userid' => $teacher->id]);
+        foreach (['anna' => 45, 'ben' => 70, 'chloe' => null] as $name => $points) {
+            $user = $gen->create_and_enrol($course, 'student', ['firstname' => $name]);
+            if ($points !== null) {
+                $skill->set_userskill_points($user->id, $points);
+            }
+            if ($name === 'ben') {
+                $gen->create_group_member(['groupid' => $group->id, 'userid' => $user->id]);
+            }
+        }
+        $skill->set_userskill_points($teacher->id, 100);
+        $this->setUser($teacher);
+        $roleid = $DB->get_field('role', 'id', ['shortname' => 'teacher']);
+
+        assign_capability('moodle/site:accessallgroups', CAP_ALLOW, $roleid, $context);
+        $counts = helper::get_course_level_counts($context, $skill);
+        $this->assertSame(['No level: 1', 'Basic: 1', 'Advanced: 1'], array_column($counts, 'label'));
+
+        assign_capability('moodle/site:accessallgroups', CAP_PROHIBIT, $roleid, $context, true);
+        $counts = helper::get_course_level_counts($context, $skill);
+        $this->assertSame(['No level: 0', 'Basic: 0', 'Advanced: 1'], array_column($counts, 'label'));
+
+        $DB->delete_records('tool_skills_levels', ['skill' => $skill->get_id()]);
+        $this->assertSame([], helper::get_course_level_counts($context, skills::get($skill->get_id())));
     }
 }

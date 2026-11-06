@@ -43,6 +43,22 @@ $PAGE->set_heading(format_string($course->fullname));
 $islearner = is_enrolled($context, $USER, 'moodle/course:isincompletionreports', true);
 $data = \tool_skills\helper::get_user_profile_skills_context($islearner ? $USER->id : 0, true, $course->id);
 
+// Teachers also see how many learners reached each level, and open each skill's participants' progress.
+if (!$islearner) {
+    $canviewlevels = has_capability('tool/skills:viewcourseparticipants', $context);
+    $canviewprogress = \tool_skills\helper::can_view_course_participants($context);
+    foreach ($data['skills'] as $i => $skill) {
+        $skillobj = \tool_skills\skills::get($skill['skillid']);
+        $counts = $canviewlevels ? \tool_skills\helper::get_course_level_counts($context, $skillobj) : [];
+        $progressurl = new moodle_url('/admin/tool/skills/progress.php', ['courseid' => $course->id, 'skill' => $skill['skillid']]);
+        $data['skills'][$i] += [
+            'haslevelcounts' => !empty($counts),
+            'levelcounts' => $counts,
+            'progressurl' => $canviewprogress ? $progressurl->out(false) : '',
+        ];
+    }
+}
+
 echo $OUTPUT->header();
 // The menu of the course's Skills pages is the heading; learners, who have no menu, get one.
 $navigation = \tool_skills\helper::get_course_navigation($context, 'overview');

@@ -12,6 +12,8 @@
   managers; personal data risk), their level and total points. Group filter, sorting, initials bar and
   download. The course's Skills pages share a menu like the Participants page, which is also their
   heading: Overview, Participants' progress and Manage course skills.
+- Teachers' overview: each skill card says how the skill is earned in this course, links to its
+  participants' progress and, with `tool/skills:viewcourseparticipants`, counts the learners per level.
 - Points history: every change of a user's skill points is recorded with its time, reason (award,
   revoke, decay, import, other), source (course, activity or decay rule, with its name at the time) and the
   level before and after. Points earned before the update are imported once in the background; where the

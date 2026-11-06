@@ -313,6 +313,68 @@ class helper {
     }
 
     /**
+     * How many of a course's learners have reached each level of a skill, for the teachers' overview.
+     *
+     * The learners are those of the Participants' progress page; in separate groups, without
+     * moodle/site:accessallgroups, only the members of the user's groups.
+     *
+     * @param \context_course $context
+     * @param skills $skill
+     * @return array[] "No level", then the levels from the lowest, each with name, count, hascolor, color
+     *     and textcolor. Empty for a skill without levels or when the user is in no group.
+     */
+    public static function get_course_level_counts(\context_course $context, skills $skill): array {
+        global $DB, $USER;
+
+        $levels = $skill->get_levels();
+        if (!$levels) {
+            return [];
+        }
+        $groupids = 0;
+        $course = get_course($context->instanceid);
+        if (groups_get_course_groupmode($course) == SEPARATEGROUPS && !has_capability('moodle/site:accessallgroups', $context)) {
+            $groupids = array_keys(groups_get_all_groups($course->id, $USER->id));
+            if (!$groupids) {
+                return [];
+            }
+        }
+
+        // Learners per points value, then per level.
+        $enrolled = get_enrolled_with_capabilities_join($context, '', 'moodle/course:isincompletionreports', $groupids, true);
+        $learners = $DB->get_records_sql_menu(
+            "SELECT COALESCE(up.points, 0) AS points, COUNT(1) AS learners
+               FROM {user} u {$enrolled->joins}
+          LEFT JOIN {tool_skills_userpoints} up ON up.userid = u.id AND up.skill = :skill
+              WHERE {$enrolled->wheres}
+           GROUP BY COALESCE(up.points, 0)",
+            ['skill' => $skill->get_id()] + $enrolled->params
+        );
+        $counts = [0 => 0] + array_fill_keys(array_keys($levels), 0);
+        foreach ($learners as $points => $count) {
+            $counts[(int) $skill->get_level_for_points((int) $points)] += $count;
+        }
+
+        $names = [0 => get_string('nolevel', 'tool_skills')];
+        uasort($levels, fn($a, $b) => (int) $a->points <=> (int) $b->points);
+        foreach ($levels as $id => $level) {
+            $names[$id] = format_string($level->name);
+        }
+        $result = [];
+        foreach ($names as $id => $name) {
+            $color = $id ? (string) ($levels[$id]->color ?? '') : '';
+            $result[] = [
+                'name' => $name,
+                'count' => $counts[$id],
+                'label' => get_string('levelcount', 'tool_skills', (object) ['level' => $name, 'count' => $counts[$id]]),
+                'hascolor' => $color !== '',
+                'color' => $color,
+                'textcolor' => $color !== '' ? self::readable_text_color($color) : '',
+            ];
+        }
+        return $result;
+    }
+
+    /**
      * The tertiary navigation of a course's Skills pages, as on the Participants page: a menu of the pages
      * the user can open. Its current page is the page heading, so the pages print no heading of their own.
      *

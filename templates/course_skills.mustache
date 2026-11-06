@@ -33,6 +33,9 @@
         * hascoursepoints, coursepoints - The points from this course
         * courses - The course row only, with award (what completing the course awards, HTML, empty for
           nothing) and hasawards (whether the course or its activities award anything)
+        * haslevelcounts, levelcounts - For teachers: the learners per level, each with label (HTML),
+          hascolor, color and textcolor
+        * progressurl - For teachers: the skill's Participants' progress, empty without access
 
     Example context (json):
     {
@@ -79,7 +82,13 @@
                         "award": "Set level - Advanced",
                         "hasawards": true
                     }
-                ]
+                ],
+                "haslevelcounts": true,
+                "levelcounts": [
+                    {"label": "No level: 3", "hascolor": false, "color": "", "textcolor": ""},
+                    {"label": "Basic: 9", "hascolor": true, "color": "#fbbf24", "textcolor": "#000000"}
+                ],
+                "progressurl": "https://example.com/admin/tool/skills/progress.php?courseid=2&skill=5"
             }
         ]
     }
@@ -104,7 +113,10 @@
             {{/haslearningtime}}
             {{#courses}}
             {{#hasawards}}
-            <h4 class="toolskill-awards-heading h6 fw-bold mt-3 mb-1">{{#str}}earnincourse, tool_skills{{/str}}</h4>
+            <h4 class="toolskill-awards-heading h6 fw-bold mt-3 mb-1">
+                {{#hidepoints}}{{#str}}earnedincourse, tool_skills{{/str}}{{/hidepoints}}
+                {{^hidepoints}}{{#str}}earnincourse, tool_skills{{/str}}{{/hidepoints}}
+            </h4>
             <ul class="toolskill-courses list-unstyled mb-0">
                 {{#award}}
                 <li class="toolskill-course toolskill-coursecompletion d-flex align-items-center justify-content-between gap-2 py-1">
@@ -122,6 +134,18 @@
             </ul>
             {{/hasawards}}
             {{/courses}}
+            {{#haslevelcounts}}
+            <h4 class="toolskill-levels-heading h6 fw-bold mt-3 mb-1">{{#str}}participantslevels, tool_skills{{/str}}</h4>
+            <div class="toolskill-levelcounts d-flex flex-wrap gap-2">
+                {{#levelcounts}}
+                <span class="badge rounded-pill {{#hascolor}}toolskill-level-badge{{/hascolor}}{{^hascolor}}toolskill-chip{{/hascolor}}"
+                    {{#hascolor}}style="background-color: {{color}}; color: {{textcolor}};"{{/hascolor}}>{{{label}}}</span>
+                {{/levelcounts}}
+            </div>
+            {{/haslevelcounts}}
+            {{#progressurl}}
+            <p class="mt-3 mb-0"><a href="{{progressurl}}">{{#str}}progressforskill, tool_skills, {{name}}{{/str}}</a></p>
+            {{/progressurl}}
         </div>
     </div>
     {{/skills}}

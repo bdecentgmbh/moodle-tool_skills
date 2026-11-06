@@ -84,7 +84,9 @@ Learners also find a **Skills** tab in each course that awards a skill. Its page
 shows a card per skill with the learner's level and points, the points from this course and, under
 **Earn it in this course**, what completing the course awards and, with the Activity skills addon, what
 each activity awards, each with the points earned there. You see the same page without points: the skills
-your course awards and how. Whose progress the page shows follows the course completion report: users
+your course awards and how, with a link to each skill's participants' progress and, with
+`tool/skills:viewcourseparticipants`, how many learners have reached each level (in separate groups, of your
+groups). Whose progress the page shows follows the course completion report: users
 enrolled with `moodle/course:isincompletionreports` (students). The tab needs
 `tool/skills:viewcourseskills` and is hidden from learners when the profile Skills section is disabled.
 

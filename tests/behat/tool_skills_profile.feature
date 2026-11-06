@@ -93,6 +93,8 @@ Feature: Skills section on the user profile
     Given I log in as "admin"
     And I am on "Course 1" course homepage
     And I navigate to "Skills" in current page administration
+    And I should see "How it is earned in this course" in the ".toolskills-course-skills" "css_element"
+    And I should see "No level: 1" in the ".toolskill-levelcounts" "css_element"
     When I set the field "Course skills navigation" to "Participants' progress"
     Then I should see "Participants' progress" in the ".tertiary-navigation" "css_element"
     And I should see "Student First" in the "tool_skills_course_participants" "table"
