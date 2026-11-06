@@ -262,6 +262,59 @@ class helper {
     }
 
     /**
+     * Whether the current user can open the Skills page of a course, which also shows its Skills tab.
+     *
+     * Users who manage the course's skills always can, so they can enable skills. Others need the
+     * capability, a course that awards a skill, and the Skills section of the profile not to be disabled.
+     *
+     * @param \context_course $context
+     * @return bool
+     */
+    public static function can_view_course_page(\context_course $context): bool {
+        global $DB;
+
+        if (has_capability('tool/skills:managecourseskillslist', $context)) {
+            return true;
+        }
+        if (
+            !has_capability('tool/skills:viewcourseskills', $context)
+            || self::get_profile_display() === self::PROFILEDISPLAY_DISABLED
+        ) {
+            return false;
+        }
+        return $DB->record_exists_sql(
+            'SELECT 1
+               FROM {tool_skills_courses} sc
+               JOIN {tool_skills} s ON s.id = sc.skill
+              WHERE sc.courseid = :courseid AND sc.status = 1 AND s.status = 1 AND s.archived = 0',
+            ['courseid' => $context->instanceid]
+        );
+    }
+
+    /**
+     * What an award gives, in the words of the course and activity skill lists, for example "Points - 40".
+     *
+     * @param int $type One of the skills::COMPLETION* constants.
+     * @param int|null $points Points of a points award.
+     * @param int|null $levelid Level of a level award.
+     * @return string Empty for skills::COMPLETIONNOTHING.
+     */
+    public static function get_award_label(int $type, ?int $points, ?int $levelid): string {
+        switch ($type) {
+            case skills::COMPLETIONPOINTS:
+                return get_string('completionpoints', 'tool_skills') . ' - ' . $points;
+            case skills::COMPLETIONPOINTSGRADE:
+                return get_string('completionpointsgrade', 'tool_skills');
+            case skills::COMPLETIONSETLEVEL:
+                return get_string('completionsetlevel', 'tool_skills') . ' - ' . level::get($levelid)->get_name();
+            case skills::COMPLETIONFORCELEVEL:
+                return get_string('completionforcelevel', 'tool_skills') . ' - ' . level::get($levelid)->get_name();
+            default:
+                return '';
+        }
+    }
+
+    /**
      * Build the Skills profile template context for a user.
      *
      * Produces the data consumed by the tool_skills/profile_skills Mustache template: one entry per
@@ -269,13 +322,18 @@ class helper {
      * colour, image), the pills added by plugins through the extend_profile_skill hook and, unless only
      * the totals are shown, the per-course points breakdown.
      *
-     * @param int $userid The user to build the skills summary for.
+     * With a course, it is the context of the course's Skills page (tool_skills/course_skills): the
+     * course's skills, each with its course row only, what the course awards (award) and the points from
+     * the course. With user id 0 as well, the skills carry no personal data (hidepoints, no pills).
+     *
+     * @param int $userid The user to build the skills summary for, or 0 with a course.
      * @param bool $detailed Include the per-course (and addon per-activity) breakdown.
+     * @param int|null $courseid The course of a course's Skills page.
      * @return array Template context: ['hasskills' => bool, 'detailed' => bool, 'skills' => array, 'uniqid' => string].
      */
-    public static function get_user_profile_skills_context(int $userid, bool $detailed = true): array {
+    public static function get_user_profile_skills_context(int $userid, bool $detailed = true, ?int $courseid = null): array {
 
-        $records = \tool_skills\user::get($userid)->get_user_skills();
+        $records = \tool_skills\user::get($userid)->get_user_skills($courseid);
 
         // Group the per-course records by their skill.
         $byskill = [];
@@ -302,9 +360,12 @@ class helper {
             $levelimageurl = $currentlevel ? self::get_level_image_url((int) $currentlevel['id']) : '';
 
             // Let plugins add pills next to the points, e.g. points removed by decay or the user's target.
-            $hook = new \tool_skills\hook\extend_profile_skill($userid, $skill, $earned);
-            \core\di::get(\core\hook\manager::class)->dispatch($hook);
-            $pills = $hook->get_pills();
+            $pills = [];
+            if ($userid) {
+                $hook = new \tool_skills\hook\extend_profile_skill($userid, $skill, $earned);
+                \core\di::get(\core\hook\manager::class)->dispatch($hook);
+                $pills = $hook->get_pills();
+            }
 
             // Per-course points breakdown, left out when only the totals are shown.
             $courses = [];
@@ -321,9 +382,14 @@ class helper {
                 // also shows the goal as "earned / available".
                 $haspoints = $availableint !== 0;
                 $hasgoal = $availableint > 0;
-                // Let addons contribute their own per-course content (e.g. activity breakdown).
+                // Let addons contribute their own per-course content (e.g. activity breakdown), on the
+                // course's Skills page with what each item awards.
+                $record->showaward = $courseid !== null;
                 $addon = '';
                 self::extend_addons_add_user_points_content($addon, $record);
+                $award = $record->showaward
+                    ? self::get_award_label((int) $record->uponcompletion, (int) $record->points, (int) $record->level)
+                    : '';
                 $courses[] = [
                     'coursename' => format_string($course->fullname),
                     'courseurl' => (new \moodle_url('/course/view.php', ['id' => $record->courseid]))->out(false),
@@ -335,6 +401,8 @@ class helper {
                     'iscomplete' => $hasgoal && $courseearned >= $availableint,
                     'hasaddoncontent' => $addon !== '',
                     'addoncontent' => $addon,
+                    'award' => $award,
+                    'hasawards' => $award !== '' || $addon !== '',
                 ];
             }
 
@@ -366,6 +434,10 @@ class helper {
                 'hasbody' => !empty($data->learningtime) || $canreport,
                 // Expand the first skill by default so the panel is not empty on open.
                 'expanded' => $index === 0,
+                // The course's Skills page: without a user no points; with one, the points from the course.
+                'hidepoints' => !$userid,
+                'hascoursepoints' => $courseid && $userid,
+                'coursepoints' => $courseid && $userid ? points_history::get_course_points($userid, $skillid, $courseid) : 0,
             ];
             $index++;
         }

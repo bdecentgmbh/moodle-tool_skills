@@ -48,6 +48,7 @@ or adjust a learner's points.
 | --- | --- | --- |
 | `tool/skills:manage` | Manager (and admin) | Create, edit, archive and delete skills and levels site-wide |
 | `tool/skills:managecourseskillslist` | Teacher, editing teacher, manager | Enable and configure skills within a course |
+| `tool/skills:viewcourseskills` | Student, teacher, editing teacher, manager | Open the Skills page of a course that awards a skill |
 | `tool/skills:viewotherspoints` | Manager | View the users-points report for a skill |
 
 ## Addons

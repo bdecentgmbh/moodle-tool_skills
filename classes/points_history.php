@@ -121,6 +121,23 @@ class points_history {
     }
 
     /**
+     * The points a course added to a user's skill: the sum of the changes from the course and its activities,
+     * less what was revoked.
+     *
+     * @param int $userid
+     * @param int $skillid
+     * @param int $courseid
+     * @return int
+     */
+    public static function get_course_points(int $userid, int $skillid, int $courseid): int {
+        global $DB;
+        return (int) $DB->get_field_sql(
+            'SELECT SUM(points) FROM {' . self::TABLE . '} WHERE userid = ? AND skill = ? AND courseid = ?',
+            [$userid, $skillid, $courseid]
+        );
+    }
+
+    /**
      * Delete the history of a user, for example when the user is deleted.
      *
      * @param int $userid

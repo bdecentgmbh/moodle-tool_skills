@@ -123,7 +123,7 @@ profile**:
 | --- | --- |
 | **Skills with courses and activities** (default) | Each skill with its current level, points and learning time, expandable to the courses that award it with the points earned there, and, with the Activity skills addon, the activities. |
 | **Skill totals only** | Each skill with its current level, points and learning time, without the course and activity rows. |
-| **Disabled** | Nothing: the profile has no Skills section, also not the **Manage skills** link for managers. |
+| **Disabled** | Nothing: the profile has no Skills section, also not the **Manage skills** link for managers. Learners also do not get the **Skills** tab of courses. |
 
 Addons can add small badges ("pills") below a skill's points in both displays, for example the points
 removed by decay. Tapping or clicking a pill shows its details.

@@ -20,9 +20,9 @@ your course awards and **how**.
 ## Opening the course skills page
 
 In your course, open **Skills** from the course's secondary navigation (it may sit in the **More**
-menu). This lists the skills
-that are available to your course — that is, skills that are enabled site-wide and either global or
-allowed in your course's category.
+menu). This opens the course's **Skills** page (see [What learners see](#what-learners-see)); select
+**Manage course skills** there. This lists the skills that are available to your course — that is,
+skills that are enabled site-wide and either global or allowed in your course's category.
 
 Each skill row has an **Edit** action; use it to enable the skill and configure how it is awarded.
 
@@ -77,6 +77,14 @@ an expandable panel with:
 
 Your administrator may show only the totals per skill (without the course rows) or hide the section;
 see *Skills on the user profile* in the [Administrator guide](admin-guide.md).
+
+Learners also find a **Skills** tab in each course that awards a skill. Its page, *Skills in this course*,
+shows a card per skill with the learner's level and points, the points from this course and, under
+**Earn it in this course**, what completing the course awards and, with the Activity skills addon, what
+each activity awards, each with the points earned there. You see the same page without points: the skills
+your course awards and how. Whose progress the page shows follows the course completion report: users
+enrolled with `moodle/course:isincompletionreports` (students). The tab needs
+`tool/skills:viewcourseskills` and is hidden from learners when the profile Skills section is disabled.
 
 Points are awarded when the learner meets the completion condition you configured — so a learner who
 completes your course sees their points and level update on their profile.

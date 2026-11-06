@@ -1,0 +1,128 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_skills/course_skills
+
+    Skills of a course on its Skills page, one card per skill in the layout of the profile's totals-only
+    display (tool_skills/profile_skills), with the summary (tool_skills/profile_skill_summary), the pills
+    (tool_skills/profile_skill_pills), the points from the course and what the course and its activities
+    award ("Earn it in this course"). Without personal data (hidepoints) the cards show no points, chips or
+    pills. The activity rows are the addon content of the course row. The skill colour is validated to a
+    #rgb/#rrggbb hex on input, so it is safe to interpolate it into the inline style.
+
+    Classes required for JS:
+    * none (popovers of the pills, see tool_skills/profile_skill_pills)
+
+    Context variables required for this template:
+    * skills - Array of skills, each with the variables of tool_skills/profile_skills, and:
+        * hidepoints - Whether to leave out the user's points, chips and pills
+        * hascoursepoints, coursepoints - The points from this course
+        * courses - The course row only, with award (what completing the course awards, HTML, empty for
+          nothing) and hasawards (whether the course or its activities award anything)
+
+    Example context (json):
+    {
+        "skills": [
+            {
+                "skillid": 5,
+                "identitykey": "firesafety",
+                "name": "Fire safety",
+                "hascolor": true,
+                "color": "#c2410c",
+                "hascurrentlevel": true,
+                "currentlevelname": "Basic",
+                "hascurrentlevelcolor": true,
+                "currentlevelcolor": "#fbbf24",
+                "currentleveltextcolor": "#000000",
+                "haslevelimage": false,
+                "levelimageurl": "",
+                "earned": 45,
+                "hastotalpoints": true,
+                "pointstocomplete": 100,
+                "haspills": true,
+                "pills": [
+                    {
+                        "name": "skilladdon_targets",
+                        "label": "Target: Advanced",
+                        "title": "Reach Advanced by 31 January 2027",
+                        "variant": "info"
+                    }
+                ],
+                "haslearningtime": true,
+                "learningtime": "3 hours",
+                "hidepoints": false,
+                "hascoursepoints": true,
+                "coursepoints": 28,
+                "courses": [
+                    {
+                        "haspoints": true,
+                        "hasgoal": true,
+                        "earned": 0,
+                        "available": 60,
+                        "iscomplete": false,
+                        "hasaddoncontent": false,
+                        "addoncontent": "",
+                        "award": "Set level - Advanced",
+                        "hasawards": true
+                    }
+                ]
+            }
+        ]
+    }
+}}
+<div class="toolskills-profile-skills toolskills-profile-totals toolskills-course-skills">
+    {{#skills}}
+    <div class="toolskill-card skill-{{identitykey}}"{{#hascolor}} style="border-inline-start: 4px solid {{color}};"{{/hascolor}}>
+        <h3 class="toolskill-header">
+            {{> tool_skills/profile_skill_summary }}
+        </h3>
+        {{#haspills}}
+        <div class="toolskill-pills d-flex flex-wrap gap-2{{#haslevelimage}} toolskill-pills-indent{{/haslevelimage}}">
+            {{> tool_skills/profile_skill_pills }}
+        </div>
+        {{/haspills}}
+        <div class="toolskill-body">
+            {{#hascoursepoints}}
+            <p class="toolskill-coursepoints mb-1">{{#str}}pointsfromcourse, tool_skills, {{coursepoints}}{{/str}}</p>
+            {{/hascoursepoints}}
+            {{#haslearningtime}}
+            <p class="toolskill-learningtime text-muted mb-1">{{#str}}learningtime, tool_skills{{/str}}: {{learningtime}}</p>
+            {{/haslearningtime}}
+            {{#courses}}
+            {{#hasawards}}
+            <h4 class="toolskill-awards-heading h6 fw-bold mt-3 mb-1">{{#str}}earnincourse, tool_skills{{/str}}</h4>
+            <ul class="toolskill-courses list-unstyled mb-0">
+                {{#award}}
+                <li class="toolskill-course toolskill-coursecompletion d-flex align-items-center justify-content-between gap-2 py-1">
+                    <span>{{#str}}coursecompletion{{/str}} <span class="toolskill-award text-muted">· {{{award}}}</span></span>
+                    {{^hidepoints}}
+                    {{#haspoints}}
+                    <span class="badge rounded-pill toolskill-chip{{#iscomplete}} toolskill-chip-complete{{/iscomplete}}">{{earned}}{{#hasgoal}} / {{available}}{{/hasgoal}}</span>
+                    {{/haspoints}}
+                    {{/hidepoints}}
+                </li>
+                {{/award}}
+                {{#hasaddoncontent}}
+                <li class="toolskill-addon">{{{addoncontent}}}</li>
+                {{/hasaddoncontent}}
+            </ul>
+            {{/hasawards}}
+            {{/courses}}
+        </div>
+    </div>
+    {{/skills}}
+</div>

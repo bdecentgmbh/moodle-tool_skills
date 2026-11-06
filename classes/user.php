@@ -91,16 +91,20 @@ class user {
     }
 
     /**
-     * Get the current user skills list.
+     * Get the skills of the user's courses: one record per course and enabled skill.
      *
+     * Each record carries the user id (userid), the skill (skillobj), the course skill (skillcourse), the
+     * user's points (userpoints, false when there are none) and the skill's levels, plus what addons add.
+     *
+     * @param int|null $courseid Only this course, whether or not the user is enrolled in it; null for the
+     *     courses the user is enrolled in. With user id 0, the course's skills without a user.
      * @return array
      */
-    public function get_user_skills() {
+    public function get_user_skills(?int $courseid = null) {
         global $DB, $CFG;
 
-        // Fetch the list of user enrolled courses.
-        $courses = enrol_get_users_courses($this->userid, true, 'id');
-        $ids = array_column($courses, 'id');
+        // The given course, or the courses the user is enrolled in.
+        $ids = $courseid ? [$courseid] : array_column(enrol_get_users_courses($this->userid, true, 'id'), 'id');
 
         // User not assigned to any course then not skills to earn.
         if (empty($ids)) {
@@ -121,6 +125,7 @@ class user {
         // Include list of course and skills.
         array_walk($list, function (&$point) {
             global $DB;
+            $point->userid = $this->userid;
             // Skill record.
             $point->skillobj = skills::get($point->skill);
             // Skill courses.

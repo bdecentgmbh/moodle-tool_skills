@@ -56,6 +56,8 @@ $PAGE->set_url(new moodle_url('/admin/tool/skills/manage/courselist.php', ['cour
 $PAGE->set_cacheable(false);
 $PAGE->set_course($course);
 $PAGE->set_heading(format_string($course->fullname));
+// The Skills tab opens the course's Skills page, from which this page is reached.
+$PAGE->set_secondary_active_tab('manage-tool-skills');
 
 // Process actions.
 if ($action !== null && confirm_sesskey()) {
@@ -95,8 +97,9 @@ $PAGE->navbar->add(get_string('mycourses', 'core'), new moodle_url('/course/inde
 $PAGE->navbar->add(format_string($course->shortname), new moodle_url('/course/view.php', ['id' => $course->id]));
 $PAGE->navbar->add(
     get_string('skills', 'tool_skills'),
-    new moodle_url('/admin/tool/skills/manage/courselist.php', ['courseid' => $courseid])
+    new moodle_url('/admin/tool/skills/course.php', ['courseid' => $courseid])
 );
+$PAGE->navbar->add(get_string('managecourseskills', 'tool_skills'), $PAGE->url);
 
 // Build skills table.
 $table = new \tool_skills\table\course_skills_table($courseid);

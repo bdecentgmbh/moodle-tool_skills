@@ -2,6 +2,11 @@
 
 ## 1.4 (unreleased)
 
+- Skills page of a course: a **Skills** tab in each course that awards a skill opens *Skills in this
+  course*, with a card per skill. Learners see their level and points, the points from this course and
+  what the course and its activities award, with the points earned there; teachers see what the course
+  awards, and reach *Manage course skills* from there. New capability `tool/skills:viewcourseskills`
+  (students, teachers, managers). Learners do not get the tab when the profile Skills section is disabled.
 - Points history: every change of a user's skill points is recorded with its time, reason (award,
   revoke, decay, import, other), source (course, activity or decay rule, with its name at the time) and the
   level before and after. Points earned before the update are imported once in the background; where the

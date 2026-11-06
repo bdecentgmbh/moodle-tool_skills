@@ -70,3 +70,20 @@ Feature: Skills section on the user profile
     And I am on the "student1" "user > profile" page logged in as student1
     Then ".toolskills-profile-skills .toolskill-course" "css_element" should not exist
     And I should see "Beginner" in the ".toolskills-profile-skills" "css_element"
+
+  @javascript
+  Scenario: Learners see the skills of a course on its Skills page
+    When I am on the "Course 1" course page logged in as student1
+    And I click on "Skills" "link" in the ".secondary-navigation" "css_element"
+    Then I should see "Skills in this course"
+    And I should see "Beginner" in the ".toolskills-course-skills" "css_element"
+    And I should see "0 points from this course" in the ".toolskills-course-skills" "css_element"
+    And I should see "Points - 200" in the ".toolskill-coursecompletion" "css_element"
+    And "Manage course skills" "button" should not exist
+
+  @javascript
+  Scenario: With the Skills section disabled, learners get no Skills tab in the course
+    Given the following config values are set as admin:
+      | profiledisplay | 0 | tool_skills |
+    When I am on the "Course 1" course page logged in as student1
+    Then "Skills" "link" should not exist in the ".secondary-navigation" "css_element"

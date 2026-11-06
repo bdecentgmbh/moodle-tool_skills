@@ -31,6 +31,7 @@
     * name, hascurrentlevel, currentlevelname, hascurrentlevelcolor, currentlevelcolor, currentleveltextcolor
     * haslevelimage, levelimageurl
     * earned, hastotalpoints, pointstocomplete
+    * hidepoints - Optional: leave out the points, on a course's Skills page without a learner
 
     Example context (json):
     {
@@ -58,10 +59,12 @@
             <span class="badge rounded-pill toolskill-level-badge"
                 {{#hascurrentlevelcolor}}style="background-color: {{currentlevelcolor}}; color: {{currentleveltextcolor}};"{{/hascurrentlevelcolor}}>{{{currentlevelname}}}</span>
             {{/hascurrentlevel}}
+            {{^hidepoints}}
             <span class="toolskill-points"
                 title="{{#str}}earned, tool_skills{{/str}}: {{earned}}{{#hastotalpoints}} / {{pointstocomplete}}{{/hastotalpoints}}">
                 <span class="toolskill-earned fw-bold fs-5">{{earned}}</span>{{#hastotalpoints}}<span class="toolskill-total text-muted">/{{pointstocomplete}}</span>{{/hastotalpoints}}
             </span>
+            {{/hidepoints}}
         </span>
     </span>
 </span>

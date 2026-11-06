@@ -26,7 +26,7 @@
 use core_user\output\myprofile\tree;
 
 /**
- * Add the link in course secondary navigation menu to open the skills list page.
+ * Add the Skills tab to the course secondary navigation, which opens the course's Skills page.
  *
  * @param  navigation_node $navigation
  * @param  stdClass $course
@@ -34,13 +34,11 @@ use core_user\output\myprofile\tree;
  * @return void
  */
 function tool_skills_extend_navigation_course(navigation_node $navigation, stdClass $course, $context) {
-    global $PAGE;
-
     $addnode = $context->contextlevel === CONTEXT_COURSE;
-    $addnode = $addnode && has_capability('tool/skills:managecourseskillslist', $context);
+    $addnode = $addnode && \tool_skills\helper::can_view_course_page($context);
     if ($addnode) {
         $id = $context->instanceid;
-        $url = new moodle_url('/admin/tool/skills/manage/courselist.php', [
+        $url = new moodle_url('/admin/tool/skills/course.php', [
             'courseid' => $id,
         ]);
         $node = $navigation->create(get_string('skills', 'tool_skills'), $url, navigation_node::TYPE_SETTING, null, null);

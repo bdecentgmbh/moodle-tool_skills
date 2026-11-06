@@ -48,7 +48,7 @@ class behat_tool_skills extends behat_base {
     }
 
     /**
-     * Open the course skill listing page for the course.
+     * Open the course skill listing page (Manage course skills) of the course, from its Skills page.
      *
      * @Given /^I navigate to "(?P<coursename>(?:[^"]|\\")*)" course skills$/
      * @param string $coursename Coursename.
@@ -56,6 +56,7 @@ class behat_tool_skills extends behat_base {
     public function i_navigate_to_course_skills($coursename) {
         $this->execute('behat_navigation::i_am_on_course_homepage', [$coursename]);
         $this->execute('behat_navigation::i_navigate_to_in_current_page_administration', ["Skills"]);
+        $this->execute('behat_forms::press_button', [get_string('managecourseskills', 'tool_skills')]);
     }
 
     /**
