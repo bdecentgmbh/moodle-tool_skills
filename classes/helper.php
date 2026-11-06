@@ -314,7 +314,7 @@ class helper {
 
     /**
      * The tertiary navigation of a course's Skills pages, as on the Participants page: a menu of the pages
-     * the user can open, and outside the Manage page its button.
+     * the user can open. Its current page is the page heading, so the pages print no heading of their own.
      *
      * @param \context_course $context
      * @param string $current The current page: overview, progress or manage.
@@ -328,8 +328,7 @@ class helper {
         if (self::can_view_course_participants($context)) {
             $pages['progress'] = [new \moodle_url('/admin/tool/skills/progress.php', $params), 'participantsprogress'];
         }
-        $canmanage = has_capability('tool/skills:managecourseskillslist', $context);
-        if ($canmanage) {
+        if (has_capability('tool/skills:managecourseskillslist', $context)) {
             $pages['manage'] = [new \moodle_url('/admin/tool/skills/manage/courselist.php', $params), 'managecourseskills'];
         }
         if (count($pages) < 2) {
@@ -343,15 +342,12 @@ class helper {
         $menu = new \core\output\select_menu('toolskillsnavigation', $options, $pages[$current][0]->out(false), true);
         $menu->set_label(get_string('coursenavigation', 'tool_skills'), ['class' => 'visually-hidden']);
         $output = $PAGE->get_renderer('core');
-        $html = \html_writer::div(
-            $output->render_from_template('core/tertiary_navigation_selector', $menu->export_for_template($output)),
-            'navitem'
+        $data = $menu->export_for_template($output);
+        $data->headinglevel = 2;
+        return \html_writer::div(
+            \html_writer::div($output->render_from_template('core/tertiary_navigation_selector', $data), 'navitem'),
+            'tertiary-navigation d-flex mb-3'
         );
-        if ($canmanage && $current !== 'manage') {
-            $button = $output->single_button($pages['manage'][0], get_string('managecourseskills', 'tool_skills'), 'get');
-            $html .= \html_writer::div($button, 'navitem ms-auto');
-        }
-        return \html_writer::div($html, 'tertiary-navigation d-flex flex-wrap align-items-center gap-2 mb-3');
     }
 
     /**

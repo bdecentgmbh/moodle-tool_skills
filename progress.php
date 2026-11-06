@@ -76,7 +76,6 @@ if ($skillid && !$nogroup) {
 
 echo $OUTPUT->header();
 echo \tool_skills\helper::get_course_navigation($context, 'progress');
-echo $OUTPUT->heading(get_string('participantsprogress', 'tool_skills'));
 
 if (!$skillid) {
     echo $OUTPUT->notification(get_string('noskillsincourse', 'tool_skills'), 'info', false);

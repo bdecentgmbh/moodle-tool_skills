@@ -155,8 +155,8 @@ final class course_progress_test extends \advanced_testcase {
         $this->assertStringContainsString('Overview', $html);
         $this->assertStringContainsString('Participants&#039; progress', $html);
         $this->assertStringContainsString('/admin/tool/skills/manage/courselist.php', $html);
-        $this->assertStringContainsString('singlebutton', $html);
-        $this->assertStringNotContainsString('singlebutton', helper::get_course_navigation($context, 'manage'));
+        // The current page is the page heading.
+        $this->assertStringContainsString('aria-level="2"', $html);
 
         $roleid = $DB->get_field('role', 'id', ['shortname' => 'teacher']);
         assign_capability('tool/skills:viewcourseparticipants', CAP_PROHIBIT, $roleid, $context);

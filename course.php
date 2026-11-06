@@ -44,8 +44,9 @@ $islearner = is_enrolled($context, $USER, 'moodle/course:isincompletionreports',
 $data = \tool_skills\helper::get_user_profile_skills_context($islearner ? $USER->id : 0, true, $course->id);
 
 echo $OUTPUT->header();
-echo \tool_skills\helper::get_course_navigation($context, 'overview');
-echo $OUTPUT->heading(get_string('skillsincourse', 'tool_skills'));
+// The menu of the course's Skills pages is the heading; learners, who have no menu, get one.
+$navigation = \tool_skills\helper::get_course_navigation($context, 'overview');
+echo $navigation ?: $OUTPUT->heading(get_string('skillsincourse', 'tool_skills'));
 
 if ($data['hasskills']) {
     echo html_writer::tag('p', get_string($islearner ? 'skillsincourse_learner' : 'skillsincourse_desc', 'tool_skills'));

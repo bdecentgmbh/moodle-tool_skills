@@ -22,8 +22,8 @@ your course awards and **how**.
 
 In your course, open **Skills** from the course's secondary navigation (it may sit in the **More**
 menu). This opens the course's **Skills** page (see [What learners see](#what-learners-see)); select
-**Manage course skills** there (or in the menu above the page heading). This lists the skills that
-are available to your course — that is,
+**Manage course skills** in the menu at the top of that page. This lists the skills that are available
+to your course — that is,
 skills that are enabled site-wide and either global or allowed in your course's category.
 
 Each skill row has an **Edit** action; use it to enable the skill and configure how it is awarded.
@@ -93,7 +93,7 @@ completes your course sees their points and level update on their profile.
 
 ## Participants' progress
 
-From the menu above the heading of the course's **Skills** page, choose **Participants' progress**. It lists
+From the menu at the top of the course's **Skills** page, choose **Participants' progress**. It lists
 the course's learners for one skill at a time (choose it under **Skill**), and in a course with groups for
 the selected group, with the points each learner earned from this course. With
 `tool/skills:viewcourseparticipants` (teachers, editing teachers and managers by default) it also shows

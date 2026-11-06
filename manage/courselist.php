@@ -108,7 +108,6 @@ $table->define_baseurl($PAGE->url);
 // Header.
 echo $OUTPUT->header();
 echo \tool_skills\helper::get_course_navigation($context, 'manage');
-echo $OUTPUT->heading(get_string('assignskills', 'tool_skills'));
 
 // Skills description.
 echo get_string('assignskills_desc', 'tool_skills');
