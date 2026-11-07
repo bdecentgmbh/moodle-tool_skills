@@ -113,6 +113,7 @@ $string['invalidlevelforskill'] = 'The selected level does not belong to this sk
 $string['key'] = 'Key';
 $string['learningtime'] = 'Learning time';
 $string['learningtime_help'] = 'Time to spend in the course to complete this skill';
+$string['learningtimepill'] = 'Learning time: about {$a} to complete this skill.';
 $string['levelcount'] = '{$a->level}: {$a->count}';
 $string['leveldefaultname'] = 'Level {$a}';
 $string['levelnotfound'] = 'Level not found';

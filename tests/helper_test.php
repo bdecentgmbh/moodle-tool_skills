@@ -182,4 +182,32 @@ final class helper_test extends \advanced_testcase {
         $total = helper::get_courses_skill_points([$course1->id, $course2->id]);
         $this->assertEquals(150, $total);
     }
+
+    /**
+     * A learning time is shown in the unit it was entered in, not split into days and hours.
+     *
+     * @dataProvider learning_time_provider
+     * @param int $seconds
+     * @param string $expected
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('learning_time_provider')]
+    public function test_format_learning_time(int $seconds, string $expected): void {
+        $this->assertSame($expected, helper::format_learning_time($seconds));
+    }
+
+    /**
+     * Learning times and how they are shown.
+     *
+     * @return array
+     */
+    public static function learning_time_provider(): array {
+        return [
+            'hours that are not whole days' => [40 * HOURSECS, '40 hours'],
+            'whole days' => [90 * DAYSECS, '90 days'],
+            'whole weeks' => [2 * WEEKSECS, '2 weeks'],
+            'minutes' => [45 * MINSECS, '45 minutes'],
+            'one hour' => [HOURSECS, '1 hour'],
+            'seconds' => [90, '1 min 30 secs'],
+        ];
+    }
 }

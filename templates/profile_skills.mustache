@@ -22,10 +22,10 @@
     The tool_skills/profiledisplay setting chooses between two displays. In the detailed display each
     skill is a Bootstrap 5 accordion panel: the header shows the skill summary
     (tool_skills/profile_skill_summary: current level image, name, level badge, earned/total points),
-    followed by the pills added by plugins (tool_skills/profile_skill_pills; outside the accordion button,
-    as they open a popover when tapped), and the body lists the courses that award the skill with their
-    points. In the totals-only display each skill is a static card with the summary, the pills and the
-    learning time, without course and activity rows. Both have an action menu beside the header (find
+    followed by the pills (tool_skills/profile_skill_pills: the learning time and those added by plugins;
+    outside the accordion button, as they open a popover when tapped), and the body lists the courses that
+    award the skill with their points. In the totals-only display each skill is a static card with the
+    summary and the pills, without course and activity rows. Both have an action menu beside the header (find
     courses, users' points, edit skill, as the user may). The skill colour is
     validated to a #rgb/#rrggbb hex on input, so it is safe to interpolate it into the inline style.
 
@@ -40,8 +40,7 @@
         * hascurrentlevel, currentlevelname, hascurrentlevelcolor, currentlevelcolor, currentleveltextcolor
         * haslevelimage, levelimageurl
         * earned, hastotalpoints, pointstocomplete
-        * haspills, pills (name, label, title, variant)
-        * haslearningtime, learningtime
+        * haspills, pills (name, label, title, variant, icon): the learning time first, then the plugins' pills
         * hascourses, courses (coursename, courseurl, courseclass, haspoints, hasgoal, earned, available,
           iscomplete, hasaddoncontent, addoncontent)
         * actions - The action menu of the skill (HTML), empty without actions
@@ -71,14 +70,19 @@
                 "haspills": true,
                 "pills": [
                     {
+                        "name": "learningtime",
+                        "label": "90 days",
+                        "title": "Learning time: about 90 days to complete this skill.",
+                        "variant": "outline",
+                        "icon": {"key": "i/duration", "component": "core", "alt": "Learning time"}
+                    },
+                    {
                         "name": "skilladdon_decay",
                         "label": "−5 decay",
                         "title": "5 points removed by decay",
                         "variant": "warning"
                     }
                 ],
-                "haslearningtime": true,
-                "learningtime": "90 days",
                 "hascourses": true,
                 "courses": [
                     {
@@ -138,9 +142,6 @@
             aria-labelledby="toolskill-heading-{{uniqid}}-{{skillid}}"
             data-bs-parent="#toolskills-accordion-{{uniqid}}" data-parent="#toolskills-accordion-{{uniqid}}">
             <div class="accordion-body toolskill-body">
-                {{#haslearningtime}}
-                <p class="toolskill-learningtime text-muted mb-2">{{#str}}learningtime, tool_skills{{/str}}: {{learningtime}}</p>
-                {{/haslearningtime}}
                 {{#hascourses}}
                 <ul class="toolskill-courses list-unstyled mb-2">
                     {{#courses}}
@@ -171,11 +172,6 @@
             {{> tool_skills/profile_skill_pills }}
         </div>
         {{/haspills}}
-        {{#haslearningtime}}
-        <div class="toolskill-body">
-            <p class="toolskill-learningtime text-muted mb-1">{{#str}}learningtime, tool_skills{{/str}}: {{learningtime}}</p>
-        </div>
-        {{/haslearningtime}}
         {{/detailed}}
     </div>
     {{/skills}}

@@ -20,8 +20,8 @@
     Skills of a course on its Skills page, one card per skill in the layout of the profile's totals-only
     display (tool_skills/profile_skills), with the summary (tool_skills/profile_skill_summary), the pills
     (tool_skills/profile_skill_pills), the points from the course and what the course and its activities
-    award ("Earn it in this course"). Without personal data (hidepoints) the cards show no points, chips or
-    pills. The activity rows are the addon content of the course row. The skill colour is validated to a
+    award ("Earn it in this course"). Without personal data (hidepoints) the cards show no points or chips,
+    and the learning time is their only pill. The activity rows are the addon content of the course row. The skill colour is validated to a
     #rgb/#rrggbb hex on input, so it is safe to interpolate it into the inline style.
 
     Classes required for JS:
@@ -29,7 +29,7 @@
 
     Context variables required for this template:
     * skills - Array of skills, each with the variables of tool_skills/profile_skills, and:
-        * hidepoints - Whether to leave out the user's points, chips and pills
+        * hidepoints - Whether to leave out the user's points and chips
         * hascoursepoints, coursepoints - The points from this course
         * courses - The course row only, with award (what completing the course awards, HTML, empty for
           nothing) and hasawards (whether the course or its activities award anything)
@@ -60,14 +60,19 @@
                 "haspills": true,
                 "pills": [
                     {
+                        "name": "learningtime",
+                        "label": "3 hours",
+                        "title": "Learning time: about 3 hours to complete this skill.",
+                        "variant": "outline",
+                        "icon": {"key": "i/duration", "component": "core", "alt": "Learning time"}
+                    },
+                    {
                         "name": "skilladdon_targets",
                         "label": "Target: Advanced",
                         "title": "Reach Advanced by 31 January 2027",
                         "variant": "info"
                     }
                 ],
-                "haslearningtime": true,
-                "learningtime": "3 hours",
                 "hidepoints": false,
                 "hascoursepoints": true,
                 "coursepoints": 28,
@@ -110,9 +115,6 @@
             {{#hascoursepoints}}
             <p class="toolskill-coursepoints mb-1">{{#str}}pointsfromcourse, tool_skills, {{coursepoints}}{{/str}}</p>
             {{/hascoursepoints}}
-            {{#haslearningtime}}
-            <p class="toolskill-learningtime text-muted mb-1">{{#str}}learningtime, tool_skills{{/str}}: {{learningtime}}</p>
-            {{/haslearningtime}}
             {{#courses}}
             {{#hasawards}}
             <h4 class="toolskill-awards-heading h6 fw-bold mt-3 mb-1">

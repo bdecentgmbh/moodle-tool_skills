@@ -128,6 +128,29 @@ final class lib_test extends \advanced_testcase {
     }
 
     /**
+     * The learning time is the first pill of a skill, an outline pill in the unit it was entered in that
+     * explains itself in its popover, before the plugins' pills; there is no separate learning time line.
+     */
+    public function test_learning_time_pill(): void {
+        $this->resetAfterTest(true);
+        [$user, $course] = $this->setup_user_with_skill();
+        $this->setUser($user);
+        $this->redirectHook(
+            \tool_skills\hook\extend_profile_skill::class,
+            fn(\tool_skills\hook\extend_profile_skill $hook) => $hook->add_pill('skilladdon_decay', '−5 decay')
+        );
+
+        $content = $this->run_callback($user, true, $course)->__get('nodes')['toolskills_earned']->content;
+        $pill = 'toolskill-pill toolskill-pill-learningtime toolskill-pill-variant-outline';
+        $this->assertStringContainsString($pill, $content);
+        $this->assertStringContainsString('90 days</a>', $content);
+        $this->assertStringContainsString('data-bs-content="Learning time: about 90 days to complete this skill."', $content);
+        $this->assertStringContainsString('aria-label="Learning time"', $content);
+        $this->assertLessThan(strpos($content, 'toolskill-pill-skilladdon_decay'), strpos($content, $pill));
+        $this->assertStringNotContainsString('toolskill-learningtime', $content);
+    }
+
+    /**
      * Without skills, the section says so, with its action menu.
      */
     public function test_section_without_skills(): void {

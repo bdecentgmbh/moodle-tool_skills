@@ -34,7 +34,8 @@ Add a pill with `add_pill(string $name, string $label, string $title = '', strin
 | `variant` | Colour: `secondary`, `info`, `success`, `warning` or `danger`. |
 
 `remove_pill($name)` removes a pill and `get_pills()` returns them in the order they were added. Labels
-and titles are escaped when rendered, so pass plain text, not HTML.
+and titles are escaped when rendered, so pass plain text, not HTML. The skill's learning time comes before
+your pills, as an outline pill named `learningtime`.
 
 Register the callback in your plugin's `db/hooks.php`:
 

@@ -510,6 +510,26 @@ class helper {
     }
 
     /**
+     * A learning time in the unit it was entered in: 40 hours is "40 hours", where format_time() says
+     * "1 day 16 hours". The unit is the one the duration field of the skill form shows.
+     *
+     * @param int $seconds
+     * @return string
+     */
+    public static function format_learning_time(int $seconds): string {
+        global $CFG;
+        require_once($CFG->libdir . '/form/duration.php');
+
+        [$number, $unit] = (new \MoodleQuickForm_duration())->seconds_to_unit($seconds);
+        $strings = [WEEKSECS => 'numweeks', DAYSECS => 'numdays', HOURSECS => 'numhours', MINSECS => 'numminutes'];
+        // The core strings are plural: one unit, and seconds, in the words of format_time().
+        if ($number == 1 || !isset($strings[$unit])) {
+            return format_time($seconds);
+        }
+        return get_string($strings[$unit], 'moodle', $number);
+    }
+
+    /**
      * What an award gives, in the words of the course and activity skill lists, for example "Points - 40".
      *
      * @param int $type One of the skills::COMPLETION* constants.
@@ -537,12 +557,12 @@ class helper {
      *
      * Produces the data consumed by the tool_skills/profile_skills Mustache template: one entry per
      * skill the user is working towards, each with its earned/total points, current level (name,
-     * colour, image), the pills added by plugins through the extend_profile_skill hook and, unless only
-     * the totals are shown, the per-course points breakdown.
+     * colour, image), its learning time and the pills added by plugins through the extend_profile_skill
+     * hook (as pills) and, unless only the totals are shown, the per-course points breakdown.
      *
      * With a course, it is the context of the course's Skills page (tool_skills/course_skills): the
      * course's skills, each with its course row only, what the course awards (award) and the points from
-     * the course. With user id 0 as well, the skills carry no personal data (hidepoints, no pills).
+     * the course. With user id 0 as well, the skills carry no personal data (hidepoints, no plugin pills).
      *
      * @param int $userid The user to build the skills summary for, or 0 with a course.
      * @param bool $detailed Include the per-course (and addon per-activity) breakdown.
@@ -581,6 +601,17 @@ class helper {
                 $hook = new \tool_skills\hook\extend_profile_skill($userid, $skill, $earned);
                 \core\di::get(\core\hook\manager::class)->dispatch($hook);
                 $pills = $hook->get_pills();
+            }
+            // The learning time comes first, as an outline pill that stands apart from the plugins' pills.
+            if (!empty($data->learningtime)) {
+                $learningtime = self::format_learning_time((int) $data->learningtime);
+                array_unshift($pills, [
+                    'name' => 'learningtime',
+                    'label' => $learningtime,
+                    'title' => get_string('learningtimepill', 'tool_skills', $learningtime),
+                    'variant' => 'outline',
+                    'icon' => ['key' => 'i/duration', 'component' => 'core', 'alt' => get_string('learningtime', 'tool_skills')],
+                ]);
             }
 
             // Per-course points breakdown, left out when only the totals are shown.
@@ -640,8 +671,6 @@ class helper {
                 'pointstocomplete' => $totalpoints,
                 'haspills' => !empty($pills),
                 'pills' => $pills,
-                'haslearningtime' => !empty($data->learningtime),
-                'learningtime' => !empty($data->learningtime) ? format_time($data->learningtime) : '',
                 'hascourses' => !empty($courses),
                 'courses' => $courses,
                 // The profile's action menu; the course's Skills page has its own links.

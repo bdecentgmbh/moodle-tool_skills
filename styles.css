@@ -179,6 +179,19 @@ body.module-skills .activity-header {
     background-color: var(--bs-danger-bg-subtle, #f8d7da);
     color: var(--bs-danger-text-emphasis, #842029);
 }
+/* The learning time: an outline, so that it stands apart from the plugins' pills. The inset shadow keeps it
+   as high as them, which a border would not. */
+.toolskills-profile-skills .toolskill-pill-variant-outline {
+    background-color: transparent;
+    color: var(--bs-secondary-color, #495057);
+    box-shadow: inset 0 0 0 1px currentColor;
+}
+.toolskills-profile-skills .toolskill-pill .icon {
+    width: auto;
+    height: auto;
+    font-size: inherit;
+    margin-right: 0.25rem;
+}
 /* Totals-only display: the card header matches the accordion button without being one. */
 .toolskills-profile-totals .toolskill-header {
     margin: 0;

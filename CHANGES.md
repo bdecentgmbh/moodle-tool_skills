@@ -27,6 +27,9 @@
   *Manage targets* and the decay pages; addons add theirs through a `get_profile_actions()` method. Each
   skill has a menu with *Find courses*, *Users' points* (instead of the *View users points for this skill*
   link) and *Edit skill*.
+- Learning time: shown as the first pill of a skill, an outline pill that explains it when tapped, in the
+  unit entered on the skill ("40 hours" instead of "1 day 16 hours"), on the profile and on the course's
+  Skills page, also when the skill's panel is collapsed.
 - Points history: every change of a user's skill points is recorded with its time, reason (award,
   revoke, decay, import, other), source (course, activity or decay rule, with its name at the time) and the
   level before and after. Points earned before the update are imported once in the background; where the

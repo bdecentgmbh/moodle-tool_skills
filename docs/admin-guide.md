@@ -66,7 +66,7 @@ Select **Create skill** on the **Active skills** tab and complete the form.
 | **Key** | A unique identifier for the skill. Keep it distinct so skills stay easy to tell apart in the system. |
 | **Description** | A longer explanation of the skill, for administrative reference. |
 | **Status** | **Enabled** — the skill is added to all courses that match its category setting and can be configured by teachers. **Disabled** — the skill is not added to any course and cannot be used. |
-| **Learning time** | The time expected to complete this skill within a course. It is shown to learners on their profile. |
+| **Learning time** | The time expected to complete this skill within a course. It is shown on the skill's card on the profile and on a course's Skills page, as an outline pill in the unit you enter here ("40 hours", not "1 day 16 hours"); tapping it explains it. |
 | **Skill colour** | A colour used to represent the skill (for example, the accent shown in the *Skills* section of the learner's profile). Enter a hex value such as `#3b82f6`, or leave it empty. |
 | **Available in course categories** | Restrict the skill to courses in the selected categories. Leave empty to make the skill available in **every** category. See [Availability](#availability-and-course-categories). |
 
