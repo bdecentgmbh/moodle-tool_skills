@@ -39,8 +39,9 @@ describes each option in detail.
 
 The users-points report lets you see how learners are doing with a given skill.
 
-- Open a learner's profile and, under **Skills**, select **View users points for this skill**
-  on the relevant skill; or open the report directly for a skill from the skills management pages.
+- On your profile, under **Skills**, open the actions menu (⋮) of the skill and select **Users' points**;
+  or open the report directly for a skill from the skills management pages. The same menu has **Find
+  courses** (the courses that award the skill) and, with `tool/skills:manage`, **Edit skill**.
 - The report lists each user together with the **points** they have earned for that skill.
 
 Access to the report requires the **`tool/skills:viewotherspoints`** capability, which managers hold

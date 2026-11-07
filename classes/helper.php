@@ -311,6 +311,77 @@ class helper {
     }
 
     /**
+     * The action menu of a skill on the profile: the courses that award it, its users-points report and its
+     * settings, as far as the user may open them.
+     *
+     * @param int $skillid
+     * @param string $name The skill name, unescaped, for the label of the menu.
+     * @return string HTML, empty without actions.
+     */
+    public static function get_skill_actions(int $skillid, string $name): string {
+        global $OUTPUT;
+
+        $system = \context_system::instance();
+        $actions = [
+            'menufindcourses' => self::can_browse_courses()
+                ? new \moodle_url('/admin/tool/skills/catalog.php', ['skill' => $skillid]) : null,
+            'menuuserspoints' => has_capability('tool/skills:viewotherspoints', $system)
+                ? new \moodle_url('/admin/tool/skills/manage/usersreport.php', ['id' => $skillid]) : null,
+            'editskill' => has_capability('tool/skills:manage', $system)
+                ? new \moodle_url('/admin/tool/skills/manage/edit.php', ['id' => $skillid, 'sesskey' => sesskey()]) : null,
+        ];
+        $menu = new \action_menu();
+        $menu->set_kebab_trigger(get_string('actionsfor', 'moodle', $name));
+        $menu->set_additional_classes('toolskill-actions');
+        foreach (array_filter($actions) as $string => $url) {
+            $menu->add_secondary_action(new \action_menu_link_secondary($url, null, get_string($string, 'tool_skills')));
+        }
+        return $menu->is_empty() ? '' : $OUTPUT->render($menu);
+    }
+
+    /**
+     * The action menu of the Skills section of the user's own profile: the user's own actions, then the
+     * management pages, of Skills and its addons, as far as the user may open them.
+     *
+     * Addons add theirs from a get_profile_actions() method of their manage_skills class, which returns
+     * ['own' => action_menu_link[], 'manage' => action_menu_link[]].
+     *
+     * @return string HTML, empty without actions.
+     */
+    public static function get_section_actions(): string {
+        global $OUTPUT;
+
+        $own = [];
+        $manage = [];
+        if (self::can_browse_courses()) {
+            $url = new \moodle_url('/admin/tool/skills/catalog.php');
+            $own[] = new \action_menu_link_secondary($url, null, get_string('menufindcourses', 'tool_skills'));
+        }
+        if (has_capability('tool/skills:manage', \context_system::instance())) {
+            $url = new \moodle_url('/admin/tool/skills/manage/list.php');
+            $manage[] = new \action_menu_link_secondary($url, null, get_string('manageskills', 'tool_skills'));
+        }
+        foreach (self::get_addon_extend_method('get_profile_actions') as $addon) {
+            $actions = $addon->get_profile_actions();
+            $own = array_merge($own, $actions['own'] ?? []);
+            $manage = array_merge($manage, $actions['manage'] ?? []);
+        }
+
+        $menu = new \action_menu();
+        $menu->set_kebab_trigger(get_string('actionsfor', 'moodle', get_string('skillprofilecategory', 'tool_skills')));
+        foreach ($own as $link) {
+            $menu->add_secondary_action($link);
+        }
+        if ($own && $manage) {
+            $menu->add_secondary_action(new \action_menu_filler());
+        }
+        foreach ($manage as $link) {
+            $menu->add_secondary_action($link);
+        }
+        return $menu->is_empty() ? '' : $OUTPUT->render($menu);
+    }
+
+    /**
      * What else than its completion a course awards in a skill, from the addons, for the Courses for skills page.
      *
      * @param int $courseid
@@ -490,8 +561,6 @@ class helper {
             $skillobjs[$record->skill] = $record->skillobj;
         }
 
-        $canreport = has_capability('tool/skills:viewotherspoints', \context_system::instance());
-
         $skills = [];
         $index = 0;
         foreach ($byskill as $skillid => $courserecords) {
@@ -575,10 +644,9 @@ class helper {
                 'learningtime' => !empty($data->learningtime) ? format_time($data->learningtime) : '',
                 'hascourses' => !empty($courses),
                 'courses' => $courses,
-                'hasreport' => $canreport,
-                'reporturl' => (new \moodle_url('/admin/tool/skills/manage/usersreport.php', ['id' => $skillid]))->out(false),
-                // The totals-only cards show a body only for the learning time or the report link.
-                'hasbody' => !empty($data->learningtime) || $canreport,
+                // The profile's action menu; the course's Skills page has its own links.
+                'actions' => $courseid === null
+                    ? self::get_skill_actions((int) $skillid, format_string($data->name, true, ['escape' => false])) : '',
                 // Expand the first skill by default so the panel is not empty on open.
                 'expanded' => $index === 0,
                 // The course's Skills page: without a user no points; with one, the points from the course.

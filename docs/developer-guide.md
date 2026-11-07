@@ -112,6 +112,15 @@ that own an allocation method also implement `get_points_history_source(string $
 differs from the user's points when the history started, one correction row is added, dated then.
 Imported rows fire no events.
 
+## Actions menu of the profile Skills section
+
+The actions menu beside the **Skills** heading of the user's own profile lists the user's own actions, then,
+below a divider, the management pages. Addons add theirs from a `get_profile_actions(): array` method of their
+`manage_skills` class, which returns `['own' => \action_menu_link[], 'manage' => \action_menu_link[]]` for the
+current user, already checked against their capabilities. Targets adds *Select targets* (a link with
+`data-action` that its JavaScript opens in a modal) and *Manage targets*; Decay adds its rules, queue, manual
+decay and report pages.
+
 ## Awards on the Courses for skills page
 
 The *Courses for skills* page says what each course awards in a skill: its completion award, then the

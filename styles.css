@@ -95,7 +95,10 @@ body.module-skills .activity-header {
     margin-bottom: 0.5rem;
     border: 1px solid var(--bs-border-color);
     border-radius: var(--bs-border-radius);
-    overflow: hidden;
+}
+/* No overflow clipping on the card, so that its action menu can open beyond it: round the header instead. */
+.toolskills-profile-skills .toolskill-card .accordion-button {
+    border-radius: var(--bs-border-radius);
 }
 .toolskills-profile-skills .accordion-button {
     /* Space between the summary column and the collapse arrow so long names never touch it. */
@@ -186,4 +189,19 @@ body.module-skills .activity-header {
 }
 .toolskills-profile-totals .toolskill-body {
     padding: 0 1.25rem 0.75rem;
+}
+/* The action menu of a skill, at the end of the card header. */
+.toolskills-profile-skills .toolskill-actions {
+    flex: 0 0 auto;
+    margin: 0.5rem 0.5rem 0 0;
+}
+/* The action menu of the Skills section of the profile, beside its heading. */
+.toolskills-profile-category > .card-body {
+    position: relative;
+}
+.toolskills-profile-category .toolskills-section-actions {
+    position: absolute;
+    top: 0.75rem;
+    inset-inline-end: 0.75rem;
+    list-style: none;
 }

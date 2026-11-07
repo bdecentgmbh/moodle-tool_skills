@@ -129,6 +129,12 @@ profile**:
 Addons can add small badges ("pills") below a skill's points in both displays, for example the points
 removed by decay. Tapping or clicking a pill shows its details.
 
+The actions menu (⋮) beside the **Skills** heading has, for each user as far as they may open them: **Find
+courses**, the addons' own actions such as **Select targets**, and the management pages: **Manage skills**,
+**Manage targets**, **Manage decay**, **Decay queue**, **Manual decay** and **Decay report**. Each skill has
+a menu too: **Find courses** for that skill, **Users' points** (with `tool/skills:viewotherspoints`) and
+**Edit skill** (with `tool/skills:manage`).
+
 ## Courses for skills
 
 The **Courses for skills** page (`/admin/tool/skills/catalog.php`) helps learners find courses: it lists,
@@ -139,8 +145,8 @@ Moodle's course listings, for example self enrolment). It lists the courses the 
 Moodle: hidden courses only for users who may see them, and only courses whose completion or activities
 award something in the skill.
 
-Learners reach it from the **Find courses that award skills** link in the Skills section of their profile,
-and from each skill on a course's **Skills** page. To add it to the primary navigation, add a line such as
+Learners reach it from **Find courses** in the actions menu (⋮) of the Skills section of their profile and
+of each skill there, and from each skill on a course's **Skills** page. To add it to the primary navigation, add a line such as
 `Courses for skills|/admin/tool/skills/catalog.php` to **Site administration > Appearance > Themes >
 Theme settings > Custom menu items**. It needs `tool/skills:browsecourses` (all authenticated users by
 default), and is not available when the profile Skills section is disabled.

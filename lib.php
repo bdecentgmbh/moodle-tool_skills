@@ -94,7 +94,19 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
     }
 
     if ($iscurrentuser) {
-        $systemcontext = \context_system::instance();
+        // The action menu of the section, at the top of it: finding courses, managing skills, and the addons' actions.
+        if ($actions = \tool_skills\helper::get_section_actions()) {
+            $tree->add_node(new core_user\output\myprofile\node(
+                'toolskills',
+                'toolskills_actions',
+                '',
+                null,
+                null,
+                $actions,
+                null,
+                'toolskills-section-actions'
+            ));
+        }
 
         // Render the panel of the user's skills: an accordion with the course breakdown, or the totals only.
         $skillscontext = \tool_skills\helper::get_user_profile_skills_context(
@@ -114,23 +126,6 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
                 'toolskills-profile-skills-node'
             );
             $tree->add_node($skillsnode);
-        }
-
-        // The courses that award skills.
-        if (\tool_skills\helper::can_browse_courses()) {
-            $link = html_writer::link(
-                new moodle_url('/admin/tool/skills/catalog.php'),
-                get_string('findcourses', 'tool_skills')
-            );
-            $tree->add_node(new core_user\output\myprofile\node('toolskills', 'toolskills_catalog', $link, null, null));
-        }
-
-        // Manage skills link for users who can manage them.
-        if (has_capability('tool/skills:manage', $systemcontext)) {
-            $link = new moodle_url('/admin/tool/skills/manage/list.php');
-            $skillstr = html_writer::link($link, get_string('skills:manage', 'tool_skills'));
-            $managenode = new core_user\output\myprofile\node('toolskills', 'manageskills', $skillstr, null, null);
-            $tree->add_node($managenode);
         }
     }
     return true;

@@ -103,7 +103,8 @@ Feature: Skills section on the user profile
   @javascript
   Scenario: Learners find the courses that award skills
     When I am on the "student1" "user > profile" page logged in as student1
-    And I follow "Find courses that award skills"
+    And I open the action menu in ".toolskills-section-actions" "css_element"
+    And I choose "Find courses" in the open action menu
     Then I should see "The courses that award skills, and what you earn in each of them."
     And I should see "Course completion · Points - 200" in the "Course 1" "table_row"
     And I should see "Enrolled" in the "Course 1" "table_row"

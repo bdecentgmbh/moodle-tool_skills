@@ -34,6 +34,8 @@ use tool_skills\table\catalog_table;
  * @covers \tool_skills\table\catalog_table
  * @covers \tool_skills\helper::can_browse_courses
  * @covers \tool_skills\helper::get_course_skills
+ * @covers \tool_skills\helper::get_skill_actions
+ * @covers \tool_skills\helper::get_section_actions
  */
 final class catalog_test extends \advanced_testcase {
     /** @var \stdClass[] The courses, by name. */
@@ -190,5 +192,54 @@ final class catalog_test extends \advanced_testcase {
 
         $this->setGuestUser();
         $this->assertFalse(helper::can_browse_courses());
+    }
+
+    /**
+     * The action menu of a skill on the profile has the actions the user may open.
+     */
+    public function test_skill_actions(): void {
+        $skillid = $this->skills['Safety'];
+
+        $this->setUser($this->getDataGenerator()->create_user());
+        $html = helper::get_skill_actions($skillid, 'Safety');
+        $this->assertStringContainsString('Actions for Safety', $html);
+        $this->assertStringContainsString('Find courses', $html);
+        $this->assertStringContainsString('/admin/tool/skills/catalog.php?skill=' . $skillid, $html);
+        $this->assertStringNotContainsString('usersreport.php', $html);
+        $this->assertStringNotContainsString('Edit skill', $html);
+
+        $this->setAdminUser();
+        $html = helper::get_skill_actions($skillid, 'Safety');
+        $this->assertStringContainsString("Users' points", $html);
+        $this->assertStringContainsString('/admin/tool/skills/manage/usersreport.php?id=' . $skillid, $html);
+        $this->assertStringContainsString('Edit skill', $html);
+        $this->assertStringContainsString('/admin/tool/skills/manage/edit.php?id=' . $skillid, $html);
+
+        set_config('profiledisplay', helper::PROFILEDISPLAY_DISABLED, 'tool_skills');
+        $this->setUser($this->getDataGenerator()->create_user());
+        $this->assertSame('', helper::get_skill_actions($skillid, 'Safety'));
+    }
+
+    /**
+     * The action menu of the Skills section of the profile has the user's own actions, then, below a divider,
+     * the management pages the user may open.
+     */
+    public function test_section_actions(): void {
+        $this->setUser($this->getDataGenerator()->create_user());
+        $html = helper::get_section_actions();
+        $this->assertStringContainsString('Actions for Skills', $html);
+        $this->assertStringContainsString('/admin/tool/skills/catalog.php"', $html);
+        $this->assertStringNotContainsString('Manage skills', $html);
+        $this->assertStringNotContainsString('dropdown-divider', $html);
+
+        $this->setAdminUser();
+        $html = helper::get_section_actions();
+        $this->assertStringContainsString('dropdown-divider', $html);
+        $this->assertStringContainsString('/admin/tool/skills/manage/list.php', $html);
+        $this->assertLessThan(strpos($html, 'Manage skills'), strpos($html, 'Find courses'));
+
+        set_config('profiledisplay', helper::PROFILEDISPLAY_DISABLED, 'tool_skills');
+        $this->setUser($this->getDataGenerator()->create_user());
+        $this->assertStringNotContainsString('Find courses', helper::get_section_actions());
     }
 }

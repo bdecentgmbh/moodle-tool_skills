@@ -24,8 +24,9 @@
     (tool_skills/profile_skill_summary: current level image, name, level badge, earned/total points),
     followed by the pills added by plugins (tool_skills/profile_skill_pills; outside the accordion button,
     as they open a popover when tapped), and the body lists the courses that award the skill with their
-    points and a link to the users-points report. In the totals-only display each skill is a static card
-    with the summary, the pills, the learning time and the report link, without course and activity rows. The skill colour is
+    points. In the totals-only display each skill is a static card with the summary, the pills and the
+    learning time, without course and activity rows. Both have an action menu beside the header (find
+    courses, users' points, edit skill, as the user may). The skill colour is
     validated to a #rgb/#rrggbb hex on input, so it is safe to interpolate it into the inline style.
 
     Classes required for JS:
@@ -43,7 +44,8 @@
         * haslearningtime, learningtime
         * hascourses, courses (coursename, courseurl, courseclass, haspoints, hasgoal, earned, available,
           iscomplete, hasaddoncontent, addoncontent)
-        * hasreport, reporturl, hasbody, expanded
+        * actions - The action menu of the skill (HTML), empty without actions
+        * expanded
 
     Example context (json):
     {
@@ -104,9 +106,7 @@
                         "addoncontent": ""
                     }
                 ],
-                "hasreport": true,
-                "reporturl": "https://example.com/admin/tool/skills/manage/usersreport.php?id=5",
-                "hasbody": true,
+                "actions": "",
                 "expanded": true
             }
         ]
@@ -116,15 +116,18 @@
     {{#skills}}
     <div class="{{#detailed}}accordion-item {{/detailed}}toolskill-card skill-{{identitykey}}"{{#hascolor}} style="border-inline-start: 4px solid {{color}};"{{/hascolor}}>
         {{#detailed}}
-        <h3 class="accordion-header" id="toolskill-heading-{{uniqid}}-{{skillid}}">
-            <button class="accordion-button{{^expanded}} collapsed{{/expanded}}" type="button"
-                data-bs-toggle="collapse" data-bs-target="#toolskill-collapse-{{uniqid}}-{{skillid}}"
-                data-toggle="collapse" data-target="#toolskill-collapse-{{uniqid}}-{{skillid}}"
-                aria-expanded="{{#expanded}}true{{/expanded}}{{^expanded}}false{{/expanded}}"
-                aria-controls="toolskill-collapse-{{uniqid}}-{{skillid}}">
-                {{> tool_skills/profile_skill_summary }}
-            </button>
-        </h3>
+        <div class="d-flex align-items-start">
+            <h3 class="accordion-header flex-grow-1" id="toolskill-heading-{{uniqid}}-{{skillid}}">
+                <button class="accordion-button{{^expanded}} collapsed{{/expanded}}" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#toolskill-collapse-{{uniqid}}-{{skillid}}"
+                    data-toggle="collapse" data-target="#toolskill-collapse-{{uniqid}}-{{skillid}}"
+                    aria-expanded="{{#expanded}}true{{/expanded}}{{^expanded}}false{{/expanded}}"
+                    aria-controls="toolskill-collapse-{{uniqid}}-{{skillid}}">
+                    {{> tool_skills/profile_skill_summary }}
+                </button>
+            </h3>
+            {{{actions}}}
+        </div>
         {{#haspills}}
         <div class="toolskill-pills d-flex flex-wrap gap-2{{#haslevelimage}} toolskill-pills-indent{{/haslevelimage}}">
             {{> tool_skills/profile_skill_pills }}
@@ -153,31 +156,26 @@
                     {{/courses}}
                 </ul>
                 {{/hascourses}}
-                {{#hasreport}}
-                <a class="toolskill-report" href="{{reporturl}}">{{#str}}usersreport, tool_skills{{/str}}</a>
-                {{/hasreport}}
             </div>
         </div>
         {{/detailed}}
         {{^detailed}}
-        <h3 class="toolskill-header">
-            {{> tool_skills/profile_skill_summary }}
-        </h3>
+        <div class="d-flex align-items-start">
+            <h3 class="toolskill-header flex-grow-1">
+                {{> tool_skills/profile_skill_summary }}
+            </h3>
+            {{{actions}}}
+        </div>
         {{#haspills}}
         <div class="toolskill-pills d-flex flex-wrap gap-2{{#haslevelimage}} toolskill-pills-indent{{/haslevelimage}}">
             {{> tool_skills/profile_skill_pills }}
         </div>
         {{/haspills}}
-        {{#hasbody}}
+        {{#haslearningtime}}
         <div class="toolskill-body">
-            {{#haslearningtime}}
             <p class="toolskill-learningtime text-muted mb-1">{{#str}}learningtime, tool_skills{{/str}}: {{learningtime}}</p>
-            {{/haslearningtime}}
-            {{#hasreport}}
-            <a class="toolskill-report" href="{{reporturl}}">{{#str}}usersreport, tool_skills{{/str}}</a>
-            {{/hasreport}}
         </div>
-        {{/hasbody}}
+        {{/haslearningtime}}
         {{/detailed}}
     </div>
     {{/skills}}

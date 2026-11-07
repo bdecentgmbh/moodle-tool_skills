@@ -22,6 +22,11 @@
   in the skill. Linked from the profile Skills section and from each skill on a course's Skills page; new
   capability `tool/skills:browsecourses` (authenticated users). Not available when the profile Skills
   section is disabled. Addons add their awards through a `get_course_awards()` method.
+- Profile Skills section: an actions menu beside the heading replaces the links and buttons below the
+  skills: *Find courses*, the addons' actions (*Select targets*) and, as the user may, *Manage skills*,
+  *Manage targets* and the decay pages; addons add theirs through a `get_profile_actions()` method. Each
+  skill has a menu with *Find courses*, *Users' points* (instead of the *View users points for this skill*
+  link) and *Edit skill*.
 - Points history: every change of a user's skill points is recorded with its time, reason (award,
   revoke, decay, import, other), source (course, activity or decay rule, with its name at the time) and the
   level before and after. Points earned before the update are imported once in the background; where the
