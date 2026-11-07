@@ -112,6 +112,14 @@ that own an allocation method also implement `get_points_history_source(string $
 differs from the user's points when the history started, one correction row is added, dated then.
 Imported rows fire no events.
 
+## Awards on the Courses for skills page
+
+The *Courses for skills* page says what each course awards in a skill: its completion award, then the
+labels addons return from a `get_course_awards(int $courseid, int $skillid): array` method of their
+`manage_skills` class, for the current user. Activity skills returns, for example, "2 activities", counting
+the activities the user sees on the course page. A course is listed only when its completion or an addon
+awards something.
+
 ## Events
 
 | Event | Fired when | Context and object |

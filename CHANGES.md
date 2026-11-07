@@ -16,6 +16,12 @@
   participants' progress and, with `tool/skills:viewcourseparticipants`, counts the learners per level.
 - Users-points report: users with the same points are each listed (only one of them was before), and the
   report is sorted, most points first, by either column.
+- Courses for skills: a page for learners to find the courses that award a skill, with what the course
+  and (with Activity skills) its activities award, and whether the learner has completed the course, is
+  enrolled or how to enrol. It lists the courses the learner sees elsewhere in Moodle that award something
+  in the skill. Linked from the profile Skills section and from each skill on a course's Skills page; new
+  capability `tool/skills:browsecourses` (authenticated users). Not available when the profile Skills
+  section is disabled. Addons add their awards through a `get_course_awards()` method.
 - Points history: every change of a user's skill points is recorded with its time, reason (award,
   revoke, decay, import, other), source (course, activity or decay rule, with its name at the time) and the
   level before and after. Points earned before the update are imported once in the background; where the

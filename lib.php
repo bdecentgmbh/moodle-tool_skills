@@ -116,6 +116,15 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
             $tree->add_node($skillsnode);
         }
 
+        // The courses that award skills.
+        if (\tool_skills\helper::can_browse_courses()) {
+            $link = html_writer::link(
+                new moodle_url('/admin/tool/skills/catalog.php'),
+                get_string('findcourses', 'tool_skills')
+            );
+            $tree->add_node(new core_user\output\myprofile\node('toolskills', 'toolskills_catalog', $link, null, null));
+        }
+
         // Manage skills link for users who can manage them.
         if (has_capability('tool/skills:manage', $systemcontext)) {
             $link = new moodle_url('/admin/tool/skills/manage/list.php');

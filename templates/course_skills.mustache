@@ -36,6 +36,7 @@
         * haslevelcounts, levelcounts - For teachers: the learners per level, each with label (HTML),
           hascolor, color and textcolor
         * progressurl - For teachers: the skill's Participants' progress, empty without access
+        * catalogurl - The Courses for skills page of the skill, empty without access
 
     Example context (json):
     {
@@ -88,7 +89,8 @@
                     {"label": "No level: 3", "hascolor": false, "color": "", "textcolor": ""},
                     {"label": "Basic: 9", "hascolor": true, "color": "#fbbf24", "textcolor": "#000000"}
                 ],
-                "progressurl": "https://example.com/admin/tool/skills/progress.php?courseid=2&skill=5"
+                "progressurl": "https://example.com/admin/tool/skills/progress.php?courseid=2&skill=5",
+                "catalogurl": "https://example.com/admin/tool/skills/catalog.php?skill=5"
             }
         ]
     }
@@ -146,6 +148,9 @@
             {{#progressurl}}
             <p class="mt-3 mb-0"><a href="{{progressurl}}">{{#str}}progressforskill, tool_skills, {{name}}{{/str}}</a></p>
             {{/progressurl}}
+            {{#catalogurl}}
+            <p class="mt-2 mb-0"><a href="{{catalogurl}}">{{#str}}catalogforskill, tool_skills, {{name}}{{/str}}</a></p>
+            {{/catalogurl}}
         </div>
     </div>
     {{/skills}}

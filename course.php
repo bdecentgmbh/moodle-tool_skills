@@ -43,6 +43,14 @@ $PAGE->set_heading(format_string($course->fullname));
 $islearner = is_enrolled($context, $USER, 'moodle/course:isincompletionreports', true);
 $data = \tool_skills\helper::get_user_profile_skills_context($islearner ? $USER->id : 0, true, $course->id);
 
+// Each skill links to the other courses that award it.
+if (\tool_skills\helper::can_browse_courses()) {
+    foreach ($data['skills'] as $i => $skill) {
+        $catalogurl = new moodle_url('/admin/tool/skills/catalog.php', ['skill' => $skill['skillid']]);
+        $data['skills'][$i]['catalogurl'] = $catalogurl->out(false);
+    }
+}
+
 // Teachers also see how many learners reached each level, and open each skill's participants' progress.
 if (!$islearner) {
     $canviewlevels = has_capability('tool/skills:viewcourseparticipants', $context);

@@ -282,21 +282,47 @@ class helper {
     /**
      * The skills a course awards: enabled in the course, and enabled and not archived site-wide.
      *
-     * @param int $courseid
+     * @param int $courseid The course, or 0 for the skills any course awards.
      * @return string[] Skill names, keyed by skill id, sorted by name.
      */
     public static function get_course_skills(int $courseid): array {
         global $DB;
 
+        $incourse = $courseid ? 'sc.courseid = :courseid AND' : '';
         $names = $DB->get_records_sql_menu(
-            'SELECT s.id, s.name
+            "SELECT DISTINCT s.id, s.name
                FROM {tool_skills_courses} sc
                JOIN {tool_skills} s ON s.id = sc.skill
-              WHERE sc.courseid = :courseid AND sc.status = 1 AND s.status = 1 AND s.archived = 0
-           ORDER BY s.name',
-            ['courseid' => $courseid]
+              WHERE $incourse sc.status = 1 AND s.status = 1 AND s.archived = 0
+           ORDER BY s.name",
+            $courseid ? ['courseid' => $courseid] : []
         );
         return array_map('format_string', $names);
+    }
+
+    /**
+     * Whether the current user can open the Courses for skills page, which lists the courses that award skills.
+     *
+     * @return bool With the capability, unless the Skills section of the profile is disabled.
+     */
+    public static function can_browse_courses(): bool {
+        return has_capability('tool/skills:browsecourses', \context_system::instance())
+            && self::get_profile_display() !== self::PROFILEDISPLAY_DISABLED;
+    }
+
+    /**
+     * What else than its completion a course awards in a skill, from the addons, for the Courses for skills page.
+     *
+     * @param int $courseid
+     * @param int $skillid
+     * @return string[] One label per kind of award, for example "2 activities".
+     */
+    public static function extend_addons_get_course_awards(int $courseid, int $skillid): array {
+        $awards = [];
+        foreach (self::get_addon_extend_method('get_course_awards') as $method) {
+            $awards = array_merge($awards, $method->get_course_awards($courseid, $skillid));
+        }
+        return $awards;
     }
 
     /**

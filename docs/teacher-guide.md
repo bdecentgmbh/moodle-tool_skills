@@ -89,6 +89,8 @@ your course awards and how, with a link to each skill's participants' progress a
 groups). Whose progress the page shows follows the course completion report: users
 enrolled with `moodle/course:isincompletionreports` (students). The tab needs
 `tool/skills:viewcourseskills` and is hidden from learners when the profile Skills section is disabled.
+Each skill also links to the other courses that award it, on the *Courses for skills* page (see the
+[Administrator guide](admin-guide.md#courses-for-skills)).
 
 Points are awarded when the learner meets the completion condition you configured — so a learner who
 completes your course sees their points and level update on their profile.

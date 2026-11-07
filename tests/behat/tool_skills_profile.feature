@@ -99,3 +99,16 @@ Feature: Skills section on the user profile
     Then I should see "Participants' progress" in the ".tertiary-navigation" "css_element"
     And I should see "Student First" in the "tool_skills_course_participants" "table"
     And I should see "From this course" in the "tool_skills_course_participants" "table"
+
+  @javascript
+  Scenario: Learners find the courses that award skills
+    When I am on the "student1" "user > profile" page logged in as student1
+    And I follow "Find courses that award skills"
+    Then I should see "The courses that award skills, and what you earn in each of them."
+    And I should see "Course completion · Points - 200" in the "Course 1" "table_row"
+    And I should see "Enrolled" in the "Course 1" "table_row"
+    And I am on the "Course 1" course page
+    And I click on "Skills" "link" in the ".secondary-navigation" "css_element"
+    And I follow "Courses that award Beginner"
+    And the field "Skill" matches value "Beginner"
+    And I should see "Beginner" in the "tool_skills_catalog" "table"

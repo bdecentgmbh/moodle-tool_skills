@@ -48,6 +48,15 @@ $capabilities = [
         ],
     ],
 
+    // Find the courses that award skills, on the Courses for skills page.
+    'tool/skills:browsecourses' => [
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'user' => CAP_ALLOW,
+        ],
+    ],
+
     // View the Skills page of a course: the skills it awards and, for learners, their own progress.
     'tool/skills:viewcourseskills' => [
         'captype' => 'read',

@@ -15,6 +15,7 @@ to **administrators** and to anyone with the **`tool/skills:manage`** capability
 - [Managing existing skills](#managing-existing-skills)
 - [Availability and course categories](#availability-and-course-categories)
 - [Skills on the user profile](#skills-on-the-user-profile)
+- [Courses for skills](#courses-for-skills)
 - [Points history](#points-history)
 - [Privacy](#privacy)
 - [Addons](#addons)
@@ -123,10 +124,26 @@ profile**:
 | --- | --- |
 | **Skills with courses and activities** (default) | Each skill with its current level, points and learning time, expandable to the courses that award it with the points earned there, and, with the Activity skills addon, the activities. |
 | **Skill totals only** | Each skill with its current level, points and learning time, without the course and activity rows. |
-| **Disabled** | Nothing: the profile has no Skills section, also not the **Manage skills** link for managers. Learners also do not get the **Skills** tab of courses. |
+| **Disabled** | Nothing: the profile has no Skills section, also not the **Manage skills** link for managers. Learners also do not get the **Skills** tab of courses, nor the **Courses for skills** page. |
 
 Addons can add small badges ("pills") below a skill's points in both displays, for example the points
 removed by decay. Tapping or clicking a pill shows its details.
+
+## Courses for skills
+
+The **Courses for skills** page (`/admin/tool/skills/catalog.php`) helps learners find courses: it lists,
+for all skills or the one chosen under **Skill**, the courses that award the skill, what completing the
+course awards and, with the Activity skills addon, how many of its activities award the skill. For each
+course it says whether the learner has completed it or is enrolled, otherwise how to enrol (the icons of
+Moodle's course listings, for example self enrolment). It lists the courses the learner sees elsewhere in
+Moodle: hidden courses only for users who may see them, and only courses whose completion or activities
+award something in the skill.
+
+Learners reach it from the **Find courses that award skills** link in the Skills section of their profile,
+and from each skill on a course's **Skills** page. To add it to the primary navigation, add a line such as
+`Courses for skills|/admin/tool/skills/catalog.php` to **Site administration > Appearance > Themes >
+Theme settings > Custom menu items**. It needs `tool/skills:browsecourses` (all authenticated users by
+default), and is not available when the profile Skills section is disabled.
 
 ## Points history
 

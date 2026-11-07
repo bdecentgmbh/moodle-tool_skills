@@ -63,6 +63,7 @@ class course_participants_table extends \table_sql {
         $this->no_sorting('level');
         $this->collapsible(false);
         $this->initialbars(true);
+        $this->set_attribute('id', 'tool_skills_course_participants');
 
         $enrolled = get_enrolled_with_capabilities_join($context, '', 'moodle/course:isincompletionreports', $groupid, true);
         // The user fields start with u.id, so rows are keyed by user.

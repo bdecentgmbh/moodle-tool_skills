@@ -46,6 +46,7 @@ or adjust a learner's points.
 
 | Capability | Default roles | Lets you |
 | --- | --- | --- |
+| `tool/skills:browsecourses` | Authenticated user | Find the courses that award skills on the Courses for skills page |
 | `tool/skills:manage` | Manager (and admin) | Create, edit, archive and delete skills and levels site-wide |
 | `tool/skills:managecourseskillslist` | Teacher, editing teacher, manager | Enable and configure skills within a course |
 | `tool/skills:viewcourseparticipants` | Teacher, editing teacher, manager | See the levels and total points of a course's participants on its Participants' progress page |
