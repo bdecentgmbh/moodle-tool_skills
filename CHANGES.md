@@ -22,8 +22,8 @@
   in the skill. Linked from the profile Skills section and from each skill on a course's Skills page; new
   capability `tool/skills:browsecourses` (authenticated users). Not available when the profile Skills
   section is disabled. Addons add their awards through a `get_course_awards()` method.
-- Profile Skills section: an actions menu beside the heading replaces the links and buttons below the
-  skills: *Find courses*, the addons' actions (*Select targets*) and, as the user may, *Manage skills*,
+- Profile Skills section: a line about the section opens it, with an actions menu beside it that replaces
+  the links and buttons below the skills: *Find courses*, the addons' actions (*Select targets*) and, as the user may, *Manage skills*,
   *Manage targets* and the decay pages; addons add theirs through a `get_profile_actions()` method. Each
   skill has a menu with *Find courses*, *Users' points* (instead of the *View users points for this skill*
   link) and *Edit skill*.

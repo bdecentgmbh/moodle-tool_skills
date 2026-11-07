@@ -195,13 +195,7 @@ body.module-skills .activity-header {
     flex: 0 0 auto;
     margin: 0.5rem 0.5rem 0 0;
 }
-/* The action menu of the Skills section of the profile, beside its heading. */
-.toolskills-profile-category > .card-body {
-    position: relative;
-}
+/* The line about the Skills section of the profile, with its action menu, above the skills. */
 .toolskills-profile-category .toolskills-section-actions {
-    position: absolute;
-    top: 0.75rem;
-    inset-inline-end: 0.75rem;
-    list-style: none;
+    margin-bottom: 0.5rem;
 }

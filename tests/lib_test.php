@@ -116,6 +116,29 @@ final class lib_test extends \advanced_testcase {
         $this->assertStringContainsString('Communication', $content);
         $this->assertStringContainsString('Level 1', $content);
         $this->assertStringContainsString(format_string($course->fullname), $content);
+
+        // Above the skills, a line about them with the action menu of the section.
+        $this->assertArrayHasKey('toolskills_actions', $nodes);
+        $this->assertStringContainsString(get_string('profileintro', 'tool_skills'), $nodes['toolskills_actions']->content);
+        $this->assertStringContainsString('Actions for Skills', $nodes['toolskills_actions']->content);
+        $this->assertLessThan(
+            array_search('toolskills_earned', array_keys($nodes)),
+            array_search('toolskills_actions', array_keys($nodes))
+        );
+    }
+
+    /**
+     * Without skills, the section says so, with its action menu.
+     */
+    public function test_section_without_skills(): void {
+        $this->resetAfterTest(true);
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        $nodes = $this->run_callback($user, true, $this->getDataGenerator()->create_course())->__get('nodes');
+
+        $this->assertArrayNotHasKey('toolskills_earned', $nodes);
+        $this->assertStringContainsString(get_string('profilenoskills', 'tool_skills'), $nodes['toolskills_actions']->content);
     }
 
     /**

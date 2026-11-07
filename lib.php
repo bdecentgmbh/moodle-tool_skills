@@ -94,25 +94,29 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
     }
 
     if ($iscurrentuser) {
-        // The action menu of the section, at the top of it: finding courses, managing skills, and the addons' actions.
-        if ($actions = \tool_skills\helper::get_section_actions()) {
-            $tree->add_node(new core_user\output\myprofile\node(
-                'toolskills',
-                'toolskills_actions',
-                '',
-                null,
-                null,
-                $actions,
-                null,
-                'toolskills-section-actions'
-            ));
-        }
-
-        // Render the panel of the user's skills: an accordion with the course breakdown, or the totals only.
         $skillscontext = \tool_skills\helper::get_user_profile_skills_context(
             $USER->id,
             $display === \tool_skills\helper::PROFILEDISPLAY_DETAILED
         );
+
+        // A line about the section, with its action menu beside it: finding courses, managing skills, and the
+        // addons' actions.
+        $intro = get_string(empty($skillscontext['hasskills']) ? 'profilenoskills' : 'profileintro', 'tool_skills');
+        $tree->add_node(new core_user\output\myprofile\node(
+            'toolskills',
+            'toolskills_actions',
+            '',
+            null,
+            null,
+            html_writer::div(
+                html_writer::tag('p', $intro, ['class' => 'mb-0']) . \tool_skills\helper::get_section_actions(),
+                'd-flex align-items-center justify-content-between gap-2'
+            ),
+            null,
+            'toolskills-section-actions'
+        ));
+
+        // Render the panel of the user's skills: an accordion with the course breakdown, or the totals only.
         if (!empty($skillscontext['hasskills'])) {
             $content = $OUTPUT->render_from_template('tool_skills/profile_skills', $skillscontext);
             $skillsnode = new core_user\output\myprofile\node(

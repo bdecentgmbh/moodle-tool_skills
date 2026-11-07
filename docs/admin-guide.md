@@ -129,7 +129,7 @@ profile**:
 Addons can add small badges ("pills") below a skill's points in both displays, for example the points
 removed by decay. Tapping or clicking a pill shows its details.
 
-The actions menu (⋮) beside the **Skills** heading has, for each user as far as they may open them: **Find
+Below the **Skills** heading, a line says what the section shows. The actions menu (⋮) beside it has, for each user as far as they may open them: **Find
 courses**, the addons' own actions such as **Select targets**, and the management pages: **Manage skills**,
 **Manage targets**, **Manage decay**, **Decay queue**, **Manual decay** and **Decay report**. Each skill has
 a menu too: **Find courses** for that skill, **Users' points** (with `tool/skills:viewotherspoints`) and
