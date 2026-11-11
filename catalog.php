@@ -26,6 +26,8 @@ require(__DIR__ . '/../../../config.php');
 
 require_login(null, false);
 $context = context_system::instance();
+// The context first: the skill names below are formatted in it.
+$PAGE->set_context($context);
 if (!\tool_skills\helper::can_browse_courses()) {
     throw new required_capability_exception($context, 'tool/skills:browsecourses', 'nopermissions', '');
 }
@@ -38,7 +40,6 @@ if (!isset($skills[$skillid])) {
 }
 
 $url = new moodle_url('/admin/tool/skills/catalog.php', $skillid ? ['skill' => $skillid] : []);
-$PAGE->set_context($context);
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('standard');
 $PAGE->set_title(get_string('catalog', 'tool_skills'));

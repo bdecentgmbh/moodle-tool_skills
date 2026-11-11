@@ -87,7 +87,7 @@ if (!$skillid) {
     $select->set_label(get_string('skill', 'tool_skills'));
     echo html_writer::div(
         $OUTPUT->render($select) . groups_print_course_menu($course, $url, true),
-        'd-flex flex-wrap align-items-center gap-3 mb-3'
+        'toolskills-progress-filters d-flex flex-wrap align-items-center mb-3'
     );
     $table->out(50, true);
 }

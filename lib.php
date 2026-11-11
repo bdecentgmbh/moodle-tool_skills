@@ -110,7 +110,7 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
             null,
             html_writer::div(
                 html_writer::tag('p', $intro, ['class' => 'mb-0']) . \tool_skills\helper::get_section_actions(),
-                'd-flex align-items-center justify-content-between gap-2'
+                'toolskills-section-intro d-flex align-items-center justify-content-between'
             ),
             null,
             'toolskills-section-actions'

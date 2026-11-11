@@ -480,7 +480,7 @@ class helper {
      * @return string HTML, empty when the user can open the overview only.
      */
     public static function get_course_navigation(\context_course $context, string $current): string {
-        global $PAGE;
+        global $PAGE, $CFG;
 
         $params = ['courseid' => $context->instanceid];
         $pages = ['overview' => [new \moodle_url('/admin/tool/skills/course.php', $params), 'overview']];
@@ -499,11 +499,15 @@ class helper {
             $options[$url->out(false)] = get_string($label, 'tool_skills');
         }
         $menu = new \core\output\select_menu('toolskillsnavigation', $options, $pages[$current][0]->out(false), true);
-        $menu->set_label(get_string('coursenavigation', 'tool_skills'), ['class' => 'visually-hidden']);
+        // Moodle's accesshide: Bootstrap 4 (Moodle 4.5) has no visually-hidden, and sr-only is deprecated in Moodle 5.x.
+        $menu->set_label(get_string('coursenavigation', 'tool_skills'), ['class' => 'accesshide']);
         $output = $PAGE->get_renderer('core');
         $data = $menu->export_for_template($output);
         $data->headinglevel = 2;
-        return \html_writer::div(
+        // Moodle 4.5's select menu has no heading level: the page gets its heading for assistive technology.
+        $heading = $CFG->branch < 500
+            ? \html_writer::tag('h2', s(get_string($pages[$current][1], 'tool_skills')), ['class' => 'accesshide']) : '';
+        return $heading . \html_writer::div(
             \html_writer::div($output->render_from_template('core/tertiary_navigation_selector', $data), 'navitem'),
             'tertiary-navigation d-flex mb-3'
         );

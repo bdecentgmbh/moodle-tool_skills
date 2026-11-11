@@ -107,7 +107,7 @@
             {{> tool_skills/profile_skill_summary }}
         </h3>
         {{#haspills}}
-        <div class="toolskill-pills d-flex flex-wrap gap-2{{#haslevelimage}} toolskill-pills-indent{{/haslevelimage}}">
+        <div class="toolskill-pills d-flex flex-wrap{{#haslevelimage}} toolskill-pills-indent{{/haslevelimage}}">
             {{> tool_skills/profile_skill_pills }}
         </div>
         {{/haspills}}
@@ -117,13 +117,13 @@
             {{/hascoursepoints}}
             {{#courses}}
             {{#hasawards}}
-            <h4 class="toolskill-awards-heading h6 fw-bold mt-3 mb-1">
+            <h4 class="toolskill-awards-heading h6 mt-3 mb-1">
                 {{#hidepoints}}{{#str}}earnedincourse, tool_skills{{/str}}{{/hidepoints}}
                 {{^hidepoints}}{{#str}}earnincourse, tool_skills{{/str}}{{/hidepoints}}
             </h4>
             <ul class="toolskill-courses list-unstyled mb-0">
                 {{#award}}
-                <li class="toolskill-course toolskill-coursecompletion d-flex align-items-center justify-content-between gap-2 py-1">
+                <li class="toolskill-course toolskill-coursecompletion d-flex align-items-center justify-content-between py-1">
                     <span>{{#str}}coursecompletion{{/str}} <span class="toolskill-award text-muted">· {{{award}}}</span></span>
                     {{^hidepoints}}
                     {{#haspoints}}
@@ -139,8 +139,8 @@
             {{/hasawards}}
             {{/courses}}
             {{#haslevelcounts}}
-            <h4 class="toolskill-levels-heading h6 fw-bold mt-3 mb-1">{{#str}}participantslevels, tool_skills{{/str}}</h4>
-            <div class="toolskill-levelcounts d-flex flex-wrap gap-2">
+            <h4 class="toolskill-levels-heading h6 mt-3 mb-1">{{#str}}participantslevels, tool_skills{{/str}}</h4>
+            <div class="toolskill-levelcounts d-flex flex-wrap">
                 {{#levelcounts}}
                 <span class="badge rounded-pill {{#hascolor}}toolskill-level-badge{{/hascolor}}{{^hascolor}}toolskill-chip{{/hascolor}}"
                     {{#hascolor}}style="background-color: {{color}}; color: {{textcolor}};"{{/hascolor}}>{{{label}}}</span>

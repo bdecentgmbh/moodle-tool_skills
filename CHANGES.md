@@ -42,6 +42,12 @@
   change in the system context.
 - Developers: `skills::set_userskill_points()` takes a `points_change` describing the change; see the
   developer guide.
+- Moodle 4.5: the profile Skills section and the course's Skills pages look as on Moodle 5.x again. They
+  used Bootstrap 5 classes (accordion, gap, font weight and size, visually hidden) that Moodle 4.5's
+  Bootstrap 4 does not have, so the skill panels showed as plain grey buttons without borders, spacing or
+  collapse arrow. They now use their own styles. A level without a colour shows as a grey badge (it was
+  invisible on Moodle 5.x). On Moodle 4.5, whose menus have no heading level, the course's Skills pages
+  get a heading for screen readers.
 
 ## 1.3 (2026101400)
 

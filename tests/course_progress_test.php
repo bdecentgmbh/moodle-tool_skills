@@ -137,7 +137,7 @@ final class course_progress_test extends \advanced_testcase {
      * manages the course's skills without the totals capability still opens the page.
      */
     public function test_access_and_navigation(): void {
-        global $DB;
+        global $DB, $CFG;
         $this->resetAfterTest();
         $gen = $this->getDataGenerator();
         $course = $gen->create_course();
@@ -156,8 +156,12 @@ final class course_progress_test extends \advanced_testcase {
         $this->assertStringContainsString('Overview', $html);
         $this->assertStringContainsString('Participants&#039; progress', $html);
         $this->assertStringContainsString('/admin/tool/skills/manage/courselist.php', $html);
-        // The current page is the page heading.
-        $this->assertStringContainsString('aria-level="2"', $html);
+        // The current page is the page heading; Moodle 4.5's select menu has no heading level, so a hidden one.
+        if ($CFG->branch >= 500) {
+            $this->assertStringContainsString('aria-level="2"', $html);
+        } else {
+            $this->assertStringContainsString('<h2 class="accesshide">Participants&#039; progress</h2>', $html);
+        }
 
         $roleid = $DB->get_field('role', 'id', ['shortname' => 'teacher']);
         assign_capability('tool/skills:viewcourseparticipants', CAP_PROHIBIT, $roleid, $context);

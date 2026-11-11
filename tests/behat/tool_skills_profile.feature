@@ -47,7 +47,7 @@ Feature: Skills section on the user profile
     And I should see "0" in the ".toolskill-earned" "css_element"
     And I should not see "Course 1" in the ".toolskills-profile-skills" "css_element"
     And ".toolskills-profile-skills .toolskill-course" "css_element" should not exist
-    And ".toolskills-profile-skills .accordion-button" "css_element" should not exist
+    And ".toolskills-profile-skills .toolskill-toggle" "css_element" should not exist
 
   @javascript
   Scenario: With the Skills section disabled, the profile has no Skills section
