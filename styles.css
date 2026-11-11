@@ -74,6 +74,11 @@ body.behat-site .toolskills-status-switch input.custom-control-input {
     position: relative;
     z-index: -1;
 }
+/* The status switch is a link around a checkbox that only shows the status: clicks go to the link. Chrome 157 hands
+   a click on the switch to the checkbox in Behat on Moodle 4.5, which then toggles without following the link. */
+.toolskills-status-switch input[type="checkbox"] {
+    pointer-events: none;
+}
 
 #page-admin-tool-skills-manage-usersreport .table-dynamic {
     padding-top: 40px;
