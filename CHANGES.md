@@ -1,5 +1,15 @@
 # Changes
 
+## 1.3 R2 (2026101401)
+
+- Moodle 4.5: the Skills section of the user profile looks as on Moodle 5.x again. It used Bootstrap 5
+  classes (accordion, gap, font weight and size) that Moodle 4.5's Bootstrap 4 does not have, so the skill
+  panels showed as plain grey buttons without borders, spacing or collapse arrow. It now uses its own
+  styles. A level without a colour shows as a grey badge (it was invisible on Moodle 5.x).
+- Themes: the skill panels no longer have the Bootstrap accordion classes. Custom CSS that targets
+  `.accordion-button` or `.accordion-body` in the Skills section should use `.toolskill-toggle` and
+  `.toolskill-body`.
+
 ## 1.3 (2026101400)
 
 Includes the changes of 1.2 R3 and 1.2 R4, which were released for this plugin only and not in a
