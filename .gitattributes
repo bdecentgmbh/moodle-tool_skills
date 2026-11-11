@@ -1,3 +1,9 @@
+# Left out of the release ZIP (git archive), also by Moodle HQ's release workflow.
+/.github export-ignore
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/.gitmodules export-ignore
+
 # The addons are private submodules. Keep their empty placeholders out of source archives (git archive,
 # the zips of GitHub releases), where Moodle would report them as plugins with a missing version.php.
 /addon/* export-ignore
