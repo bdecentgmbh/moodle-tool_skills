@@ -74,6 +74,11 @@ body.behat-site .toolskills-status-switch input.custom-control-input {
     position: relative;
     z-index: -1;
 }
+/* The status switch is a link around a checkbox that only shows the status: clicks go to the link. Chrome 157 hands
+   a click on the switch to the checkbox in Behat on Moodle 4.5, which then toggles without following the link. */
+.toolskills-status-switch input[type="checkbox"] {
+    pointer-events: none;
+}
 
 #page-admin-tool-skills-manage-usersreport .table-dynamic {
     padding-top: 40px;
@@ -83,23 +88,59 @@ body.module-skills .activity-header {
     display: none;
 }
 
-/* Profile Skills panel: accordion (detailed display) or static cards (totals only). */
-.toolskills-profile-skills.accordion {
-    --bs-accordion-btn-padding-y: 0.75rem;
-    /* Pin the active-header appearance so it renders the same across Moodle/Bootstrap versions. */
-    --bs-accordion-active-bg: transparent;
-    --bs-accordion-active-color: inherit;
-    --bs-accordion-btn-focus-box-shadow: none;
-}
+/* Profile Skills panel: accordion (detailed display) or static cards (totals only). Self-contained, so that it
+   looks the same on Moodle 4.5 (Bootstrap 4.6: no accordion component, no gap-*, fw-* or fs-* utilities, no --bs-*
+   custom properties) and on Moodle 5.x (Bootstrap 5). The var() fallbacks are the Boost values of Moodle 4.5. */
 .toolskills-profile-skills .toolskill-card {
     margin-bottom: 0.5rem;
-    border: 1px solid var(--bs-border-color);
-    border-radius: var(--bs-border-radius);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: var(--bs-border-radius, 0.5rem);
     overflow: hidden;
 }
-.toolskills-profile-skills .accordion-button {
+.toolskills-profile-detailed .toolskill-header {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.2;
+}
+/* The header button that opens and closes a skill. */
+.toolskills-profile-skills .toolskill-toggle {
+    display: flex;
+    align-items: center;
     /* Space between the summary column and the collapse arrow so long names never touch it. */
     column-gap: 0.75rem;
+    width: 100%;
+    margin: 0;
+    padding: 0.75rem 1.25rem;
+    font: inherit;
+    color: inherit;
+    text-align: start;
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    overflow-anchor: none;
+}
+/* The collapse arrow: a chevron drawn with two borders in the text colour (no image), down when collapsed
+   and turned up when open, where Bootstrap 5's accordion arrow is. */
+.toolskills-profile-skills .toolskill-toggle::after {
+    flex: 0 0 auto;
+    width: 0.65rem;
+    height: 0.65rem;
+    margin-inline: auto 0.3rem;
+    content: "";
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-25%) rotate(45deg);
+    transition: transform 0.2s ease-in-out;
+}
+.toolskills-profile-skills .toolskill-toggle:not(.collapsed)::after {
+    transform: translateY(25%) rotate(-135deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .toolskills-profile-skills .toolskill-toggle::after {
+        transition: none;
+    }
 }
 .toolskills-profile-skills .toolskill-summary {
     flex: 1 1 auto;
@@ -109,9 +150,21 @@ body.module-skills .activity-header {
     flex: 1 1 auto;
     min-width: 0;
 }
+.toolskills-profile-skills .toolskill-summary,
+.toolskills-profile-skills .toolskill-meta,
+.toolskills-profile-skills .toolskill-pills,
+.toolskills-profile-skills .toolskill-course,
+.toolskills-profile-skills .toolskill-activity {
+    gap: 0.5rem;
+}
 .toolskills-profile-skills .toolskill-name {
     display: block;
+    font-weight: 700;
     overflow-wrap: anywhere;
+}
+.toolskills-profile-skills .toolskill-earned {
+    font-size: 1.25rem;
+    font-weight: 700;
 }
 .toolskills-profile-skills .toolskill-level-img {
     width: 40px;
@@ -120,12 +173,18 @@ body.module-skills .activity-header {
     border-radius: 6px;
     flex: 0 0 auto;
 }
+/* Badges: the same box on Bootstrap 4 and 5, whose badges differ in padding and size. */
 .toolskills-profile-skills .toolskill-chip,
 .toolskills-profile-skills .toolskill-level-badge,
 .toolskills-profile-skills .toolskill-pill {
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
     font-weight: 600;
+    line-height: 1;
 }
-.toolskills-profile-skills .toolskill-chip {
+/* A level without a colour (otherwise set inline): a grey badge, as Bootstrap 5 badges have white text. */
+.toolskills-profile-skills .toolskill-chip,
+.toolskills-profile-skills .toolskill-level-badge {
     background-color: var(--bs-secondary-bg, #e9ecef);
     color: var(--bs-secondary-color, #495057);
 }
@@ -139,18 +198,17 @@ body.module-skills .activity-header {
 /* Pills added by plugins through the extend_profile_skill hook, in a row below the summary and aligned with
    the skill name. Pills with a title open a popover; the pointer cursor also makes iOS deliver the tap. */
 .toolskills-profile-skills .toolskill-pills {
-    /* No negative margin: the collapsed accordion button is painted above the row and would cover the pills. */
+    /* No negative margin: the collapsed toggle button is painted above the row and would cover the pills. */
     padding: 0 1.25rem 0.75rem;
-}
-/* The pills belong to the header: draw the separator above the panel body instead of below the button. */
-.toolskills-profile-skills .accordion-button:not(.collapsed) {
-    box-shadow: none;
-}
-.toolskills-profile-skills .accordion-body {
-    border-top: 1px solid var(--bs-accordion-border-color, var(--bs-border-color));
 }
 .toolskills-profile-skills .toolskill-pills-indent {
     padding-inline-start: calc(1.25rem + 40px + 0.5rem);
+}
+/* The panel body of the detailed display. The pills belong to the header: the separator is drawn above the
+   body, not below the button. */
+.toolskills-profile-detailed .toolskill-body {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--bs-border-color, #dee2e6);
 }
 .toolskills-profile-skills a.toolskill-pill {
     cursor: pointer;
@@ -176,7 +234,7 @@ body.module-skills .activity-header {
     background-color: var(--bs-danger-bg-subtle, #f8d7da);
     color: var(--bs-danger-text-emphasis, #842029);
 }
-/* Totals-only display: the card header matches the accordion button without being one. */
+/* Totals-only display: the card header matches the toggle button without being one. */
 .toolskills-profile-totals .toolskill-header {
     margin: 0;
     padding: 0.75rem 1.25rem;

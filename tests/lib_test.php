@@ -111,8 +111,12 @@ final class lib_test extends \advanced_testcase {
 
         $this->assertArrayHasKey('toolskills_earned', $nodes);
         $content = $nodes['toolskills_earned']->content;
-        // Rendered as a Bootstrap accordion of the skill, its level and its course breakdown.
-        $this->assertStringContainsString('toolskills-profile-skills accordion', $content);
+        // Rendered as an accordion of the skill, its level and its course breakdown.
+        $this->assertStringContainsString('toolskills-profile-skills toolskills-profile-detailed', $content);
+        $this->assertStringContainsString('toolskill-toggle', $content);
+        // Only Bootstrap classes that Moodle 4.5 (Bootstrap 4.6) also has: no Bootstrap 5 accordion or utilities.
+        $bs5only = '(accordion-[a-z]+|gap-[0-9]|fw-[a-z]+|fs-[0-9]|visually-hidden)';
+        $this->assertDoesNotMatchRegularExpression('/class="[^"]*(?<![\w-])' . $bs5only . '(?![\w-])/', $content);
         $this->assertStringContainsString('Communication', $content);
         $this->assertStringContainsString('Level 1', $content);
         $this->assertStringContainsString(format_string($course->fullname), $content);
@@ -171,7 +175,7 @@ final class lib_test extends \advanced_testcase {
         [$user, $course] = $this->setup_user_with_skill();
         $this->setUser($user);
         $content = $this->run_callback($user, true, $course)->__get('nodes')['toolskills_earned']->content;
-        $this->assertStringContainsString('toolskills-profile-skills accordion', $content);
+        $this->assertStringContainsString('toolskills-profile-skills toolskills-profile-detailed', $content);
         $this->assertStringContainsString('toolskill-course', $content);
     }
 
@@ -189,8 +193,8 @@ final class lib_test extends \advanced_testcase {
         $this->assertStringContainsString('Communication', $content);
         $this->assertStringContainsString('Level 1', $content);
         $this->assertStringContainsString('toolskill-earned', $content);
-        $this->assertStringNotContainsString('accordion-item', $content);
-        $this->assertStringNotContainsString('accordion-button', $content);
+        $this->assertStringNotContainsString('toolskill-toggle', $content);
+        $this->assertStringNotContainsString('toolskill-collapse', $content);
         $this->assertStringNotContainsString('toolskill-course', $content);
         $this->assertStringNotContainsString(format_string($course->fullname), $content);
     }
