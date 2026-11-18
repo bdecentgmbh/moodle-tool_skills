@@ -452,7 +452,6 @@ class helper {
         }
 
         $names = [0 => get_string('nolevel', 'tool_skills')];
-        uasort($levels, fn($a, $b) => (int) $a->points <=> (int) $b->points);
         foreach ($levels as $id => $level) {
             $names[$id] = format_string($level->name);
         }
@@ -595,7 +594,8 @@ class helper {
             $earned = (int) ($userskill->points ?? 0);
 
             // The current level is the highest level whose points threshold the user has reached.
-            $currentlevel = self::get_reached_level($data->levels ?? [], $earned);
+            $levelid = $skill->get_level_for_points($earned);
+            $currentlevel = $levelid ? (array) $skill->get_levels()[$levelid] : null;
             $levelcolor = $currentlevel['color'] ?? '';
             $levelimageurl = $currentlevel ? self::get_level_image_url((int) $currentlevel['id']) : '';
 
@@ -696,25 +696,6 @@ class helper {
             'skills' => $skills,
             'uniqid' => \html_writer::random_id('toolskills'),
         ];
-    }
-
-    /**
-     * Return the highest level whose points threshold the given earned points reach.
-     *
-     * @param array $levels Levels keyed 1..N, each an array with at least 'id', 'name', 'color', 'points'.
-     * @param int $earned The user's earned points for the skill.
-     * @return array|null The reached level record, or null if none is reached.
-     */
-    protected static function get_reached_level(array $levels, int $earned): ?array {
-        $levels = array_values($levels);
-        usort($levels, fn($a, $b) => ((int) ($a['points'] ?? 0)) <=> ((int) ($b['points'] ?? 0)));
-        $reached = null;
-        foreach ($levels as $level) {
-            if ($earned >= (int) ($level['points'] ?? 0)) {
-                $reached = $level;
-            }
-        }
-        return $reached;
     }
 
     /**

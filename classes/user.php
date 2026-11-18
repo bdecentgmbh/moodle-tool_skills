@@ -137,7 +137,7 @@ class user {
 
             $point->userpoints = $DB->get_record('tool_skills_userpoints', ['skill' => $point->skill, 'userid' => $this->userid]);
             // Skill levels.
-            $point->levels = $DB->get_records('tool_skills_levels', ['skill' => $point->skill]);
+            $point->levels = $DB->get_records('tool_skills_levels', ['skill' => $point->skill], 'points ASC, id ASC');
         });
 
         return $list;
@@ -210,14 +210,9 @@ class user {
     public function get_user_proficency_level(int $skillid, int $points) {
 
         $skill = skills::get($skillid);
-        $levels = $skill->get_levels();
-        foreach ($levels as $level) {
-            if ($points >= $level->points) {
-                $proficiencylevel = $level->name;
-            }
-        }
+        $levelid = $skill->get_level_for_points($points);
 
-        return $proficiencylevel ?? '';
+        return $levelid ? $skill->get_levels()[$levelid]->name : '';
     }
 
     /**

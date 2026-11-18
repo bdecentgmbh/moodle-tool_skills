@@ -324,11 +324,12 @@ class skills {
     protected function fetch_levels(): void {
         global $DB;
 
-        $this->levels = $DB->get_records('tool_skills_levels', ['skill' => $this->skillid]);
+        // From the lowest level up, so that every caller sees the levels in the same order.
+        $this->levels = $DB->get_records('tool_skills_levels', ['skill' => $this->skillid], 'points ASC, id ASC');
     }
 
     /**
-     * Get the levels for this skill.
+     * Get the levels for this skill, sorted by their points (and id, for equal points), keyed by id.
      *
      * @return array
      */
@@ -355,14 +356,15 @@ class skills {
     /**
      * The level a user with the given points has reached: the highest level whose points they reach.
      *
+     * This is the one rule for the reached level; the profile, the course pages, the reports and the
+     * points history use it.
+     *
      * @param int $points
      * @return int|null ID of the level, null when no level is reached (or the skill has no levels).
      */
     public function get_level_for_points(int $points): ?int {
-        $levels = array_values($this->get_levels());
-        usort($levels, fn($a, $b) => [(int) $a->points, (int) $a->id] <=> [(int) $b->points, (int) $b->id]);
         $reached = null;
-        foreach ($levels as $level) {
+        foreach ($this->get_levels() as $level) {
             if ($points >= (int) $level->points) {
                 $reached = (int) $level->id;
             }

@@ -319,9 +319,19 @@ class skills_form extends \moodleform {
         }
 
         if (!empty($data['levels']) && is_array($data['levels'])) {
+            $previous = null;
             foreach ($data['levels'] as $i => $level) {
                 if (isset($level['color']) && !$ishexcolour($level['color'])) {
                     $errors["levels[$i][color]"] = get_string('error:invalidcolor', 'tool_skills');
+                }
+                // Each level needs more points than the level before it. Otherwise a user would reach two levels
+                // at once, or a higher level before a lower one.
+                if (isset($level['points']) && is_numeric($level['points'])) {
+                    $points = (int) $level['points'];
+                    if ($previous !== null && $points <= $previous) {
+                        $errors["levels[$i][points]"] = get_string('error:levelpoints', 'tool_skills', $previous);
+                    }
+                    $previous = $points;
                 }
             }
         }

@@ -29,6 +29,29 @@ Feature: Configuring the tool_skills plugin on the "Skills" page, applying diffe
     And I should see "Beginner" in the "tool_skills_list" "table"
 
   @javascript
+  Scenario: Each level needs more points than the level before it
+    When I navigate to skills
+    And I click on "Create skill" "button"
+    And I set the following fields to these values:
+      | Skill name       | Communication |
+      | Key              | communication |
+      | Number of levels | 3             |
+      | Level #1 name    | Bronze        |
+      | Level #1 point   | 10            |
+      | Level #2 name    | Silver        |
+      | Level #2 point   | 50            |
+      | Level #3 name    | Gold          |
+      | Level #3 point   | 30            |
+    And I click on "Save changes" "button"
+    Then I should see "Each level needs more points than the level before it (50)."
+    And I set the field "Level #3 point" to "50"
+    And I click on "Save changes" "button"
+    And I should see "Each level needs more points than the level before it (50)."
+    And I set the field "Level #3 point" to "80"
+    And I click on "Save changes" "button"
+    And I should see "Communication" in the "tool_skills_list" "table"
+
+  @javascript
   Scenario: Change the skills visibility
     When I log in as "admin"
     And I create skill with the following fields to these values:

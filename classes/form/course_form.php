@@ -72,7 +72,7 @@ class course_form extends \core_form\dynamic_form {
 
         // Completion level — fetch first so we can conditionally show level-based options.
         $skill = $this->optional_param('skill', 0, PARAM_INT);
-        $levels = $DB->get_records_menu('tool_skills_levels', ['skill' => $skill], '', 'id, name');
+        $levels = $DB->get_records_menu('tool_skills_levels', ['skill' => $skill], 'points ASC, id ASC', 'id, name');
 
         // Upon completion.
         $options = [

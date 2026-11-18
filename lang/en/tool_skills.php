@@ -94,6 +94,7 @@ $string['enrolled'] = 'Enrolled';
 $string['entitycategory'] = 'Category';
 $string['error:identityexists'] = 'A skill with this key already exists. Please use a unique key.';
 $string['error:invalidcolor'] = 'Enter a valid hex colour (for example #3b82f6) or leave the field empty';
+$string['error:levelpoints'] = 'Each level needs more points than the level before it ({$a}).';
 $string['error:numeric'] = 'Value should be in numbers';
 $string['error:skillsnotfound'] = 'Skill record not found for the given id';
 $string['eventskillarchived'] = 'Skill archived';

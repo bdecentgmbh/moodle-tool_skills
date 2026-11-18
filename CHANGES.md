@@ -42,12 +42,11 @@
   change in the system context.
 - Developers: `skills::set_userskill_points()` takes a `points_change` describing the change; see the
   developer guide.
-- Moodle 4.5: the profile Skills section and the course's Skills pages look as on Moodle 5.x again. They
-  used Bootstrap 5 classes (accordion, gap, font weight and size, visually hidden) that Moodle 4.5's
-  Bootstrap 4 does not have, so the skill panels showed as plain grey buttons without borders, spacing or
-  collapse arrow. They now use their own styles. A level without a colour shows as a grey badge (it was
-  invisible on Moodle 5.x). On Moodle 4.5, whose menus have no heading level, the course's Skills pages
-  get a heading for screen readers.
+- Levels: each level needs more points than the level before it; the skill form rejects levels with the
+  same or fewer points. Skills whose levels were saved out of order show the same level everywhere, the
+  highest level whose points the user reaches: the profile, the course's Skills pages, the *Skills* report
+  source (which showed the last level in database order) and the Skill progress and Level visuals widgets.
+  Level lists, such as the level to award in a course, are sorted by points (SKI-230).
 
 ### Addons in the Skills bundle (1.4)
 
@@ -58,6 +57,8 @@
 - Skills reports: new report source *Skill points history*.
 - Activity skills: activity awards on the course's Skills page and the Courses for skills page, and in the
   points history; the profile lists only activities the learner sees.
+- Skill progress and Level visuals: the current and next level follow the levels' points, not the order in
+  the database.
 - Every addon's changelog has the details. Level visuals and Skill progress are unchanged (1.3).
 
 ## 1.3 R3 (2026101402)
