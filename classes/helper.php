@@ -352,20 +352,12 @@ class helper {
         global $OUTPUT;
 
         $own = [];
-        $manage = [];
         if (self::can_browse_courses()) {
             $url = new \moodle_url('/admin/tool/skills/catalog.php');
             $own[] = new \action_menu_link_secondary($url, null, get_string('menufindcourses', 'tool_skills'));
         }
-        if (has_capability('tool/skills:manage', \context_system::instance())) {
-            $url = new \moodle_url('/admin/tool/skills/manage/list.php');
-            $manage[] = new \action_menu_link_secondary($url, null, get_string('manageskills', 'tool_skills'));
-        }
-        foreach (self::get_addon_extend_method('get_profile_actions') as $addon) {
-            $actions = $addon->get_profile_actions();
-            $own = array_merge($own, $actions['own'] ?? []);
-            $manage = array_merge($manage, $actions['manage'] ?? []);
-        }
+        [$addonown, $manage] = self::get_profile_action_links();
+        $own = array_merge($own, $addonown);
 
         $menu = new \action_menu();
         $menu->set_kebab_trigger(get_string('actionsfor', 'moodle', get_string('skillprofilecategory', 'tool_skills')));
@@ -379,6 +371,27 @@ class helper {
             $menu->add_secondary_action($link);
         }
         return $menu->is_empty() ? '' : $OUTPUT->render($menu);
+    }
+
+    /**
+     * The actions of the addons for the user's own skills, and the site-wide management pages the user may open:
+     * *Manage skills* and the addons' pages (such as *Manage targets* and the decay pages).
+     *
+     * @return array[] Two lists of \action_menu_link: [own, manage].
+     */
+    protected static function get_profile_action_links(): array {
+        $own = [];
+        $manage = [];
+        if (has_capability('tool/skills:manage', \context_system::instance())) {
+            $url = new \moodle_url('/admin/tool/skills/manage/list.php');
+            $manage[] = new \action_menu_link_secondary($url, null, get_string('manageskills', 'tool_skills'));
+        }
+        foreach (self::get_addon_extend_method('get_profile_actions') as $addon) {
+            $actions = $addon->get_profile_actions();
+            $own = array_merge($own, $actions['own'] ?? []);
+            $manage = array_merge($manage, $actions['manage'] ?? []);
+        }
+        return [$own, $manage];
     }
 
     /**
@@ -489,13 +502,23 @@ class helper {
         if (has_capability('tool/skills:managecourseskillslist', $context)) {
             $pages['manage'] = [new \moodle_url('/admin/tool/skills/manage/courselist.php', $params), 'managecourseskills'];
         }
-        if (count($pages) < 2) {
+        // The site-wide pages the user may manage, as on the profile: users who manage skills find them here also
+        // when the profile has no Skills section.
+        [, $manage] = self::get_profile_action_links();
+        if (count($pages) < 2 && !$manage) {
             return '';
         }
 
         $options = [];
         foreach ($pages as [$url, $label]) {
             $options[$url->out(false)] = get_string($label, 'tool_skills');
+        }
+        if ($manage) {
+            $group = [];
+            foreach ($manage as $link) {
+                $group[$link->url->out(false)] = (string) $link->text;
+            }
+            $options[] = [get_string('sitemanagement', 'tool_skills') => $group];
         }
         $menu = new \core\output\select_menu('toolskillsnavigation', $options, $pages[$current][0]->out(false), true);
         // Moodle's accesshide: Bootstrap 4 (Moodle 4.5) has no visually-hidden, and sr-only is deprecated in Moodle 5.x.

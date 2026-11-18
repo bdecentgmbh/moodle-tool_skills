@@ -171,6 +171,46 @@ final class course_progress_test extends \advanced_testcase {
     }
 
     /**
+     * Users who manage skills site-wide find *Manage skills* in the course navigation, also when the profile
+     * has no Skills section (SKI-231). Teachers without that capability do not get the group.
+     */
+    public function test_navigation_site_management(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $gen = $this->getDataGenerator();
+        $course = $gen->create_course();
+        $context = \context_course::instance($course->id);
+        $teacher = $gen->create_and_enrol($course, 'teacher');
+        $manager = $gen->create_user();
+        $managerroleid = $DB->get_field('role', 'id', ['shortname' => 'manager'], MUST_EXIST);
+        $gen->role_assign($managerroleid, $manager->id, \context_system::instance()->id);
+        $this->create_skill('Safety', [$course->id]);
+        set_config('profiledisplay', helper::PROFILEDISPLAY_DISABLED, 'tool_skills');
+
+        $this->setUser($teacher);
+        $html = helper::get_course_navigation($context, 'overview');
+        $this->assertStringNotContainsString('Site-wide', $html);
+        $this->assertStringNotContainsString('/admin/tool/skills/manage/list.php', $html);
+
+        $this->setUser($manager);
+        $html = helper::get_course_navigation($context, 'manage');
+        $this->assertStringContainsString('Site-wide', $html);
+        $this->assertStringContainsString('/admin/tool/skills/manage/list.php', $html);
+        $this->assertStringContainsString('/admin/tool/skills/manage/courselist.php', $html);
+
+        // Only the site-wide pages: the course navigation is shown for them too.
+        $roleid = $DB->get_field('role', 'id', ['shortname' => 'teacher']);
+        assign_capability('tool/skills:managecourseskillslist', CAP_PROHIBIT, $roleid, $context);
+        assign_capability('tool/skills:viewcourseparticipants', CAP_PROHIBIT, $roleid, $context);
+        $this->setUser($teacher);
+        $this->assertSame('', helper::get_course_navigation($context, 'overview'));
+        assign_capability('tool/skills:manage', CAP_ALLOW, $roleid, \context_system::instance());
+        $gen->role_assign($roleid, $teacher->id, \context_system::instance()->id);
+        $html = helper::get_course_navigation($context, 'overview');
+        $this->assertStringContainsString('/admin/tool/skills/manage/list.php', $html);
+    }
+
+    /**
      * The skills a course awards, by name, without disabled or archived skills.
      */
     public function test_course_skills(): void {

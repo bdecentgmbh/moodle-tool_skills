@@ -42,6 +42,13 @@
   change in the system context.
 - Developers: `skills::set_userskill_points()` takes a `points_change` describing the change; see the
   developer guide.
+- Management pages without the profile Skills section: the menu of a course's Skills pages has a
+  *Site-wide* group with the pages the user may open there, *Manage skills* and the addons' pages (*Manage
+  targets*, the decay pages), as in the actions menu of the profile. Users who manage skills, targets or
+  decay without being site administrators also find them in a *Skills* section of Site administration
+  (site administrators under Plugins > Admin tools, as before). The description of *Skills on the user
+  profile* says where these pages are when it is disabled, and that learners then cannot choose optional
+  targets (SKI-231).
 - Levels: each level needs more points than the level before it; the skill form rejects levels with the
   same or fewer points. Skills whose levels were saved out of order show the same level everywhere, the
   highest level whose points the user reaches: the profile, the course's Skills pages, the *Skills* report

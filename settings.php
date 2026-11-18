@@ -25,21 +25,23 @@
 defined('MOODLE_INTERNAL') || die;
 
 
+// The Skills section is in the admin tree for everyone: Moodle shows a user only the pages their capabilities allow,
+// so users who may manage skills, targets or decay without being site administrators find them there too. The
+// General settings page stays with the site administrators. Moodle adds Plugins > Admin tools for site
+// administrators only; for the others, Skills is a section of its own in Site administration.
+$ADMIN->add($ADMIN->locate('tools') ? 'tools' : 'root', new admin_category('skills', new lang_string('pluginname', 'tool_skills')));
+
+$settings = null; // Reset the settings.
+
+// Include the external page setting to manage skills.
+$ADMIN->add('skills', new admin_externalpage(
+    'manageskills',
+    get_string('manageskills', 'tool_skills'),
+    new moodle_url('/admin/tool/skills/manage/list.php'),
+    'tool/skills:manage'
+));
+
 if ($hassiteconfig) {
-    $ADMIN->add('tools', new admin_category('skills', new lang_string('pluginname', 'tool_skills')));
-
-    $settings = null; // Reset the settings.
-
-    // Include the external page setting to manage skills.
-    $managepage = new admin_externalpage(
-        'manageskills',
-        get_string('manageskills', 'tool_skills'),
-        new moodle_url('/admin/tool/skills/manage/list.php'),
-        'tool/skills:manage'
-    );
-
-    $ADMIN->add('skills', $managepage);
-
     // General settings.
     $generalpage = new admin_settingpage('tool_skills_settings', new lang_string('generalsettings', 'tool_skills'));
     if ($ADMIN->fulltree) {
@@ -57,13 +59,13 @@ if ($hassiteconfig) {
         ));
     }
     $ADMIN->add('skills', $generalpage);
+}
 
-    // Load admin settings for all installed skilladdon subplugins.
-    // Moodle does not iterate subplugin types in admin/settings/plugins.php,
-    // so the parent plugin must trigger this manually.
-    $skilladdonplugins = core_plugin_manager::instance()->get_plugins_of_type('skilladdon');
-    foreach ($skilladdonplugins as $skilladdonplugin) {
-        /** @var \tool_skills\plugininfo\skilladdon $skilladdonplugin */
-        $skilladdonplugin->load_settings($ADMIN, 'skills', $hassiteconfig);
-    }
+// Load admin settings for all installed skilladdon subplugins: their pages, with the capabilities they need.
+// Moodle does not iterate subplugin types in admin/settings/plugins.php,
+// so the parent plugin must trigger this manually.
+$skilladdonplugins = core_plugin_manager::instance()->get_plugins_of_type('skilladdon');
+foreach ($skilladdonplugins as $skilladdonplugin) {
+    /** @var \tool_skills\plugininfo\skilladdon $skilladdonplugin */
+    $skilladdonplugin->load_settings($ADMIN, 'skills', $hassiteconfig);
 }

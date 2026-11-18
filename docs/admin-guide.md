@@ -78,7 +78,7 @@ A skill can define up to **10 levels**, each representing a milestone with a poi
 | Setting | Description |
 | --- | --- |
 | **Level name** | The name shown for this level (for example, *Beginner*, *Advanced*). |
-| **Level point** | The number of points required to reach this level. |
+| **Level point** | The number of points required to reach this level. Each level needs more points than the level before it. |
 | **Level colour** | A colour for this level's badge. It overrides the general skill colour for this level. Enter a hex value or leave empty. |
 | **Level image** | An image representing the level, shown next to the skill on the learner's profile. |
 
@@ -124,7 +124,13 @@ profile**:
 | --- | --- |
 | **Skills with courses and activities** (default) | Each skill with its current level, points and learning time, expandable to the courses that award it with the points earned there, and, with the Activity skills addon, the activities. |
 | **Skill totals only** | Each skill with its current level, points and learning time, without the course and activity rows. |
-| **Disabled** | Nothing: the profile has no Skills section, also not the **Manage skills** link for managers. Learners also do not get the **Skills** tab of courses, nor the **Courses for skills** page. |
+| **Disabled** | Nothing: the profile has no Skills section and no actions menu. Learners also do not get the **Skills** tab of courses, nor the **Courses for skills** page, and cannot choose optional targets (Skill targets addon). |
+
+With **Disabled**, users who manage skills, targets or decay find these pages in the menu at the top of the
+**Skills** page of the courses they teach or manage (group **Site-wide**), and in Site administration: site
+administrators under **Plugins > Admin tools > Skills**, other users with a Skills capability in a
+**Skills** section of their own. The Site administration section shows each user only the pages they may
+open; **General settings** stays with the site administrators.
 
 Addons can add small badges ("pills") below a skill's points in both displays, for example the points
 removed by decay. Tapping or clicking a pill shows its details.
