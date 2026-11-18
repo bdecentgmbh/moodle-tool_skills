@@ -142,6 +142,7 @@ class skills_form extends \moodleform {
         $levelscount = $mform->getElementValue('levelscount');
         $levelscount = !empty($levelscount) ? reset($levelscount) : 0;
 
+        $previouspoints = null;
         for ($i = 1; $i <= $levelscount; $i++) {
             // Static heading.
             $mform->addElement('static', "level[$i]", html_writer::tag('h5', get_string('levelsnohead', 'tool_skills', $i)));
@@ -167,10 +168,14 @@ class skills_form extends \moodleform {
                 $mform->setDefault("levels[$i][name]", get_string('leveldefaultname', 'tool_skills', $i));
             }
 
-            // Set the default point for this level.
-            if ($mform->getElementValue("levels[$i][points]") === null) {
-                $mform->setDefault("levels[$i][points]", ($i - 1) * 10);
+            // Set the default point for this level: 0 for the first, then 10 more than the level before, as each
+            // level needs more points than the one before it.
+            $points = $mform->getElementValue("levels[$i][points]");
+            if ($points === null) {
+                $points = $previouspoints === null ? 0 : $previouspoints + 10;
+                $mform->setDefault("levels[$i][points]", $points);
             }
+            $previouspoints = (int) $points;
 
             // Level color.
             $mform->addElement('tool_skills_colorpicker', "levels[$i][color]", get_string('levelscolor', 'tool_skills', $i), '');
