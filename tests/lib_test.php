@@ -95,6 +95,26 @@ final class lib_test extends \advanced_testcase {
     }
 
     /**
+     * The HTML without core's action menus (elements with the class action-menu).
+     *
+     * @param string $html
+     * @return string
+     */
+    private function without_action_menus(string $html): string {
+        $dom = new \DOMDocument();
+        libxml_use_internal_errors(true);
+        $dom->loadHTML('<?xml encoding="utf-8"?><div>' . $html . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        libxml_clear_errors();
+        $xpath = new \DOMXPath($dom);
+        $menus = $xpath->query('//*[contains(concat(" ", normalize-space(@class), " "), " action-menu ")]');
+        $this->assertGreaterThan(0, $menus->length);
+        foreach (iterator_to_array($menus) as $menu) {
+            $menu->parentNode?->removeChild($menu);
+        }
+        return $dom->saveHTML();
+    }
+
+    /**
      * The skills accordion is shown on the user's own profile, with the skill and course breakdown
      * rendered from the tool_skills/profile_skills template.
      *
@@ -115,8 +135,13 @@ final class lib_test extends \advanced_testcase {
         $this->assertStringContainsString('toolskills-profile-skills toolskills-profile-detailed', $content);
         $this->assertStringContainsString('toolskill-toggle', $content);
         // Only Bootstrap classes that Moodle 4.5 (Bootstrap 4.6) also has: no Bootstrap 5 accordion or utilities.
+        // The action menus are core's (core/action_menu), rendered with the Bootstrap of the running Moodle, so
+        // they are left out of the check.
         $bs5only = '(accordion-[a-z]+|gap-[0-9]|fw-[a-z]+|fs-[0-9]|visually-hidden)';
-        $this->assertDoesNotMatchRegularExpression('/class="[^"]*(?<![\w-])' . $bs5only . '(?![\w-])/', $content);
+        $this->assertDoesNotMatchRegularExpression(
+            '/class="[^"]*(?<![\w-])' . $bs5only . '(?![\w-])/',
+            $this->without_action_menus($content)
+        );
         $this->assertStringContainsString('Communication', $content);
         $this->assertStringContainsString('Level 1', $content);
         $this->assertStringContainsString(format_string($course->fullname), $content);

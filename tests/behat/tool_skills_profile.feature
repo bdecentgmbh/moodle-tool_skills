@@ -74,7 +74,7 @@ Feature: Skills section on the user profile
   @javascript
   Scenario: Learners see the skills of a course on its Skills page
     When I am on the "Course 1" course page logged in as student1
-    And I click on "Skills" "link" in the ".secondary-navigation" "css_element"
+    And I navigate to "Skills" in current page administration
     Then I should see "Skills in this course"
     And I should see "Beginner" in the ".toolskills-course-skills" "css_element"
     And I should see "0 points from this course" in the ".toolskills-course-skills" "css_element"
@@ -109,7 +109,7 @@ Feature: Skills section on the user profile
     And I should see "Course completion · Points - 200" in the "Course 1" "table_row"
     And I should see "Enrolled" in the "Course 1" "table_row"
     And I am on the "Course 1" course page
-    And I click on "Skills" "link" in the ".secondary-navigation" "css_element"
+    And I navigate to "Skills" in current page administration
     And I follow "Courses that award Beginner"
     And the field "Skill" matches value "Beginner"
     And I should see "Beginner" in the "tool_skills_catalog" "table"
