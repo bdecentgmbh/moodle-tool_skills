@@ -233,6 +233,7 @@ class skills {
         global $DB;
 
         $result = $DB->set_field('tool_skills', $key, $value, ['id' => $this->skillid]);
+        \tool_skills\event\skill_updated::create_from_skill($this->skillid)->trigger();
 
         return $result;
     }
@@ -256,7 +257,11 @@ class skills {
             $DB->delete_records('tool_skills_userpoints', ['skill' => $this->skillid]);
             // Remove skills points award logs.
             $DB->delete_records('tool_skills_awardlogs', ['skill' => $this->skillid]);
+            // Remove the points history of the skill.
+            points_history::delete_skill_history($this->skillid);
 
+            $other = ['name' => $this->skillrecord->name ?? ''];
+            \tool_skills\event\skill_deleted::create_from_skill($this->skillid, $other)->trigger();
             return true;
         }
         return false;
@@ -266,25 +271,32 @@ class skills {
     /**
      * Archive the skills
      *
-     * @return void
+     * @return bool True when the skill was archived.
      */
-    public function archive_skill() {
+    public function archive_skill(): bool {
         global $DB;
 
-        if ($DB->update_record('tool_skills', ['id' => $this->skillid, 'archived' => 1, 'timearchived' => time()])) {
-            \tool_skills\courseskills::disable_course_skills($this->skillid);
+        if (!$DB->update_record('tool_skills', ['id' => $this->skillid, 'archived' => 1, 'timearchived' => time()])) {
+            return false;
         }
+        \tool_skills\courseskills::disable_course_skills($this->skillid);
+        \tool_skills\event\skill_archived::create_from_skill($this->skillid)->trigger();
+        return true;
     }
 
     /**
      * Activate the skills.
      *
-     * @return void
+     * @return bool True when the skill was restored from the archive.
      */
-    public function active_skill() {
+    public function active_skill(): bool {
         global $DB;
 
-        $DB->update_record('tool_skills', ['id' => $this->skillid, 'archived' => 0, 'timearchived' => null]);
+        if (!$DB->update_record('tool_skills', ['id' => $this->skillid, 'archived' => 0, 'timearchived' => null])) {
+            return false;
+        }
+        \tool_skills\event\skill_restored::create_from_skill($this->skillid)->trigger();
+        return true;
     }
 
     /**
@@ -312,11 +324,12 @@ class skills {
     protected function fetch_levels(): void {
         global $DB;
 
-        $this->levels = $DB->get_records('tool_skills_levels', ['skill' => $this->skillid]);
+        // From the lowest level up, so that every caller sees the levels in the same order.
+        $this->levels = $DB->get_records('tool_skills_levels', ['skill' => $this->skillid], 'points ASC, id ASC');
     }
 
     /**
-     * Get the levels for this skill.
+     * Get the levels for this skill, sorted by their points (and id, for equal points), keyed by id.
      *
      * @return array
      */
@@ -338,6 +351,25 @@ class skills {
         global $DB;
 
         return count($this->get_levels());
+    }
+
+    /**
+     * The level a user with the given points has reached: the highest level whose points they reach.
+     *
+     * This is the one rule for the reached level; the profile, the course pages, the reports and the
+     * points history use it.
+     *
+     * @param int $points
+     * @return int|null ID of the level, null when no level is reached (or the skill has no levels).
+     */
+    public function get_level_for_points(int $points): ?int {
+        $reached = null;
+        foreach ($this->get_levels() as $level) {
+            if ($points >= (int) $level->points) {
+                $reached = (int) $level->id;
+            }
+        }
+        return $reached;
     }
 
     /**
@@ -383,7 +415,7 @@ class skills {
         $level = level::get($levelid);
         $levelpoints = $level->get_data()->points; // Points to complete this level.
         // Update the new points for this user in db.
-        $this->set_userskill_points($userid, $levelpoints);
+        $this->set_userskill_points($userid, $levelpoints, $skillobj->get_points_change(points_history::REASON_AWARD));
         // Create a award log for this user point increase.
         $this->create_user_point_award($skillobj, $userid, $levelpoints);
     }
@@ -407,7 +439,7 @@ class skills {
         // User not reached this level, then increase the users skill points to reach the new level.
         if ($userskill->points < $levelpoints) {
             // Update the new points for this user in db.
-            $this->set_userskill_points($userid, $levelpoints);
+            $this->set_userskill_points($userid, $levelpoints, $skillobj->get_points_change(points_history::REASON_AWARD));
             // Create a award log for this user point increase.
             $this->create_user_point_award($skillobj, $userid, $levelpoints - $userskill->points);
         }
@@ -429,25 +461,28 @@ class skills {
         $levelpoints = $userskill->points + $points;
 
         // Update the new points for this user in db.
-        $this->set_userskill_points($userid, $levelpoints);
+        $this->set_userskill_points($userid, $levelpoints, $skillobj->get_points_change(points_history::REASON_AWARD));
 
         // Create a award log for this user point increase.
         $this->create_user_point_award($skillobj, $userid, $points);
     }
 
     /**
-     * Update the course completion points to users
+     * Set a user's points for this skill and record the change in the points history.
      *
      * @param int $userid
-     * @param int $points
-     * @return int
+     * @param int $points The user's new points.
+     * @param points_change|null $change Why and through which source the points change; null records the reason "other".
+     * @return int ID of the user points record.
      */
-    public function set_userskill_points(int $userid, int $points): int {
+    public function set_userskill_points(int $userid, int $points, ?points_change $change = null): int {
         global $DB;
 
         $record = ['skill' => $this->skillid, 'userid' => $userid];
+        $oldpoints = 0;
 
         if ($data = $DB->get_record('tool_skills_userpoints', $record)) {
+            $oldpoints = (int) $data->points;
             $id = $data->id;
             $data->points = $points;
             $data->timemodified = time();
@@ -459,6 +494,8 @@ class skills {
 
             $id = $DB->insert_record('tool_skills_userpoints', $record);
         }
+
+        points_history::record($this, $userid, $oldpoints, $points, $change);
 
         return $id;
     }
@@ -474,11 +511,7 @@ class skills {
     public function create_user_point_award($skillobj, int $userid, int $points) {
 
         // Find the method of the course skills.
-        if ($skillobj instanceof \tool_skills\courseskills) {
-            $method = 'course';
-        } else {
-            $method = helper::extend_addons_get_allocation_method($skillobj);
-        }
+        $method = $skillobj->get_method_name();
 
         // Allocation method id.
         $methodid = $skillobj->get_data()->id;
@@ -583,6 +616,12 @@ class skills {
 
         // Allow the query changes to the DB.
         $transaction->allow_commit();
+
+        if ($isupdate) {
+            \tool_skills\event\skill_updated::create_from_skill((int) $skillid)->trigger();
+        } else {
+            \tool_skills\event\skill_created::create_from_skill((int) $skillid)->trigger();
+        }
 
         return $skillid ?? false;
     }

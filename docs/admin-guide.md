@@ -15,6 +15,8 @@ to **administrators** and to anyone with the **`tool/skills:manage`** capability
 - [Managing existing skills](#managing-existing-skills)
 - [Availability and course categories](#availability-and-course-categories)
 - [Skills on the user profile](#skills-on-the-user-profile)
+- [Courses for skills](#courses-for-skills)
+- [Points history](#points-history)
 - [Privacy](#privacy)
 - [Addons](#addons)
 
@@ -64,7 +66,7 @@ Select **Create skill** on the **Active skills** tab and complete the form.
 | **Key** | A unique identifier for the skill. Keep it distinct so skills stay easy to tell apart in the system. |
 | **Description** | A longer explanation of the skill, for administrative reference. |
 | **Status** | **Enabled** — the skill is added to all courses that match its category setting and can be configured by teachers. **Disabled** — the skill is not added to any course and cannot be used. |
-| **Learning time** | The time expected to complete this skill within a course. It is shown to learners on their profile. |
+| **Learning time** | The time expected to complete this skill within a course. It is shown on the skill's card on the profile and on a course's Skills page, as an outline pill in the unit you enter here ("40 hours", not "1 day 16 hours"); tapping it explains it. |
 | **Skill colour** | A colour used to represent the skill (for example, the accent shown in the *Skills* section of the learner's profile). Enter a hex value such as `#3b82f6`, or leave it empty. |
 | **Available in course categories** | Restrict the skill to courses in the selected categories. Leave empty to make the skill available in **every** category. See [Availability](#availability-and-course-categories). |
 
@@ -76,7 +78,7 @@ A skill can define up to **10 levels**, each representing a milestone with a poi
 | Setting | Description |
 | --- | --- |
 | **Level name** | The name shown for this level (for example, *Beginner*, *Advanced*). |
-| **Level point** | The number of points required to reach this level. |
+| **Level point** | The number of points required to reach this level. Each level needs more points than the level before it. |
 | **Level colour** | A colour for this level's badge. It overrides the general skill colour for this level. Enter a hex value or leave empty. |
 | **Level image** | An image representing the level, shown next to the skill on the learner's profile. |
 
@@ -122,16 +124,62 @@ profile**:
 | --- | --- |
 | **Skills with courses and activities** (default) | Each skill with its current level, points and learning time, expandable to the courses that award it with the points earned there, and, with the Activity skills addon, the activities. |
 | **Skill totals only** | Each skill with its current level, points and learning time, without the course and activity rows. |
-| **Disabled** | Nothing: the profile has no Skills section, also not the **Manage skills** link for managers. |
+| **Disabled** | Nothing: the profile has no Skills section and no actions menu. Learners also do not get the **Skills** tab of courses, nor the **Courses for skills** page, and cannot choose optional targets (Skill targets addon). |
+
+With **Disabled**, users who manage skills, targets or decay find these pages in the menu at the top of the
+**Skills** page of the courses they teach or manage (group **Site-wide**), and in the **Skills** section of
+Site administration: under **Plugins > Admin tools**, and on Moodle 4.5, which shows Admin tools to site
+administrators only, as a section of its own for other users with a Skills capability. The Site administration section shows each user only the pages they may
+open; **General settings** stays with the site administrators.
 
 Addons can add small badges ("pills") below a skill's points in both displays, for example the points
 removed by decay. Tapping or clicking a pill shows its details.
 
+Below the **Skills** heading, a line says what the section shows. The actions menu (⋮) beside it has, for each user as far as they may open them: **Find
+courses**, the addons' own actions such as **Select targets**, and the management pages: **Manage skills**,
+**Manage targets**, **Manage decay**, **Decay queue**, **Manual decay** and **Decay report**. Each skill has
+a menu too: **Find courses** for that skill, **Users' points** (with `tool/skills:viewotherspoints`) and
+**Edit skill** (with `tool/skills:manage`).
+
+## Courses for skills
+
+The **Courses for skills** page (`/admin/tool/skills/catalog.php`) helps learners find courses: it lists,
+for all skills or the one chosen under **Skill**, the courses that award the skill, what completing the
+course awards and, with the Activity skills addon, how many of its activities award the skill. For each
+course it says whether the learner has completed it or is enrolled, otherwise how to enrol (the icons of
+Moodle's course listings, for example self enrolment). It lists the courses the learner sees elsewhere in
+Moodle: hidden courses only for users who may see them, and only courses whose completion or activities
+award something in the skill.
+
+Learners reach it from **Find courses** in the actions menu (⋮) of the Skills section of their profile and
+of each skill there, and from each skill on a course's **Skills** page. To add it to the primary navigation, add a line such as
+`Courses for skills|/admin/tool/skills/catalog.php` to **Site administration > Appearance > Themes >
+Theme settings > Custom menu items**. It needs `tool/skills:browsecourses` (all authenticated users by
+default), and is not available when the profile Skills section is disabled.
+
+## Points history
+
+Skills records every change of a learner's points: when it happened, why (an award, points taken back
+when a course's points or a grade changed, decay), through which course, activity or decay rule, and the
+level before and after. Reports over any period use this history; with the Reports addon, build them on
+the **Skill points history** report source. Changes also appear in Moodle's logs as the events *Skill
+points changed* and *Skill level reached*, next to *Skill created*, *updated*, *archived*, *restored* and
+*deleted*.
+
+**Points from before the update to Skills 1.4** are imported once, in the background (cron must run).
+Before 1.4 Skills kept only the latest award per course or activity, so earlier periods can be
+approximate: a course completed twice counts once, on the later date. Where the imported changes do not
+add up to a learner's points at the time of the update, one correction row (reason *Import correction*)
+is added, dated when the history started. From the update on, every change is recorded exactly.
+
 ## Privacy
 
-Skills implements the Moodle Privacy API. It stores, per user, the points earned for each skill and a
-log of how those points were awarded (which course or activity). These records are exported and
-deleted through Moodle's standard data-request tooling, scoped to the relevant course context.
+Skills implements the Moodle Privacy API. It stores, per user, the points earned for each skill, a
+log of how those points were awarded (which course or activity), and the points history. The points and
+award logs are exported and deleted in the relevant course context; the points history in the user's
+own context (and with the course's data when a course context is deleted). A manager who made a
+manual change, such as a manual decay, is exported in the system context and removed from the history
+when their data is deleted.
 
 ## Addons
 

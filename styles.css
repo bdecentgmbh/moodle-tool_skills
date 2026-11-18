@@ -88,14 +88,14 @@ body.module-skills .activity-header {
     display: none;
 }
 
-/* Profile Skills panel: accordion (detailed display) or static cards (totals only). Self-contained, so that it
-   looks the same on Moodle 4.5 (Bootstrap 4.6: no accordion component, no gap-*, fw-* or fs-* utilities, no --bs-*
-   custom properties) and on Moodle 5.x (Bootstrap 5). The var() fallbacks are the Boost values of Moodle 4.5. */
+/* Profile Skills panel: accordion (detailed display) or static cards (totals only), also the cards of a
+   course's Skills page. Self-contained, so that it looks the same on Moodle 4.5 (Bootstrap 4.6: no accordion
+   component, no gap-*, fw-* or fs-* utilities, no --bs-* custom properties) and on Moodle 5.x (Bootstrap 5).
+   The var() fallbacks are the Boost values of Moodle 4.5. */
 .toolskills-profile-skills .toolskill-card {
     margin-bottom: 0.5rem;
     border: 1px solid var(--bs-border-color, #dee2e6);
     border-radius: var(--bs-border-radius, 0.5rem);
-    overflow: hidden;
 }
 .toolskills-profile-detailed .toolskill-header {
     margin: 0;
@@ -103,7 +103,8 @@ body.module-skills .activity-header {
     font-weight: 400;
     line-height: 1.2;
 }
-/* The header button that opens and closes a skill. */
+/* The header button that opens and closes a skill. No overflow clipping on the card, so that its action menu
+   can open beyond it: round the button instead. */
 .toolskills-profile-skills .toolskill-toggle {
     display: flex;
     align-items: center;
@@ -117,7 +118,7 @@ body.module-skills .activity-header {
     text-align: start;
     background-color: transparent;
     border: 0;
-    border-radius: 0;
+    border-radius: var(--bs-border-radius, 0.5rem);
     overflow-anchor: none;
 }
 /* The collapse arrow: a chevron drawn with two borders in the text colour (no image), down when collapsed
@@ -154,7 +155,8 @@ body.module-skills .activity-header {
 .toolskills-profile-skills .toolskill-meta,
 .toolskills-profile-skills .toolskill-pills,
 .toolskills-profile-skills .toolskill-course,
-.toolskills-profile-skills .toolskill-activity {
+.toolskills-profile-skills .toolskill-activity,
+.toolskills-profile-skills .toolskill-levelcounts {
     gap: 0.5rem;
 }
 .toolskills-profile-skills .toolskill-name {
@@ -234,6 +236,19 @@ body.module-skills .activity-header {
     background-color: var(--bs-danger-bg-subtle, #f8d7da);
     color: var(--bs-danger-text-emphasis, #842029);
 }
+/* The learning time: an outline, so that it stands apart from the plugins' pills. The inset shadow keeps it
+   as high as them, which a border would not. */
+.toolskills-profile-skills .toolskill-pill-variant-outline {
+    background-color: transparent;
+    color: var(--bs-secondary-color, #495057);
+    box-shadow: inset 0 0 0 1px currentColor;
+}
+.toolskills-profile-skills .toolskill-pill .icon {
+    width: auto;
+    height: auto;
+    font-size: inherit;
+    margin-right: 0.25rem;
+}
 /* Totals-only display: the card header matches the toggle button without being one. */
 .toolskills-profile-totals .toolskill-header {
     margin: 0;
@@ -244,4 +259,26 @@ body.module-skills .activity-header {
 }
 .toolskills-profile-totals .toolskill-body {
     padding: 0 1.25rem 0.75rem;
+}
+/* Headings in the cards of a course's Skills page (bold, as on Moodle 4.5; Moodle 5.x headings are lighter). */
+.toolskills-course-skills .toolskill-awards-heading,
+.toolskills-course-skills .toolskill-levels-heading {
+    font-weight: 700;
+}
+/* The action menu of a skill, at the end of the card header. */
+.toolskills-profile-skills .toolskill-actions {
+    flex: 0 0 auto;
+    margin: 0.5rem 0.5rem 0 0;
+}
+/* The line about the Skills section of the profile, with its action menu, above the skills. */
+.toolskills-profile-category .toolskills-section-actions {
+    margin-bottom: 0.5rem;
+}
+.toolskills-profile-category .toolskills-section-intro {
+    gap: 0.5rem;
+}
+
+/* Participants' progress of a course: the skill and group selectors. */
+.toolskills-progress-filters {
+    gap: 1rem;
 }

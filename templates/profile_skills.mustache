@@ -23,18 +23,19 @@
     skill is a collapsible panel of an accordion (Bootstrap collapse, styled in styles.css): the header
     shows the skill summary
     (tool_skills/profile_skill_summary: current level image, name, level badge, earned/total points),
-    followed by the pills added by plugins (tool_skills/profile_skill_pills; outside the toggle button,
-    as they open a popover when tapped), and the body lists the courses that award the skill with their
-    points and a link to the users-points report. In the totals-only display each skill is a static card
-    with the summary, the pills, the learning time and the report link, without course and activity rows. The skill colour is
+    followed by the pills (tool_skills/profile_skill_pills: the learning time and those added by plugins;
+    outside the toggle button, as they open a popover when tapped), and the body lists the courses that
+    award the skill with their points. In the totals-only display each skill is a static card with the
+    summary and the pills, without course and activity rows. Both have an action menu beside the header (find
+    courses, users' points, edit skill, as the user may). The skill colour is
     validated to a #rgb/#rrggbb hex on input, so it is safe to interpolate it into the inline style.
 
     Classes required for JS:
     * none (Bootstrap collapse and popovers; both data-bs-* (Moodle 5.x) and data-* (Moodle 4.5) attributes are set)
 
     Moodle 4.5 runs Bootstrap 4.6 and Moodle 5.x Bootstrap 5: this template and its partials only use Bootstrap
-    classes that both have (d-flex, mt-1, py-1, text-muted, badge, rounded-pill, collapse, ...), and no
-    accordion-*, gap-*, fw-*, fs-* or visually-hidden. The panel, spacing and type come from styles.css.
+    classes that both have (d-flex, flex-grow-1, mt-1, py-1, text-muted, badge, rounded-pill, collapse, ...), and
+    no accordion-*, gap-*, fw-*, fs-* or visually-hidden. The panel, spacing and type come from styles.css.
 
     Context variables required for this template:
     * uniqid - Unique string to namespace the accordion element ids.
@@ -44,11 +45,11 @@
         * hascurrentlevel, currentlevelname, hascurrentlevelcolor, currentlevelcolor, currentleveltextcolor
         * haslevelimage, levelimageurl
         * earned, hastotalpoints, pointstocomplete
-        * haspills, pills (name, label, title, variant)
-        * haslearningtime, learningtime
+        * haspills, pills (name, label, title, variant, icon): the learning time first, then the plugins' pills
         * hascourses, courses (coursename, courseurl, courseclass, haspoints, hasgoal, earned, available,
           iscomplete, hasaddoncontent, addoncontent)
-        * hasreport, reporturl, hasbody, expanded
+        * actions - The action menu of the skill (HTML), empty without actions
+        * expanded
 
     Example context (json):
     {
@@ -74,14 +75,19 @@
                 "haspills": true,
                 "pills": [
                     {
+                        "name": "learningtime",
+                        "label": "90 days",
+                        "title": "Learning time: about 90 days to complete this skill.",
+                        "variant": "outline",
+                        "icon": {"key": "i/duration", "component": "core", "alt": "Learning time"}
+                    },
+                    {
                         "name": "skilladdon_decay",
                         "label": "−5 decay",
                         "title": "5 points removed by decay",
                         "variant": "warning"
                     }
                 ],
-                "haslearningtime": true,
-                "learningtime": "90 days",
                 "hascourses": true,
                 "courses": [
                     {
@@ -109,9 +115,7 @@
                         "addoncontent": ""
                     }
                 ],
-                "hasreport": true,
-                "reporturl": "https://example.com/admin/tool/skills/manage/usersreport.php?id=5",
-                "hasbody": true,
+                "actions": "",
                 "expanded": true
             }
         ]
@@ -121,15 +125,18 @@
     {{#skills}}
     <div class="toolskill-card skill-{{identitykey}}"{{#hascolor}} style="border-inline-start: 4px solid {{color}};"{{/hascolor}}>
         {{#detailed}}
-        <h3 class="toolskill-header" id="toolskill-heading-{{uniqid}}-{{skillid}}">
-            <button class="toolskill-toggle{{^expanded}} collapsed{{/expanded}}" type="button"
-                data-bs-toggle="collapse" data-bs-target="#toolskill-collapse-{{uniqid}}-{{skillid}}"
-                data-toggle="collapse" data-target="#toolskill-collapse-{{uniqid}}-{{skillid}}"
-                aria-expanded="{{#expanded}}true{{/expanded}}{{^expanded}}false{{/expanded}}"
-                aria-controls="toolskill-collapse-{{uniqid}}-{{skillid}}">
-                {{> tool_skills/profile_skill_summary }}
-            </button>
-        </h3>
+        <div class="d-flex align-items-start">
+            <h3 class="toolskill-header flex-grow-1" id="toolskill-heading-{{uniqid}}-{{skillid}}">
+                <button class="toolskill-toggle{{^expanded}} collapsed{{/expanded}}" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#toolskill-collapse-{{uniqid}}-{{skillid}}"
+                    data-toggle="collapse" data-target="#toolskill-collapse-{{uniqid}}-{{skillid}}"
+                    aria-expanded="{{#expanded}}true{{/expanded}}{{^expanded}}false{{/expanded}}"
+                    aria-controls="toolskill-collapse-{{uniqid}}-{{skillid}}">
+                    {{> tool_skills/profile_skill_summary }}
+                </button>
+            </h3>
+            {{{actions}}}
+        </div>
         {{#haspills}}
         <div class="toolskill-pills d-flex flex-wrap{{#haslevelimage}} toolskill-pills-indent{{/haslevelimage}}">
             {{> tool_skills/profile_skill_pills }}
@@ -140,9 +147,6 @@
             aria-labelledby="toolskill-heading-{{uniqid}}-{{skillid}}"
             data-bs-parent="#toolskills-accordion-{{uniqid}}" data-parent="#toolskills-accordion-{{uniqid}}">
             <div class="toolskill-body">
-                {{#haslearningtime}}
-                <p class="toolskill-learningtime text-muted mb-2">{{#str}}learningtime, tool_skills{{/str}}: {{learningtime}}</p>
-                {{/haslearningtime}}
                 {{#hascourses}}
                 <ul class="toolskill-courses list-unstyled mb-2">
                     {{#courses}}
@@ -158,31 +162,21 @@
                     {{/courses}}
                 </ul>
                 {{/hascourses}}
-                {{#hasreport}}
-                <a class="toolskill-report" href="{{reporturl}}">{{#str}}usersreport, tool_skills{{/str}}</a>
-                {{/hasreport}}
             </div>
         </div>
         {{/detailed}}
         {{^detailed}}
-        <h3 class="toolskill-header">
-            {{> tool_skills/profile_skill_summary }}
-        </h3>
+        <div class="d-flex align-items-start">
+            <h3 class="toolskill-header flex-grow-1">
+                {{> tool_skills/profile_skill_summary }}
+            </h3>
+            {{{actions}}}
+        </div>
         {{#haspills}}
         <div class="toolskill-pills d-flex flex-wrap{{#haslevelimage}} toolskill-pills-indent{{/haslevelimage}}">
             {{> tool_skills/profile_skill_pills }}
         </div>
         {{/haspills}}
-        {{#hasbody}}
-        <div class="toolskill-body">
-            {{#haslearningtime}}
-            <p class="toolskill-learningtime text-muted mb-1">{{#str}}learningtime, tool_skills{{/str}}: {{learningtime}}</p>
-            {{/haslearningtime}}
-            {{#hasreport}}
-            <a class="toolskill-report" href="{{reporturl}}">{{#str}}usersreport, tool_skills{{/str}}</a>
-            {{/hasreport}}
-        </div>
-        {{/hasbody}}
         {{/detailed}}
     </div>
     {{/skills}}

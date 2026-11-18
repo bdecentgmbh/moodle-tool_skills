@@ -91,5 +91,36 @@
         <INDEX NAME="methodid-method" UNIQUE="false" FIELDS="methodid, method"/>
       </INDEXES>
     </TABLE>
+    <TABLE NAME="tool_skills_points_history" COMMENT="Every change of a user's skill points, for reporting over time">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="skill" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="points" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The change: newpoints - oldpoints"/>
+        <FIELD NAME="oldpoints" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Points before the change"/>
+        <FIELD NAME="newpoints" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Points after the change"/>
+        <FIELD NAME="oldlevel" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" COMMENT="Level reached before the change"/>
+        <FIELD NAME="newlevel" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" COMMENT="Level reached after the change"/>
+        <FIELD NAME="reason" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="award, revoke, decay, import or other"/>
+        <FIELD NAME="method" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="Source type, for example course, activity or decay"/>
+        <FIELD NAME="methodid" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" COMMENT="ID of the source in the table of its method"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" COMMENT="Course of the source"/>
+        <FIELD NAME="cmid" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" COMMENT="Course module of the source"/>
+        <FIELD NAME="sourcename" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the source at the time of the change"/>
+        <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="User who made a manual change"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="skill" TYPE="foreign" FIELDS="skill" REFTABLE="tool_skills" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="usermodified" TYPE="foreign" FIELDS="usermodified" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid-skill-timecreated" UNIQUE="false" FIELDS="userid, skill, timecreated"/>
+        <INDEX NAME="method-methodid" UNIQUE="false" FIELDS="method, methodid"/>
+        <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid"/>
+      </INDEXES>
+    </TABLE>
   </TABLES>
 </XMLDB>

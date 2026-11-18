@@ -33,6 +33,7 @@ use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\helper;
 use core_privacy\local\request\transform;
 use core_privacy\local\request\writer;
+use tool_skills\points_history;
 
 /**
  * The skills stores user points and allocation logs details.
@@ -69,6 +70,24 @@ class provider implements
         ];
         $collection->add_database_table('tool_skills_awardlogs', $awardlogsmetadata, 'privacy:metadata:awardlogs');
 
+        // Points history: every change of a user's points.
+        $historymetadata = [
+            'userid' => 'privacy:metadata:history:userid',
+            'skill' => 'privacy:metadata:history:skill',
+            'points' => 'privacy:metadata:history:points',
+            'oldpoints' => 'privacy:metadata:history:oldpoints',
+            'newpoints' => 'privacy:metadata:history:newpoints',
+            'oldlevel' => 'privacy:metadata:history:oldlevel',
+            'newlevel' => 'privacy:metadata:history:newlevel',
+            'reason' => 'privacy:metadata:history:reason',
+            'method' => 'privacy:metadata:history:method',
+            'courseid' => 'privacy:metadata:history:courseid',
+            'sourcename' => 'privacy:metadata:history:sourcename',
+            'usermodified' => 'privacy:metadata:history:usermodified',
+            'timecreated' => 'privacy:metadata:history:timecreated',
+        ];
+        $collection->add_database_table(points_history::TABLE, $historymetadata, 'privacy:metadata:history');
+
         return $collection;
     }
 
@@ -79,6 +98,7 @@ class provider implements
      * @return contextlist $contextlist The list of contexts used in this plugin.
      */
     public static function get_contexts_for_userid(int $userid): contextlist {
+        global $DB;
         $contextlist = new \core_privacy\local\request\contextlist();
         // User completions.
         $sql = "SELECT ctx.id
@@ -96,6 +116,18 @@ class provider implements
         ];
         $contextlist->add_from_sql($sql, $params);
 
+        // The user's points history lives in their user context.
+        $sql = "SELECT ctx.id
+                  FROM {context} ctx
+                 WHERE ctx.contextlevel = :contextlevel AND ctx.instanceid = :userid
+                       AND EXISTS (SELECT 1 FROM {" . points_history::TABLE . "} h WHERE h.userid = :historyuserid)";
+        $contextlist->add_from_sql($sql, ['contextlevel' => CONTEXT_USER, 'userid' => $userid, 'historyuserid' => $userid]);
+
+        // Manual changes the user made to other users' points (for example a manual decay) are in the system context.
+        if ($DB->record_exists(points_history::TABLE, ['usermodified' => $userid])) {
+            $contextlist->add_system_context();
+        }
+
         return $contextlist;
     }
 
@@ -107,6 +139,16 @@ class provider implements
     public static function get_users_in_context(userlist $userlist) {
         $context = $userlist->get_context();
 
+        if ($context instanceof \context_user) {
+            $sql = "SELECT userid FROM {" . points_history::TABLE . "} WHERE userid = :userid";
+            $userlist->add_from_sql('userid', $sql, ['userid' => $context->instanceid]);
+            return;
+        }
+        if ($context instanceof \context_system) {
+            $sql = "SELECT usermodified FROM {" . points_history::TABLE . "} WHERE usermodified IS NOT NULL";
+            $userlist->add_from_sql('usermodified', $sql, []);
+            return;
+        }
         if (!$context instanceof \context_course) {
             return;
         }
@@ -176,9 +218,21 @@ class provider implements
     protected static function delete_user_data_in_context(int $userid, \context $context) {
         global $DB;
 
+        if ($context->contextlevel == CONTEXT_USER && (int) $context->instanceid === $userid) {
+            points_history::delete_user_history($userid);
+            return;
+        }
+        if ($context->contextlevel == CONTEXT_SYSTEM) {
+            // Keep the other users' history, without the user who made the change.
+            $DB->set_field(points_history::TABLE, 'usermodified', 0, ['usermodified' => $userid]);
+            return;
+        }
         if ($context->contextlevel != CONTEXT_COURSE) {
             return;
         }
+
+        // The user's history of this course goes with the course's data.
+        $DB->delete_records(points_history::TABLE, ['userid' => $userid, 'courseid' => $context->instanceid]);
 
         $skillcourses = $DB->get_records('tool_skills_courses', ['courseid' => $context->instanceid]);
         $affectedskills = [];
@@ -217,9 +271,19 @@ class provider implements
     public static function delete_data_for_all_users_in_context(\context $context) {
         global $DB;
 
+        if ($context->contextlevel == CONTEXT_USER) {
+            points_history::delete_user_history((int) $context->instanceid);
+            return;
+        }
+        if ($context->contextlevel == CONTEXT_SYSTEM) {
+            $DB->set_field_select(points_history::TABLE, 'usermodified', 0, 'usermodified IS NOT NULL');
+            return;
+        }
         if ($context->contextlevel != CONTEXT_COURSE) {
             return;
         }
+        // The history of this course goes with the course's data.
+        $DB->delete_records(points_history::TABLE, ['courseid' => $context->instanceid]);
         // Get the course.
         $course = get_course($context->instanceid);
         if (!$course) {
@@ -264,6 +328,7 @@ class provider implements
         }
         // Context user.
         $user = $contextlist->get_user();
+        self::export_points_history($contextlist);
         [$contextsql, $contextparams] = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
 
         $sql = "SELECT *, up.id AS id, tsl.timecreated AS timeawarded, ctx.id AS contextid, tsl.points AS coursepoint
@@ -291,6 +356,50 @@ class provider implements
             ),
             $user
         );
+    }
+
+    /**
+     * Export the user's points history (user context) and the manual changes they made (system context).
+     *
+     * @param approved_contextlist $contextlist
+     * @return void
+     */
+    protected static function export_points_history(approved_contextlist $contextlist): void {
+        global $DB;
+
+        $userid = (int) $contextlist->get_user()->id;
+        $levelname = fn($levelid) => $levelid ? ($DB->get_field('tool_skills_levels', 'name', ['id' => $levelid]) ?: '-') : '-';
+        $skillname = fn($skillid) => format_string($DB->get_field('tool_skills', 'name', ['id' => $skillid]) ?: '-');
+        foreach ($contextlist->get_contexts() as $context) {
+            if ($context->contextlevel == CONTEXT_USER && (int) $context->instanceid === $userid) {
+                $rows = $DB->get_records(points_history::TABLE, ['userid' => $userid], 'timecreated ASC, id ASC');
+                $field = 'userid';
+            } else if ($context->contextlevel == CONTEXT_SYSTEM) {
+                $rows = $DB->get_records(points_history::TABLE, ['usermodified' => $userid], 'timecreated ASC, id ASC');
+                $field = 'usermodified';
+            } else {
+                continue;
+            }
+            if (!$rows) {
+                continue;
+            }
+            $data = array_values(array_map(fn($row) => (object) [
+                'skill' => $skillname($row->skill),
+                'points' => (int) $row->points,
+                'oldpoints' => (int) $row->oldpoints,
+                'newpoints' => (int) $row->newpoints,
+                'oldlevel' => format_string($levelname($row->oldlevel)),
+                'newlevel' => format_string($levelname($row->newlevel)),
+                'reason' => $row->reason,
+                'source' => $row->sourcename !== null ? format_string($row->sourcename) : ($row->method ?? '-'),
+                'madebyyou' => transform::yesno($field === 'usermodified' || (int) $row->usermodified === $userid),
+                'time' => transform::datetime($row->timecreated),
+            ], $rows));
+            writer::with_context($context)->export_data(
+                [get_string('privacy:history', 'tool_skills')],
+                (object) ['changes' => $data]
+            );
+        }
     }
 
     /**

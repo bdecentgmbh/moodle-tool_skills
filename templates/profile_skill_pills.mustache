@@ -17,7 +17,8 @@
 {{!
     @template tool_skills/profile_skill_pills
 
-    Pills of one skill in the Skills section of the user profile, added by plugins through the
+    Pills of one skill in the Skills section of the user profile and on a course's Skills page: the
+    skill's learning time (an outline pill with an icon) and the pills added by plugins through the
     \tool_skills\hook\extend_profile_skill hook. A pill with a title shows it in a popover when it is
     tapped, clicked or activated with the keyboard (the same markup as Moodle's help icons, so it also
     works on touch devices); pills without a title are plain badges. Labels and titles are plain text.
@@ -26,11 +27,18 @@
     * none (popovers are enabled by theme_boost for data-bs-toggle (Moodle 5.x) and data-toggle (Moodle 4.5))
 
     Context variables required for this template:
-    * pills - Array of pills, each: name, label, title, variant
+    * pills - Array of pills, each: name, label, title, variant, and optionally icon (key, component, alt)
 
     Example context (json):
     {
         "pills": [
+            {
+                "name": "learningtime",
+                "label": "40 hours",
+                "title": "Learning time: about 40 hours to complete this skill.",
+                "variant": "outline",
+                "icon": {"key": "i/duration", "component": "core", "alt": "Learning time"}
+            },
             {
                 "name": "skilladdon_decay",
                 "label": "−5 decay",
@@ -51,9 +59,9 @@
 <a class="badge rounded-pill toolskill-pill toolskill-pill-{{name}} toolskill-pill-variant-{{variant}}" role="button" tabindex="0"
     data-bs-toggle="popover" data-toggle="popover" data-bs-trigger="focus" data-trigger="focus"
     data-bs-placement="bottom" data-placement="bottom" data-bs-container="body" data-container="body"
-    data-bs-content="{{title}}" data-content="{{title}}">{{label}}</a>
+    data-bs-content="{{title}}" data-content="{{title}}">{{#icon}}{{#pix}}{{key}}, {{component}}, {{alt}}{{/pix}}{{/icon}}{{label}}</a>
 {{/title}}
 {{^title}}
-<span class="badge rounded-pill toolskill-pill toolskill-pill-{{name}} toolskill-pill-variant-{{variant}}">{{label}}</span>
+<span class="badge rounded-pill toolskill-pill toolskill-pill-{{name}} toolskill-pill-variant-{{variant}}">{{#icon}}{{#pix}}{{key}}, {{component}}, {{alt}}{{/pix}}{{/icon}}{{label}}</span>
 {{/title}}
 {{/pills}}
