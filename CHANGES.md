@@ -66,6 +66,8 @@
   points history; the profile lists only activities the learner sees.
 - Skill progress and Level visuals: the current and next level follow the levels' points, not the order in
   the database.
+- Skill decay and Skill targets: the skill and cohort fields of the manual decay, decay rule and target
+  forms start with *Choose...* instead of the first entry (SKI-229).
 - Every addon's changelog has the details. Level visuals and Skill progress are unchanged (1.3).
 
 ## 1.3 R3 (2026101402)
