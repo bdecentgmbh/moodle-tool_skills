@@ -1,6 +1,6 @@
 # Changes
 
-## 1.4 (unreleased)
+## 1.4 (2026111800)
 
 - Skills page of a course: a **Skills** tab in each course that awards a skill opens *Skills in this
   course*, with a card per skill. Learners see their level and points, the points from this course and
@@ -23,10 +23,10 @@
   capability `tool/skills:browsecourses` (authenticated users). Not available when the profile Skills
   section is disabled. Addons add their awards through a `get_course_awards()` method.
 - Profile Skills section: a line about the section opens it, with an actions menu beside it that replaces
-  the links and buttons below the skills: *Find courses*, the addons' actions (*Select targets*) and, as the user may, *Manage skills*,
-  *Manage targets* and the decay pages; addons add theirs through a `get_profile_actions()` method. Each
-  skill has a menu with *Find courses*, *Users' points* (instead of the *View users points for this skill*
-  link) and *Edit skill*.
+  the links and buttons below the skills: *Find courses*, the addons' actions (*Select targets*) and, as the
+  user may, *Manage skills*, *Manage targets* and the decay pages; addons add theirs through a
+  `get_profile_actions()` method. Each skill has a menu with *Find courses*, *Users' points* (instead of the
+  *View users points for this skill* link) and *Edit skill*.
 - Learning time: shown as the first pill of a skill, an outline pill that explains it when tapped, in the
   unit entered on the skill ("40 hours" instead of "1 day 16 hours"), on the profile and on the course's
   Skills page, also when the skill's panel is collapsed.
@@ -48,6 +48,17 @@
   collapse arrow. They now use their own styles. A level without a colour shows as a grey badge (it was
   invisible on Moodle 5.x). On Moodle 4.5, whose menus have no heading level, the course's Skills pages
   get a heading for screen readers.
+
+### Addons in the Skills bundle (1.4)
+
+- Skill targets: optional targets, which members of the target's cohort choose on their profile
+  (*Select targets*), with their own date; targets for all members of the cohort work as before.
+- Skill decay: a *Next decay* pill with the date, about how many points and the rule; decays (with their
+  rule, manual decays with the manager) are recorded in the points history.
+- Skills reports: new report source *Skill points history*.
+- Activity skills: activity awards on the course's Skills page and the Courses for skills page, and in the
+  points history; the profile lists only activities the learner sees.
+- Every addon's changelog has the details. Level visuals and Skill progress are unchanged (1.3).
 
 ## 1.3 R3 (2026101402)
 

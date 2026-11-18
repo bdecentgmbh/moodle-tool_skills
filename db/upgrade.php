@@ -111,8 +111,9 @@ function xmldb_tool_skills_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026072101, 'tool', 'skills');
     }
 
-    if ($oldversion < 2026101401) {
-        // Points history: one row per change of a user's skill points.
+    if ($oldversion < 2026111800) {
+        // Points history: one row per change of a user's skill points. (Numbered after 1.3 R3, 2026101402, so that sites
+        // on any 1.3 release get the table.)
         $table = new xmldb_table('tool_skills_points_history');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('skill', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null);
@@ -148,7 +149,7 @@ function xmldb_tool_skills_upgrade($oldversion) {
             \core\task\manager::queue_adhoc_task(new \tool_skills\task\import_points_history(), true);
         }
 
-        upgrade_plugin_savepoint(true, 2026101401, 'tool', 'skills');
+        upgrade_plugin_savepoint(true, 2026111800, 'tool', 'skills');
     }
 
     return true;
