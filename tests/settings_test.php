@@ -49,11 +49,11 @@ final class settings_test extends \advanced_testcase {
     }
 
     /**
-     * Managers, who are no site administrators, find Manage skills in a Skills section of Site administration,
+     * Managers, who are no site administrators, find Manage skills in the Skills section of Site administration,
      * without the General settings (SKI-231). Users without a Skills capability do not see the section.
      */
     public function test_managers_and_other_users(): void {
-        global $DB;
+        global $CFG, $DB;
         $this->resetAfterTest();
         $manager = $this->getDataGenerator()->create_user();
         $roleid = $DB->get_field('role', 'id', ['shortname' => 'manager'], MUST_EXIST);
@@ -62,9 +62,14 @@ final class settings_test extends \advanced_testcase {
         $root = admin_get_root(true, false);
 
         $this->assertFalse(has_capability('moodle/site:config', \context_system::instance()));
-        // Moodle has no Plugins > Admin tools for them.
-        $this->assertNull($root->locate('tools'));
-        $this->assertNotNull($root->locate('skills'));
+        if ($CFG->branch >= 500) {
+            // Moodle 5.x has Plugins > Admin tools for everyone, and Skills is there as for site administrators.
+            $this->assertNotNull($root->locate('tools')->locate('skills'));
+        } else {
+            // Moodle 4.5 has no Plugins > Admin tools for them: Skills is a section of its own.
+            $this->assertNull($root->locate('tools'));
+            $this->assertNotNull($root->locate('skills'));
+        }
         $this->assertTrue($root->locate('skills')->check_access());
         $this->assertTrue($root->locate('manageskills')->check_access());
         $this->assertNull($root->locate('tool_skills_settings'));

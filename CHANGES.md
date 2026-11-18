@@ -45,8 +45,9 @@
 - Management pages without the profile Skills section: the menu of a course's Skills pages has a
   *Site-wide* group with the pages the user may open there, *Manage skills* and the addons' pages (*Manage
   targets*, the decay pages), as in the actions menu of the profile. Users who manage skills, targets or
-  decay without being site administrators also find them in a *Skills* section of Site administration
-  (site administrators under Plugins > Admin tools, as before). The description of *Skills on the user
+  decay without being site administrators also find them in the *Skills* section of Site administration,
+  under Plugins > Admin tools as for site administrators (Moodle 4.5, which shows Admin tools to site
+  administrators only: as a section of its own). The description of *Skills on the user
   profile* says where these pages are when it is disabled, and that learners then cannot choose optional
   targets (SKI-231).
 - Levels: each level needs more points than the level before it; the skill form rejects levels with the

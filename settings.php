@@ -27,8 +27,8 @@ defined('MOODLE_INTERNAL') || die;
 
 // The Skills section is in the admin tree for everyone: Moodle shows a user only the pages their capabilities allow,
 // so users who may manage skills, targets or decay without being site administrators find them there too. The
-// General settings page stays with the site administrators. Moodle adds Plugins > Admin tools for site
-// administrators only; for the others, Skills is a section of its own in Site administration.
+// General settings page stays with the site administrators. Moodle 4.5 adds Plugins > Admin tools for
+// site administrators only; for the others, Skills is a section of its own in Site administration there.
 $ADMIN->add($ADMIN->locate('tools') ? 'tools' : 'root', new admin_category('skills', new lang_string('pluginname', 'tool_skills')));
 
 $settings = null; // Reset the settings.

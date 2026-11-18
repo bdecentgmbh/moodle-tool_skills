@@ -55,6 +55,8 @@ Feature: Users who manage skills find the management pages without the profile S
 
   Scenario: A manager opens Manage skills from Site administration
     When I log in as "manager1"
-    And I navigate to "Skills > Manage skills" in site administration
+    # The Skills section is under Plugins > Admin tools on Moodle 5.x and of its own on Moodle 4.5.
+    And I visit "/admin/category.php?category=skills"
+    And I follow "Manage skills"
     Then I should see "Skills" in the "page-header" "region"
     And I should see "Create skill"

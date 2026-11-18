@@ -11,7 +11,7 @@ For step-by-step detail, follow the links to the other guides.
 
 | Task | Capability | Where | Guide |
 | --- | --- | --- | --- |
-| Create, edit, archive and delete skills and levels site-wide | `tool/skills:manage` | Site administration > Skills > Manage skills | [Administrator guide](admin-guide.md) |
+| Create, edit, archive and delete skills and levels site-wide | `tool/skills:manage` | Site administration > Plugins > Admin tools > Skills (Moodle 4.5: Site administration > Skills) | [Administrator guide](admin-guide.md) |
 | Enable skills in a course and configure completion awards | `tool/skills:managecourseskillslist` | A course > **Skills** | [Teacher guide](teacher-guide.md) |
 | View every user's points for a skill | `tool/skills:viewotherspoints` | Users-points report (below) | this guide |
 
@@ -20,8 +20,8 @@ any course, not only ones you teach — useful for setting up skills consistentl
 
 ## Managing skills site-wide
 
-Under **Site administration > Skills > Manage skills** (site administrators: **Plugins > Admin tools >
-Skills**) you have the same **Manage skills** interface as an administrator. You also reach it from the
+Under **Site administration > Plugins > Admin tools > Skills > Manage skills** (on Moodle 4.5:
+**Site administration > Skills**) you have the same **Manage skills** interface as an administrator. You also reach it from the
 actions menu of the Skills section of your profile and from the **Site-wide** group in the menu at the
 top of a course's **Skills** page. It has the **Active** and **Archived** tabs, the category **Filter**, and the
 create/edit/archive/activate/delete actions. See the [Administrator guide](admin-guide.md) for the

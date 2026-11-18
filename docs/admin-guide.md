@@ -127,9 +127,9 @@ profile**:
 | **Disabled** | Nothing: the profile has no Skills section and no actions menu. Learners also do not get the **Skills** tab of courses, nor the **Courses for skills** page, and cannot choose optional targets (Skill targets addon). |
 
 With **Disabled**, users who manage skills, targets or decay find these pages in the menu at the top of the
-**Skills** page of the courses they teach or manage (group **Site-wide**), and in Site administration: site
-administrators under **Plugins > Admin tools > Skills**, other users with a Skills capability in a
-**Skills** section of their own. The Site administration section shows each user only the pages they may
+**Skills** page of the courses they teach or manage (group **Site-wide**), and in the **Skills** section of
+Site administration: under **Plugins > Admin tools**, and on Moodle 4.5, which shows Admin tools to site
+administrators only, as a section of its own for other users with a Skills capability. The Site administration section shows each user only the pages they may
 open; **General settings** stays with the site administrators.
 
 Addons can add small badges ("pills") below a skill's points in both displays, for example the points
