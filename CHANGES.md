@@ -1,5 +1,12 @@
 # Changes
 
+## 1.3 R3 (2026101402)
+
+- Skill decay (Skills bundle): managers and other users who are not site administrators can open the
+  decay pages their capabilities allow (*Manage skill decay rules*, *Skill decay queue*, *Manual skill
+  decay*). They got an *Access denied* error, because the Skills section of Site administration is built
+  for site administrators only. Skill decay 1.3 R2.
+
 ## 1.3 R2 (2026101401)
 
 - Moodle 4.5: the Skills section of the user profile looks as on Moodle 5.x again. It used Bootstrap 5
