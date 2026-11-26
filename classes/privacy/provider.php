@@ -21,6 +21,7 @@
  * @copyright 2023, bdecent gmbh bdecent.de
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace tool_skills\privacy;
 
 use stdClass;
@@ -266,31 +267,24 @@ class provider implements
         $user = $contextlist->get_user();
         [$contextsql, $contextparams] = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
 
-        $sql = "SELECT *, up.id AS id, tsl.timecreated AS timeawarded, ctx.id AS contextid, tsl.points AS coursepoint
-                FROM {context} ctx
-                INNER JOIN {tool_skills_courses} tsc ON ctx.instanceid = tsc.courseid
-                INNER JOIN {tool_skills_awardlogs} tsl ON tsl.method = 'course' AND tsc.id = tsl.methodid
-                INNER JOIN {tool_skills_userpoints} up ON up.skill = tsc.skill
-                INNER JOIN {tool_skills} ts ON ts.id = up.skill
-                WHERE ctx.id {$contextsql} AND up.userid = :userid
-                ORDER BY ts.id ASC";
+        // The user's own course award logs, one row per log, in the approved course contexts.
+        $sql = "SELECT tsl.id, tsl.skill, tsl.userid, tsl.points AS coursepoint, tsl.timecreated AS timeawarded,
+                       ctx.id AS contextid
+                  FROM {context} ctx
+                  JOIN {tool_skills_courses} tsc ON tsc.courseid = ctx.instanceid
+                  JOIN {tool_skills_awardlogs} tsl ON tsl.method = 'course' AND tsl.methodid = tsc.id
+                       AND tsl.skill = tsc.skill
+                  JOIN {tool_skills} ts ON ts.id = tsl.skill
+                 WHERE ctx.id {$contextsql} AND ctx.contextlevel = :contextlevel AND tsl.userid = :userid
+              ORDER BY ts.id ASC, tsl.timecreated ASC, tsl.id ASC";
 
         $params = [
             'contextlevel' => CONTEXT_COURSE,
-            'userid' => $contextlist->get_user()->id,
+            'userid' => $user->id,
         ];
-        $userpoints = $DB->get_records_sql($sql, $params + $contextparams);
+        $awardlogs = $DB->get_records_sql($sql, $params + $contextparams);
 
-        self::export_user_points(
-            get_string('privacy:awardlogs', 'tool_skills'),
-            array_filter(
-                $userpoints,
-                function (stdClass $point) use ($contextlist): bool {
-                    return $point->userid == $contextlist->get_user()->id;
-                }
-            ),
-            $user
-        );
+        self::export_user_points(get_string('privacy:awardlogs', 'tool_skills'), $awardlogs, $user);
     }
 
     /**
@@ -304,34 +298,25 @@ class provider implements
      * @param stdclass $user User record object.
      */
     private static function export_user_points(string $path, array $userpoints, $user) {
-
-        $userpointsbycontextid = self::group_by_property($userpoints, 'contextid');
-        foreach ($userpointsbycontextid as $contextid => $points) {
+        $username = fullname($user);
+        foreach (self::group_by_property($userpoints, 'contextid') as $contextid => $points) {
             $context = \context::instance_by_id($contextid);
-            $skillsbyid = self::group_by_property($points, 'skill');
-            foreach ($skillsbyid as $skillid => $skills) {
-                $skilldata = (object) array_map(function ($skill) use ($user) {
-                    if ($user->id == $skill->userid) {
-                        $skillobj = \tool_skills\skills::get($skill->skill);
-                        return [
-                            'username' => fullname(\core_user::get_user($skill->userid)),
-                            'skill' => $skillobj->get_name(),
-                            'points' => $skill->coursepoint,
-                            'timeawarded' => $skill->timeawarded ? transform::datetime($skill->timeawarded) : '-',
-                        ];
-                    }
-                }, $skills);
+            $usednames = [];
+            foreach (self::group_by_property($points, 'skill') as $skillid => $logs) {
+                // Each skill of the course gets its own subpath, so that one skill doesn't overwrite another.
+                $skillname = \tool_skills\skills::get($skillid)->get_name();
+                $subpath = isset($usednames[$skillname]) ? "{$skillname} ({$skillid})" : $skillname;
+                $usednames[$skillname] = true;
 
-                if (!empty($skilldata)) {
-                    $context = \context::instance_by_id($contextid);
-                    // Fetch the generic context data.
-                    // Export data.
-                    writer::with_context($context)->export_data(
-                        [$path],
-                        $skilldata
-                    );
-                }
-            };
+                $awards = array_map(fn($log) => (object) [
+                    'username' => $username,
+                    'skill' => $skillname,
+                    'points' => $log->coursepoint,
+                    'timeawarded' => $log->timeawarded ? transform::datetime($log->timeawarded) : '-',
+                ], $logs);
+
+                writer::with_context($context)->export_data([$path, $subpath], (object) ['awards' => $awards]);
+            }
         }
     }
 
