@@ -22,11 +22,10 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 use core_user\output\myprofile\tree;
 
 /**
- * Add the link in course secondary navigation menu to open the skills list page.
+ * Add the Skills tab to the course secondary navigation, which opens the course's Skills page.
  *
  * @param  navigation_node $navigation
  * @param  stdClass $course
@@ -34,13 +33,11 @@ use core_user\output\myprofile\tree;
  * @return void
  */
 function tool_skills_extend_navigation_course(navigation_node $navigation, stdClass $course, $context) {
-    global $PAGE;
-
     $addnode = $context->contextlevel === CONTEXT_COURSE;
-    $addnode = $addnode && has_capability('tool/skills:managecourseskillslist', $context);
+    $addnode = $addnode && \tool_skills\helper::can_view_course_page($context);
     if ($addnode) {
         $id = $context->instanceid;
-        $url = new moodle_url('/admin/tool/skills/manage/courselist.php', [
+        $url = new moodle_url('/admin/tool/skills/course.php', [
             'courseid' => $id,
         ]);
         $node = $navigation->create(get_string('skills', 'tool_skills'), $url, navigation_node::TYPE_SETTING, null, null);
@@ -96,13 +93,29 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
     }
 
     if ($iscurrentuser) {
-        $systemcontext = \context_system::instance();
-
-        // Render the panel of the user's skills: an accordion with the course breakdown, or the totals only.
         $skillscontext = \tool_skills\helper::get_user_profile_skills_context(
             $USER->id,
             $display === \tool_skills\helper::PROFILEDISPLAY_DETAILED
         );
+
+        // A line about the section, with its action menu beside it: finding courses, managing skills, and the
+        // addons' actions.
+        $intro = get_string(empty($skillscontext['hasskills']) ? 'profilenoskills' : 'profileintro', 'tool_skills');
+        $tree->add_node(new core_user\output\myprofile\node(
+            'toolskills',
+            'toolskills_actions',
+            '',
+            null,
+            null,
+            html_writer::div(
+                html_writer::tag('p', $intro, ['class' => 'mb-0']) . \tool_skills\helper::get_section_actions(),
+                'toolskills-section-intro d-flex align-items-center justify-content-between'
+            ),
+            null,
+            'toolskills-section-actions'
+        ));
+
+        // Render the panel of the user's skills: an accordion with the course breakdown, or the totals only.
         if (!empty($skillscontext['hasskills'])) {
             $content = $OUTPUT->render_from_template('tool_skills/profile_skills', $skillscontext);
             $skillsnode = new core_user\output\myprofile\node(
@@ -116,14 +129,6 @@ function tool_skills_myprofile_navigation(tree $tree, $user, $iscurrentuser, $co
                 'toolskills-profile-skills-node'
             );
             $tree->add_node($skillsnode);
-        }
-
-        // Manage skills link for users who can manage them.
-        if (has_capability('tool/skills:manage', $systemcontext)) {
-            $link = new moodle_url('/admin/tool/skills/manage/list.php');
-            $skillstr = html_writer::link($link, get_string('skills:manage', 'tool_skills'));
-            $managenode = new core_user\output\myprofile\node('toolskills', 'manageskills', $skillstr, null, null);
-            $tree->add_node($managenode);
         }
     }
     return true;

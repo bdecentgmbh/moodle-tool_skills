@@ -212,4 +212,60 @@ final class privacy_test extends \core_privacy\tests\provider_testcase {
             'methodid' => $fixture1->courseskillid, 'method' => 'course',
         ]));
     }
+
+    /**
+     * The export of a course's awards holds the user's own awards only, one subpath per skill (SKI-236).
+     */
+    public function test_export_user_data_exports_own_course_awards_per_skill(): void {
+        global $DB;
+
+        $gen = $this->getDataGenerator();
+        $course = $gen->create_course(['enablecompletion' => 1]);
+        $learner = $gen->create_and_enrol($course);
+        $other = $gen->create_and_enrol($course);
+
+        $skills = [];
+        foreach (['Teamwork' => 30, 'Levels out of order' => 0] as $name => $points) {
+            $skillid = $DB->insert_record('tool_skills', (object) [
+                'name' => $name, 'identitykey' => strtolower(str_replace(' ', '', $name)), 'description' => '',
+                'status' => 1, 'categories' => '[]', 'learningtime' => '', 'levelscount' => 0, 'archived' => 0,
+                'timearchived' => 0, 'timecreated' => time(), 'timemodified' => time(),
+            ]);
+            $courseskillid = $DB->insert_record('tool_skills_courses', (object) [
+                'courseid' => $course->id, 'skill' => $skillid, 'status' => 1,
+                'uponcompletion' => skills::COMPLETIONPOINTS, 'points' => $points, 'level' => 0, 'timemodified' => time(),
+            ]);
+            $skills[$name] = (object) ['id' => $skillid, 'courseskillid' => $courseskillid, 'points' => $points];
+        }
+
+        // The learner completed the course first, the other learner later with other points.
+        $learnertime = make_timestamp(2026, 11, 25, 19, 48);
+        $othertime = make_timestamp(2026, 11, 26, 10, 0);
+        foreach ($skills as $skill) {
+            foreach ([[$learner, $skill->points, $learnertime], [$other, $skill->points + 7, $othertime]] as [$u, $p, $t]) {
+                $DB->insert_record('tool_skills_userpoints', (object) ['skill' => $skill->id, 'userid' => $u->id,
+                    'points' => $p, 'timecreated' => $t, 'timemodified' => $t]);
+                $DB->insert_record('tool_skills_awardlogs', (object) ['skill' => $skill->id, 'userid' => $u->id,
+                    'points' => $p, 'methodid' => $skill->courseskillid, 'method' => 'course', 'timecreated' => $t]);
+            }
+        }
+
+        $coursecontext = \context_course::instance($course->id);
+        $this->export_context_data_for_user($learner->id, $coursecontext, 'tool_skills');
+        $writer = writer::with_context($coursecontext);
+        $path = get_string('privacy:awardlogs', 'tool_skills');
+
+        // Nothing is written directly under the path: each skill has its own subpath.
+        $this->assertEmpty($writer->get_data([$path]));
+        foreach ($skills as $name => $skill) {
+            $data = $writer->get_data([$path, $name]);
+            $this->assertNotEmpty($data, "No export for the skill {$name}");
+            $this->assertCount(1, $data->awards);
+            $award = reset($data->awards);
+            $this->assertEquals(fullname($learner), $award->username);
+            $this->assertEquals($name, $award->skill);
+            $this->assertEquals($skill->points, $award->points);
+            $this->assertEquals(\core_privacy\local\request\transform::datetime($learnertime), $award->timeawarded);
+        }
+    }
 }

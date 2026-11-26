@@ -262,20 +262,342 @@ class helper {
     }
 
     /**
+     * Whether the current user can open the Skills page of a course, which also shows its Skills tab.
+     *
+     * Users who manage the course's skills always can, so they can enable skills. Others need the
+     * capability, a course that awards a skill, and the Skills section of the profile not to be disabled.
+     *
+     * @param \context_course $context
+     * @return bool
+     */
+    public static function can_view_course_page(\context_course $context): bool {
+        if (has_capability('tool/skills:managecourseskillslist', $context)) {
+            return true;
+        }
+        return has_capability('tool/skills:viewcourseskills', $context)
+            && self::get_profile_display() !== self::PROFILEDISPLAY_DISABLED
+            && self::get_course_skills($context->instanceid);
+    }
+
+    /**
+     * The skills a course awards: enabled in the course, and enabled and not archived site-wide.
+     *
+     * @param int $courseid The course, or 0 for the skills any course awards.
+     * @return string[] Skill names, keyed by skill id, sorted by name.
+     */
+    public static function get_course_skills(int $courseid): array {
+        global $DB;
+
+        $incourse = $courseid ? 'sc.courseid = :courseid AND' : '';
+        $names = $DB->get_records_sql_menu(
+            "SELECT DISTINCT s.id, s.name
+               FROM {tool_skills_courses} sc
+               JOIN {tool_skills} s ON s.id = sc.skill
+              WHERE $incourse sc.status = 1 AND s.status = 1 AND s.archived = 0
+           ORDER BY s.name",
+            $courseid ? ['courseid' => $courseid] : []
+        );
+        return array_map('format_string', $names);
+    }
+
+    /**
+     * Whether the current user can open the Courses for skills page, which lists the courses that award skills.
+     *
+     * @return bool With the capability, unless the Skills section of the profile is disabled.
+     */
+    public static function can_browse_courses(): bool {
+        return has_capability('tool/skills:browsecourses', \context_system::instance())
+            && self::get_profile_display() !== self::PROFILEDISPLAY_DISABLED;
+    }
+
+    /**
+     * The action menu of a skill on the profile: the courses that award it, its users-points report and its
+     * settings, as far as the user may open them.
+     *
+     * @param int $skillid
+     * @param string $name The skill name, unescaped, for the label of the menu.
+     * @return string HTML, empty without actions.
+     */
+    public static function get_skill_actions(int $skillid, string $name): string {
+        global $OUTPUT;
+
+        $system = \context_system::instance();
+        $actions = [
+            'menufindcourses' => self::can_browse_courses()
+                ? new \moodle_url('/admin/tool/skills/catalog.php', ['skill' => $skillid]) : null,
+            'menuuserspoints' => has_capability('tool/skills:viewotherspoints', $system)
+                ? new \moodle_url('/admin/tool/skills/manage/usersreport.php', ['id' => $skillid]) : null,
+            'editskill' => has_capability('tool/skills:manage', $system)
+                ? new \moodle_url('/admin/tool/skills/manage/edit.php', ['id' => $skillid, 'sesskey' => sesskey()]) : null,
+        ];
+        $menu = new \action_menu();
+        $menu->set_kebab_trigger(get_string('actionsfor', 'moodle', $name));
+        $menu->set_additional_classes('toolskill-actions');
+        foreach (array_filter($actions) as $string => $url) {
+            $menu->add_secondary_action(new \action_menu_link_secondary($url, null, get_string($string, 'tool_skills')));
+        }
+        return $menu->is_empty() ? '' : $OUTPUT->render($menu);
+    }
+
+    /**
+     * The action menu of the Skills section of the user's own profile: the user's own actions, then the
+     * management pages, of Skills and its addons, as far as the user may open them.
+     *
+     * Addons add theirs from a get_profile_actions() method of their manage_skills class, which returns
+     * ['own' => action_menu_link[], 'manage' => action_menu_link[]].
+     *
+     * @return string HTML, empty without actions.
+     */
+    public static function get_section_actions(): string {
+        global $OUTPUT;
+
+        $own = [];
+        if (self::can_browse_courses()) {
+            $url = new \moodle_url('/admin/tool/skills/catalog.php');
+            $own[] = new \action_menu_link_secondary($url, null, get_string('menufindcourses', 'tool_skills'));
+        }
+        [$addonown, $manage] = self::get_profile_action_links();
+        $own = array_merge($own, $addonown);
+
+        $menu = new \action_menu();
+        $menu->set_kebab_trigger(get_string('actionsfor', 'moodle', get_string('skillprofilecategory', 'tool_skills')));
+        foreach ($own as $link) {
+            $menu->add_secondary_action($link);
+        }
+        if ($own && $manage) {
+            $menu->add_secondary_action(new \action_menu_filler());
+        }
+        foreach ($manage as $link) {
+            $menu->add_secondary_action($link);
+        }
+        return $menu->is_empty() ? '' : $OUTPUT->render($menu);
+    }
+
+    /**
+     * The actions of the addons for the user's own skills, and the site-wide management pages the user may open:
+     * *Manage skills* and the addons' pages (such as *Manage targets* and the decay pages).
+     *
+     * @return array[] Two lists of \action_menu_link: [own, manage].
+     */
+    protected static function get_profile_action_links(): array {
+        $own = [];
+        $manage = [];
+        if (has_capability('tool/skills:manage', \context_system::instance())) {
+            $url = new \moodle_url('/admin/tool/skills/manage/list.php');
+            $manage[] = new \action_menu_link_secondary($url, null, get_string('manageskills', 'tool_skills'));
+        }
+        foreach (self::get_addon_extend_method('get_profile_actions') as $addon) {
+            $actions = $addon->get_profile_actions();
+            $own = array_merge($own, $actions['own'] ?? []);
+            $manage = array_merge($manage, $actions['manage'] ?? []);
+        }
+        return [$own, $manage];
+    }
+
+    /**
+     * What else than its completion a course awards in a skill, from the addons, for the Courses for skills page.
+     *
+     * @param int $courseid
+     * @param int $skillid
+     * @return string[] One label per kind of award, for example "2 activities".
+     */
+    public static function extend_addons_get_course_awards(int $courseid, int $skillid): array {
+        $awards = [];
+        foreach (self::get_addon_extend_method('get_course_awards') as $method) {
+            $awards = array_merge($awards, $method->get_course_awards($courseid, $skillid));
+        }
+        return $awards;
+    }
+
+    /**
+     * Whether the current user can open the Participants' progress page of a course.
+     *
+     * Everyone who manages the course's skills can, with the points from the course only; with
+     * tool/skills:viewcourseparticipants also the participants' levels and total points.
+     *
+     * @param \context_course $context
+     * @return bool
+     */
+    public static function can_view_course_participants(\context_course $context): bool {
+        return has_any_capability(['tool/skills:viewcourseparticipants', 'tool/skills:managecourseskillslist'], $context);
+    }
+
+    /**
+     * How many of a course's learners have reached each level of a skill, for the teachers' overview.
+     *
+     * The learners are those of the Participants' progress page; in separate groups, without
+     * moodle/site:accessallgroups, only the members of the user's groups.
+     *
+     * @param \context_course $context
+     * @param skills $skill
+     * @return array[] "No level", then the levels from the lowest, each with name, count, hascolor, color
+     *     and textcolor. Empty for a skill without levels or when the user is in no group.
+     */
+    public static function get_course_level_counts(\context_course $context, skills $skill): array {
+        global $DB, $USER;
+
+        $levels = $skill->get_levels();
+        if (!$levels) {
+            return [];
+        }
+        $groupids = 0;
+        $course = get_course($context->instanceid);
+        if (groups_get_course_groupmode($course) == SEPARATEGROUPS && !has_capability('moodle/site:accessallgroups', $context)) {
+            $groupids = array_keys(groups_get_all_groups($course->id, $USER->id));
+            if (!$groupids) {
+                return [];
+            }
+        }
+
+        // Learners per points value, then per level.
+        $enrolled = get_enrolled_with_capabilities_join($context, '', 'moodle/course:isincompletionreports', $groupids, true);
+        $learners = $DB->get_records_sql_menu(
+            "SELECT COALESCE(up.points, 0) AS points, COUNT(1) AS learners
+               FROM {user} u {$enrolled->joins}
+          LEFT JOIN {tool_skills_userpoints} up ON up.userid = u.id AND up.skill = :skill
+              WHERE {$enrolled->wheres}
+           GROUP BY COALESCE(up.points, 0)",
+            ['skill' => $skill->get_id()] + $enrolled->params
+        );
+        $counts = [0 => 0] + array_fill_keys(array_keys($levels), 0);
+        foreach ($learners as $points => $count) {
+            $counts[(int) $skill->get_level_for_points((int) $points)] += $count;
+        }
+
+        $names = [0 => get_string('nolevel', 'tool_skills')];
+        foreach ($levels as $id => $level) {
+            $names[$id] = format_string($level->name);
+        }
+        $result = [];
+        foreach ($names as $id => $name) {
+            $color = $id ? (string) ($levels[$id]->color ?? '') : '';
+            $result[] = [
+                'name' => $name,
+                'count' => $counts[$id],
+                'label' => get_string('levelcount', 'tool_skills', (object) ['level' => $name, 'count' => $counts[$id]]),
+                'hascolor' => $color !== '',
+                'color' => $color,
+                'textcolor' => $color !== '' ? self::readable_text_color($color) : '',
+            ];
+        }
+        return $result;
+    }
+
+    /**
+     * The tertiary navigation of a course's Skills pages, as on the Participants page: a menu of the pages
+     * the user can open. Its current page is the page heading, so the pages print no heading of their own.
+     *
+     * @param \context_course $context
+     * @param string $current The current page: overview, progress or manage.
+     * @return string HTML, empty when the user can open the overview only.
+     */
+    public static function get_course_navigation(\context_course $context, string $current): string {
+        global $PAGE, $CFG;
+
+        $params = ['courseid' => $context->instanceid];
+        $pages = ['overview' => [new \moodle_url('/admin/tool/skills/course.php', $params), 'overview']];
+        if (self::can_view_course_participants($context)) {
+            $pages['progress'] = [new \moodle_url('/admin/tool/skills/progress.php', $params), 'participantsprogress'];
+        }
+        if (has_capability('tool/skills:managecourseskillslist', $context)) {
+            $pages['manage'] = [new \moodle_url('/admin/tool/skills/manage/courselist.php', $params), 'managecourseskills'];
+        }
+        // The site-wide pages the user may manage, as on the profile: users who manage skills find them here also
+        // when the profile has no Skills section.
+        [, $manage] = self::get_profile_action_links();
+        if (count($pages) < 2 && !$manage) {
+            return '';
+        }
+
+        $options = [];
+        foreach ($pages as [$url, $label]) {
+            $options[$url->out(false)] = get_string($label, 'tool_skills');
+        }
+        if ($manage) {
+            $group = [];
+            foreach ($manage as $link) {
+                $group[$link->url->out(false)] = (string) $link->text;
+            }
+            $options[] = [get_string('sitemanagement', 'tool_skills') => $group];
+        }
+        $menu = new \core\output\select_menu('toolskillsnavigation', $options, $pages[$current][0]->out(false), true);
+        // Moodle's accesshide: Bootstrap 4 (Moodle 4.5) has no visually-hidden, and sr-only is deprecated in Moodle 5.x.
+        $menu->set_label(get_string('coursenavigation', 'tool_skills'), ['class' => 'accesshide']);
+        $output = $PAGE->get_renderer('core');
+        $data = $menu->export_for_template($output);
+        $data->headinglevel = 2;
+        // Moodle 4.5's select menu has no heading level: the page gets its heading for assistive technology.
+        $heading = $CFG->branch < 500
+            ? \html_writer::tag('h2', s(get_string($pages[$current][1], 'tool_skills')), ['class' => 'accesshide']) : '';
+        return $heading . \html_writer::div(
+            \html_writer::div($output->render_from_template('core/tertiary_navigation_selector', $data), 'navitem'),
+            'tertiary-navigation d-flex mb-3'
+        );
+    }
+
+    /**
+     * A learning time in the unit it was entered in: 40 hours is "40 hours", where format_time() says
+     * "1 day 16 hours". The unit is the one the duration field of the skill form shows.
+     *
+     * @param int $seconds
+     * @return string
+     */
+    public static function format_learning_time(int $seconds): string {
+        global $CFG;
+        require_once($CFG->libdir . '/form/duration.php');
+
+        [$number, $unit] = (new \MoodleQuickForm_duration())->seconds_to_unit($seconds);
+        $strings = [WEEKSECS => 'numweeks', DAYSECS => 'numdays', HOURSECS => 'numhours', MINSECS => 'numminutes'];
+        // The core strings are plural: one unit, and seconds, in the words of format_time().
+        if ($number == 1 || !isset($strings[$unit])) {
+            return format_time($seconds);
+        }
+        return get_string($strings[$unit], 'moodle', $number);
+    }
+
+    /**
+     * What an award gives, in the words of the course and activity skill lists, for example "Points - 40".
+     *
+     * @param int $type One of the skills::COMPLETION* constants.
+     * @param int|null $points Points of a points award.
+     * @param int|null $levelid Level of a level award.
+     * @return string Empty for skills::COMPLETIONNOTHING.
+     */
+    public static function get_award_label(int $type, ?int $points, ?int $levelid): string {
+        switch ($type) {
+            case skills::COMPLETIONPOINTS:
+                return get_string('completionpoints', 'tool_skills') . ' - ' . $points;
+            case skills::COMPLETIONPOINTSGRADE:
+                return get_string('completionpointsgrade', 'tool_skills');
+            case skills::COMPLETIONSETLEVEL:
+                return get_string('completionsetlevel', 'tool_skills') . ' - ' . level::get($levelid)->get_name();
+            case skills::COMPLETIONFORCELEVEL:
+                return get_string('completionforcelevel', 'tool_skills') . ' - ' . level::get($levelid)->get_name();
+            default:
+                return '';
+        }
+    }
+
+    /**
      * Build the Skills profile template context for a user.
      *
      * Produces the data consumed by the tool_skills/profile_skills Mustache template: one entry per
      * skill the user is working towards, each with its earned/total points, current level (name,
-     * colour, image), the pills added by plugins through the extend_profile_skill hook and, unless only
-     * the totals are shown, the per-course points breakdown.
+     * colour, image), its learning time and the pills added by plugins through the extend_profile_skill
+     * hook (as pills) and, unless only the totals are shown, the per-course points breakdown.
      *
-     * @param int $userid The user to build the skills summary for.
+     * With a course, it is the context of the course's Skills page (tool_skills/course_skills): the
+     * course's skills, each with its course row only, what the course awards (award) and the points from
+     * the course. With user id 0 as well, the skills carry no personal data (hidepoints, no plugin pills).
+     *
+     * @param int $userid The user to build the skills summary for, or 0 with a course.
      * @param bool $detailed Include the per-course (and addon per-activity) breakdown.
+     * @param int|null $courseid The course of a course's Skills page.
      * @return array Template context: ['hasskills' => bool, 'detailed' => bool, 'skills' => array, 'uniqid' => string].
      */
-    public static function get_user_profile_skills_context(int $userid, bool $detailed = true): array {
+    public static function get_user_profile_skills_context(int $userid, bool $detailed = true, ?int $courseid = null): array {
 
-        $records = \tool_skills\user::get($userid)->get_user_skills();
+        $records = \tool_skills\user::get($userid)->get_user_skills($courseid);
 
         // Group the per-course records by their skill.
         $byskill = [];
@@ -284,8 +606,6 @@ class helper {
             $byskill[$record->skill][] = $record;
             $skillobjs[$record->skill] = $record->skillobj;
         }
-
-        $canreport = has_capability('tool/skills:viewotherspoints', \context_system::instance());
 
         $skills = [];
         $index = 0;
@@ -297,14 +617,29 @@ class helper {
             $earned = (int) ($userskill->points ?? 0);
 
             // The current level is the highest level whose points threshold the user has reached.
-            $currentlevel = self::get_reached_level($data->levels ?? [], $earned);
+            $levelid = $skill->get_level_for_points($earned);
+            $currentlevel = $levelid ? (array) $skill->get_levels()[$levelid] : null;
             $levelcolor = $currentlevel['color'] ?? '';
             $levelimageurl = $currentlevel ? self::get_level_image_url((int) $currentlevel['id']) : '';
 
             // Let plugins add pills next to the points, e.g. points removed by decay or the user's target.
-            $hook = new \tool_skills\hook\extend_profile_skill($userid, $skill, $earned);
-            \core\di::get(\core\hook\manager::class)->dispatch($hook);
-            $pills = $hook->get_pills();
+            $pills = [];
+            if ($userid) {
+                $hook = new \tool_skills\hook\extend_profile_skill($userid, $skill, $earned);
+                \core\di::get(\core\hook\manager::class)->dispatch($hook);
+                $pills = $hook->get_pills();
+            }
+            // The learning time comes first, as an outline pill that stands apart from the plugins' pills.
+            if (!empty($data->learningtime)) {
+                $learningtime = self::format_learning_time((int) $data->learningtime);
+                array_unshift($pills, [
+                    'name' => 'learningtime',
+                    'label' => $learningtime,
+                    'title' => get_string('learningtimepill', 'tool_skills', $learningtime),
+                    'variant' => 'outline',
+                    'icon' => ['key' => 'i/duration', 'component' => 'core', 'alt' => get_string('learningtime', 'tool_skills')],
+                ]);
+            }
 
             // Per-course points breakdown, left out when only the totals are shown.
             $courses = [];
@@ -321,9 +656,14 @@ class helper {
                 // also shows the goal as "earned / available".
                 $haspoints = $availableint !== 0;
                 $hasgoal = $availableint > 0;
-                // Let addons contribute their own per-course content (e.g. activity breakdown).
+                // Let addons contribute their own per-course content (e.g. activity breakdown), on the
+                // course's Skills page with what each item awards.
+                $record->showaward = $courseid !== null;
                 $addon = '';
                 self::extend_addons_add_user_points_content($addon, $record);
+                $award = $record->showaward
+                    ? self::get_award_label((int) $record->uponcompletion, (int) $record->points, (int) $record->level)
+                    : '';
                 $courses[] = [
                     'coursename' => format_string($course->fullname),
                     'courseurl' => (new \moodle_url('/course/view.php', ['id' => $record->courseid]))->out(false),
@@ -335,6 +675,8 @@ class helper {
                     'iscomplete' => $hasgoal && $courseearned >= $availableint,
                     'hasaddoncontent' => $addon !== '',
                     'addoncontent' => $addon,
+                    'award' => $award,
+                    'hasawards' => $award !== '' || $addon !== '',
                 ];
             }
 
@@ -356,16 +698,17 @@ class helper {
                 'pointstocomplete' => $totalpoints,
                 'haspills' => !empty($pills),
                 'pills' => $pills,
-                'haslearningtime' => !empty($data->learningtime),
-                'learningtime' => !empty($data->learningtime) ? format_time($data->learningtime) : '',
                 'hascourses' => !empty($courses),
                 'courses' => $courses,
-                'hasreport' => $canreport,
-                'reporturl' => (new \moodle_url('/admin/tool/skills/manage/usersreport.php', ['id' => $skillid]))->out(false),
-                // The totals-only cards show a body only for the learning time or the report link.
-                'hasbody' => !empty($data->learningtime) || $canreport,
+                // The profile's action menu; the course's Skills page has its own links.
+                'actions' => $courseid === null
+                    ? self::get_skill_actions((int) $skillid, format_string($data->name, true, ['escape' => false])) : '',
                 // Expand the first skill by default so the panel is not empty on open.
                 'expanded' => $index === 0,
+                // The course's Skills page: without a user no points; with one, the points from the course.
+                'hidepoints' => !$userid,
+                'hascoursepoints' => $courseid && $userid,
+                'coursepoints' => $courseid && $userid ? points_history::get_course_points($userid, $skillid, $courseid) : 0,
             ];
             $index++;
         }
@@ -376,25 +719,6 @@ class helper {
             'skills' => $skills,
             'uniqid' => \html_writer::random_id('toolskills'),
         ];
-    }
-
-    /**
-     * Return the highest level whose points threshold the given earned points reach.
-     *
-     * @param array $levels Levels keyed 1..N, each an array with at least 'id', 'name', 'color', 'points'.
-     * @param int $earned The user's earned points for the skill.
-     * @return array|null The reached level record, or null if none is reached.
-     */
-    protected static function get_reached_level(array $levels, int $earned): ?array {
-        $levels = array_values($levels);
-        usort($levels, fn($a, $b) => ((int) ($a['points'] ?? 0)) <=> ((int) ($b['points'] ?? 0)));
-        $reached = null;
-        foreach ($levels as $level) {
-            if ($earned >= (int) ($level['points'] ?? 0)) {
-                $reached = $level;
-            }
-        }
-        return $reached;
     }
 
     /**

@@ -95,6 +95,26 @@ final class lib_test extends \advanced_testcase {
     }
 
     /**
+     * The HTML without core's action menus (elements with the class action-menu).
+     *
+     * @param string $html
+     * @return string
+     */
+    private function without_action_menus(string $html): string {
+        $dom = new \DOMDocument();
+        libxml_use_internal_errors(true);
+        $dom->loadHTML('<?xml encoding="utf-8"?><div>' . $html . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        libxml_clear_errors();
+        $xpath = new \DOMXPath($dom);
+        $menus = $xpath->query('//*[contains(concat(" ", normalize-space(@class), " "), " action-menu ")]');
+        $this->assertGreaterThan(0, $menus->length);
+        foreach (iterator_to_array($menus) as $menu) {
+            $menu->parentNode?->removeChild($menu);
+        }
+        return $dom->saveHTML();
+    }
+
+    /**
      * The skills accordion is shown on the user's own profile, with the skill and course breakdown
      * rendered from the tool_skills/profile_skills template.
      *
@@ -115,11 +135,62 @@ final class lib_test extends \advanced_testcase {
         $this->assertStringContainsString('toolskills-profile-skills toolskills-profile-detailed', $content);
         $this->assertStringContainsString('toolskill-toggle', $content);
         // Only Bootstrap classes that Moodle 4.5 (Bootstrap 4.6) also has: no Bootstrap 5 accordion or utilities.
+        // The action menus are core's (core/action_menu), rendered with the Bootstrap of the running Moodle, so
+        // they are left out of the check.
         $bs5only = '(accordion-[a-z]+|gap-[0-9]|fw-[a-z]+|fs-[0-9]|visually-hidden)';
-        $this->assertDoesNotMatchRegularExpression('/class="[^"]*(?<![\w-])' . $bs5only . '(?![\w-])/', $content);
+        $this->assertDoesNotMatchRegularExpression(
+            '/class="[^"]*(?<![\w-])' . $bs5only . '(?![\w-])/',
+            $this->without_action_menus($content)
+        );
         $this->assertStringContainsString('Communication', $content);
         $this->assertStringContainsString('Level 1', $content);
         $this->assertStringContainsString(format_string($course->fullname), $content);
+
+        // Above the skills, a line about them with the action menu of the section.
+        $this->assertArrayHasKey('toolskills_actions', $nodes);
+        $this->assertStringContainsString(get_string('profileintro', 'tool_skills'), $nodes['toolskills_actions']->content);
+        $this->assertStringContainsString('Actions for Skills', $nodes['toolskills_actions']->content);
+        $this->assertLessThan(
+            array_search('toolskills_earned', array_keys($nodes)),
+            array_search('toolskills_actions', array_keys($nodes))
+        );
+    }
+
+    /**
+     * The learning time is the first pill of a skill, an outline pill in the unit it was entered in that
+     * explains itself in its popover, before the plugins' pills; there is no separate learning time line.
+     */
+    public function test_learning_time_pill(): void {
+        $this->resetAfterTest(true);
+        [$user, $course] = $this->setup_user_with_skill();
+        $this->setUser($user);
+        $this->redirectHook(
+            \tool_skills\hook\extend_profile_skill::class,
+            fn(\tool_skills\hook\extend_profile_skill $hook) => $hook->add_pill('skilladdon_decay', '−5 decay')
+        );
+
+        $content = $this->run_callback($user, true, $course)->__get('nodes')['toolskills_earned']->content;
+        $pill = 'toolskill-pill toolskill-pill-learningtime toolskill-pill-variant-outline';
+        $this->assertStringContainsString($pill, $content);
+        $this->assertStringContainsString('90 days</a>', $content);
+        $this->assertStringContainsString('data-bs-content="Learning time: about 90 days to complete this skill."', $content);
+        $this->assertStringContainsString('aria-label="Learning time"', $content);
+        $this->assertLessThan(strpos($content, 'toolskill-pill-skilladdon_decay'), strpos($content, $pill));
+        $this->assertStringNotContainsString('toolskill-learningtime', $content);
+    }
+
+    /**
+     * Without skills, the section says so, with its action menu.
+     */
+    public function test_section_without_skills(): void {
+        $this->resetAfterTest(true);
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        $nodes = $this->run_callback($user, true, $this->getDataGenerator()->create_course())->__get('nodes');
+
+        $this->assertArrayNotHasKey('toolskills_earned', $nodes);
+        $this->assertStringContainsString(get_string('profilenoskills', 'tool_skills'), $nodes['toolskills_actions']->content);
     }
 
     /**

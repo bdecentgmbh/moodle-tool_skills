@@ -35,7 +35,6 @@ use core\output\notification;
 use core_table\dynamic;
 use html_writer;
 use tool_skills\courseskills;
-use tool_skills\skills;
 
 /**
  * Skills list table.
@@ -148,23 +147,8 @@ class course_skills_table extends \table_sql {
      * @return string
      */
     public function col_uponcompletion(stdClass $row): string {
-
-        $completion = $row->uponcompletion ?? 0;
-
-        switch ($completion) {
-            case skills::COMPLETIONFORCELEVEL:
-                return get_string('completionforcelevel', 'tool_skills') . ' - ' . \tool_skills\level::get($row->level)->get_name();
-
-            case skills::COMPLETIONPOINTS:
-                return get_string('completionpoints', 'tool_skills') . ' - ' . $row->points;
-
-            case skills::COMPLETIONSETLEVEL:
-                return get_string('completionsetlevel', 'tool_skills') . ' - ' . \tool_skills\level::get($row->level)->get_name();
-
-            case skills::COMPLETIONNOTHING:
-            default:
-                return get_string('completionnothing', 'tool_skills');
-        }
+        $award = \tool_skills\helper::get_award_label((int) $row->uponcompletion, (int) $row->points, (int) $row->level);
+        return $award ?: get_string('completionnothing', 'tool_skills');
     }
 
     /**

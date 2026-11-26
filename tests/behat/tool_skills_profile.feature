@@ -70,3 +70,46 @@ Feature: Skills section on the user profile
     And I am on the "student1" "user > profile" page logged in as student1
     Then ".toolskills-profile-skills .toolskill-course" "css_element" should not exist
     And I should see "Beginner" in the ".toolskills-profile-skills" "css_element"
+
+  @javascript
+  Scenario: Learners see the skills of a course on its Skills page
+    When I am on the "Course 1" course page logged in as student1
+    And I navigate to "Skills" in current page administration
+    Then I should see "Skills in this course"
+    And I should see "Beginner" in the ".toolskills-course-skills" "css_element"
+    And I should see "0 points from this course" in the ".toolskills-course-skills" "css_element"
+    And I should see "Points - 200" in the ".toolskill-coursecompletion" "css_element"
+    And "Manage course skills" "button" should not exist
+
+  @javascript
+  Scenario: With the Skills section disabled, learners get no Skills tab in the course
+    Given the following config values are set as admin:
+      | profiledisplay | 0 | tool_skills |
+    When I am on the "Course 1" course page logged in as student1
+    Then "Skills" "link" should not exist in the ".secondary-navigation" "css_element"
+
+  @javascript
+  Scenario: Teachers follow the participants' progress of a course
+    Given I log in as "admin"
+    And I am on "Course 1" course homepage
+    And I navigate to "Skills" in current page administration
+    And I should see "How it is earned in this course" in the ".toolskills-course-skills" "css_element"
+    And I should see "No level: 1" in the ".toolskill-levelcounts" "css_element"
+    When I set the field "Course skills navigation" to "Participants' progress"
+    Then I should see "Participants' progress" in the ".tertiary-navigation" "css_element"
+    And I should see "Student First" in the "tool_skills_course_participants" "table"
+    And I should see "From this course" in the "tool_skills_course_participants" "table"
+
+  @javascript
+  Scenario: Learners find the courses that award skills
+    When I am on the "student1" "user > profile" page logged in as student1
+    And I open the action menu in ".toolskills-section-actions" "css_element"
+    And I choose "Find courses" in the open action menu
+    Then I should see "The courses that award skills, and what you earn in each of them."
+    And I should see "Course completion · Points - 200" in the "Course 1" "table_row"
+    And I should see "Enrolled" in the "Course 1" "table_row"
+    And I am on the "Course 1" course page
+    And I navigate to "Skills" in current page administration
+    And I follow "Courses that award Beginner"
+    And the field "Skill" matches value "Beginner"
+    And I should see "Beginner" in the "tool_skills_catalog" "table"

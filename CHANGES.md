@@ -1,5 +1,90 @@
 # Changes
 
+## 1.4 (2026111800)
+
+- Skills page of a course: a **Skills** tab in each course that awards a skill opens *Skills in this
+  course*, with a card per skill. Learners see their level and points, the points from this course and
+  what the course and its activities award, with the points earned there; teachers see what the course
+  awards, and reach *Manage course skills* from its menu. New capability `tool/skills:viewcourseskills`
+  (students, teachers, managers). Learners do not get the tab when the profile Skills section is disabled.
+- Participants' progress of a course: teachers follow the course's learners one skill at a time, with the
+  points from this course and, with the new capability `tool/skills:viewcourseparticipants` (teachers,
+  managers; personal data risk), their level and total points. Group filter, sorting, initials bar and
+  download. The course's Skills pages share a menu like the Participants page, which is also their
+  heading: Overview, Participants' progress and Manage course skills.
+- Teachers' overview: each skill card says how the skill is earned in this course, links to its
+  participants' progress and, with `tool/skills:viewcourseparticipants`, counts the learners per level.
+- Users-points report: users with the same points are each listed (only one of them was before), and the
+  report is sorted, most points first, by either column.
+- Courses for skills: a page for learners to find the courses that award a skill, with what the course
+  and (with Activity skills) its activities award, and whether the learner has completed the course, is
+  enrolled or how to enrol. It lists the courses the learner sees elsewhere in Moodle that award something
+  in the skill. Linked from the profile Skills section and from each skill on a course's Skills page; new
+  capability `tool/skills:browsecourses` (authenticated users). Not available when the profile Skills
+  section is disabled. Addons add their awards through a `get_course_awards()` method.
+- Profile Skills section: a line about the section opens it, with an actions menu beside it that replaces
+  the links and buttons below the skills: *Find courses*, the addons' actions (*Select targets*) and, as the
+  user may, *Manage skills*, *Manage targets* and the decay pages; addons add theirs through a
+  `get_profile_actions()` method. Each skill has a menu with *Find courses*, *Users' points* (instead of the
+  *View users points for this skill* link) and *Edit skill*.
+- Learning time: shown as the first pill of a skill, an outline pill that explains it when tapped, in the
+  unit entered on the skill ("40 hours" instead of "1 day 16 hours"), on the profile and on the course's
+  Skills page, also when the skill's panel is collapsed.
+- Points history: every change of a user's skill points is recorded with its time, reason (award,
+  revoke, decay, import, other), source (course, activity or decay rule, with its name at the time) and the
+  level before and after. Points earned before the update are imported once in the background; where the
+  import does not add up to a user's points, one correction row is added. The Reports addon reports on
+  it with its new *Skill points history* source.
+- Events: *Skill points changed* and *Skill level reached*, and *Skill created*, *updated*, *archived*,
+  *restored* and *deleted*.
+- Archiving and restoring a skill show their confirmation message again.
+- Privacy: the points history is exported and deleted in the user's context; the manager of a manual
+  change in the system context.
+- Privacy: the *Points awarded* export of a course lists the user's own course awards, each skill under
+  its own subpath. It could show another learner's award under the user's name, leave out the user's
+  own, and keep only one skill of a course that awards several (SKI-236).
+- Security (Activity skills): only users with `tool/skills:managecourseskillslist` in an activity can save
+  its award rule; before, any logged-in user could award themselves points through the form's web service
+  (SKI-233).
+- Developers: `skills::set_userskill_points()` takes a `points_change` describing the change; see the
+  developer guide.
+- Management pages without the profile Skills section: the menu of a course's Skills pages has a
+  *Site-wide* group with the pages the user may open there, *Manage skills* and the addons' pages (*Manage
+  targets*, the decay pages), as in the actions menu of the profile. Users who manage skills, targets or
+  decay without being site administrators also find them in the *Skills* section of Site administration,
+  under Plugins > Admin tools as for site administrators (Moodle 4.5, which shows Admin tools to site
+  administrators only: as a section of its own). The description of *Skills on the user
+  profile* says where these pages are when it is disabled, and that learners then cannot choose optional
+  targets (SKI-231).
+- Levels: each level needs more points than the level before it; the skill form rejects levels with the
+  same or fewer points. Skills whose levels were saved out of order show the same level everywhere, the
+  highest level whose points the user reaches: the profile, the course's Skills pages, the *Skills* report
+  source (which showed the last level in database order) and the Skill progress and Level visuals widgets.
+  Level lists, such as the level to award in a course, are sorted by points (SKI-230).
+
+### Addons in the Skills bundle (1.4)
+
+- Skill targets: optional targets, which members of the target's cohort choose on their profile
+  (*Select targets*), with their own date; targets for all members of the cohort work as before.
+- Skill decay: a *Next decay* pill with the date, about how many points and the rule; decays (with their
+  rule, manual decays with the manager) are recorded in the points history.
+- Skills reports: new report source *Skill points history*.
+- Activity skills: activity awards on the course's Skills page and the Courses for skills page, and in the
+  points history; the profile lists only activities the learner sees. Security: only users who manage the
+  activity's skills can save its award rule (SKI-233, see above).
+- Skill progress and Level visuals: the current and next level follow the levels' points, not the order in
+  the database.
+- Skill decay and Skill targets: the skill and cohort fields of the manual decay, decay rule and target
+  forms start with *Choose...* instead of the first entry (SKI-229).
+- Every addon's changelog has the details.
+
+## 1.3 R3 (2026101402)
+
+- Skill decay (Skills bundle): managers and other users who are not site administrators can open the
+  decay pages their capabilities allow (*Manage skill decay rules*, *Skill decay queue*, *Manual skill
+  decay*). They got an *Access denied* error, because the Skills section of Site administration is built
+  for site administrators only. Skill decay 1.3 R2.
+
 ## 1.3 R2 (2026101401)
 
 - Moodle 4.5: the Skills section of the user profile looks as on Moodle 5.x again. It used Bootstrap 5

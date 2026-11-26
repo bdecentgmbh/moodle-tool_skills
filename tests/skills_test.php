@@ -232,6 +232,25 @@ final class skills_test extends \advanced_testcase {
     }
 
     /**
+     * The levels come sorted by points, also when they were saved out of order (SKI-230), and the reached
+     * level is the highest one by points.
+     */
+    public function test_get_levels_sorted_by_points(): void {
+        $this->resetAfterTest(true);
+        $skillid = $this->create_skill();
+        $level10 = $this->create_level($skillid, 10);
+        $level50 = $this->create_level($skillid, 50);
+        $level30 = $this->create_level($skillid, 30);
+        $skill = skills::get($skillid);
+
+        $this->assertSame([$level10, $level30, $level50], array_map('intval', array_keys($skill->get_levels())));
+        $this->assertSame($level50, $skill->get_level_for_points(55));
+        $this->assertSame($level30, $skill->get_level_for_points(49));
+        $this->assertNull($skill->get_level_for_points(9));
+        $this->assertEquals(['Level 10', 'Level 30', 'Level 50'], array_column($skill->get_data()->levels, 'name'));
+    }
+
+    /**
      * Helper to build a minimal allocation_method stub for point operations.
      * Returns a courseskills instance with the skill instance set.
      *

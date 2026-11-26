@@ -190,6 +190,23 @@ final class user_test extends \advanced_testcase {
     }
 
     /**
+     * Levels saved out of order by points: the level is the highest one reached by points, as on the profile,
+     * not the last one in the database (SKI-230).
+     */
+    public function test_get_user_proficiency_level_with_levels_out_of_order(): void {
+        $moodleuser = $this->getDataGenerator()->create_user();
+        $skillid = $this->create_skill();
+        $this->create_level($skillid, 10);
+        $this->create_level($skillid, 50);
+        $this->create_level($skillid, 30);
+        $this->insert_userpoints($skillid, $moodleuser->id, 55);
+
+        $this->assertSame('L50', user::get($moodleuser->id)->get_user_proficency_level($skillid, 55));
+        $this->assertSame('L30', user::get($moodleuser->id)->get_user_proficency_level($skillid, 49));
+        $this->assertSame('', user::get($moodleuser->id)->get_user_proficency_level($skillid, 9));
+    }
+
+    /**
      * Test get_user_proficency_level() returns empty string when user is below first level.
      */
     public function test_get_user_proficiency_level_returns_empty_below_first_level(): void {

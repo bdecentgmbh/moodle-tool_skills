@@ -114,6 +114,48 @@ abstract class allocation_method {
     }
 
     /**
+     * Name of this allocation method, as stored in the award logs and the points history ('course', 'activity', ...).
+     *
+     * @return string
+     */
+    public function get_method_name(): string {
+        if ($this instanceof courseskills) {
+            return 'course';
+        }
+        return (string) helper::extend_addons_get_allocation_method($this);
+    }
+
+    /**
+     * Course, course module and name of the current skill instance's source, for the points history.
+     *
+     * Allocation methods override this; the default knows no source details.
+     *
+     * @return array [courseid|null, cmid|null, name|null]
+     */
+    protected function get_points_source(): array {
+        return [null, null, null];
+    }
+
+    /**
+     * Describe a change of points through the current skill instance of this method, for the points history.
+     *
+     * @param string $reason One of the points_history::REASON_* constants.
+     * @return points_change
+     */
+    public function get_points_change(string $reason): points_change {
+        [$courseid, $cmid, $name] = $this->get_points_source();
+        $data = $this->get_data();
+        return new points_change(
+            $reason,
+            $this->get_method_name() ?: null,
+            isset($data->id) ? (int) $data->id : null,
+            $courseid ? (int) $courseid : null,
+            $cmid ? (int) $cmid : null,
+            $name
+        );
+    }
+
+    /**
      * Get skill log class instance to store user point allocations.
      *
      * @return \tool_skills\logs
