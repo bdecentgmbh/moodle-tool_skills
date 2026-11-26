@@ -1,5 +1,18 @@
 # Changes
 
+## 1.3 R3 (2026101402)
+
+- Skill decay (Skills bundle): managers and other users who are not site administrators can open the
+  decay pages their capabilities allow (*Manage skill decay rules*, *Skill decay queue*, *Manual skill
+  decay*). They got an *Access denied* error, because the Skills section of Site administration is built
+  for site administrators only. Skill decay 1.3 R2.
+- Security (Activity skills): only users with `tool/skills:managecourseskillslist` in an activity can save
+  its award rule; before, any logged-in user could award themselves points through the form's web service
+  (SKI-233). Activity skills 1.3 R3.
+- Privacy: the *Points awarded* export of a course lists the user's own course awards, each skill under
+  its own subpath. It could show another learner's award under the user's name, leave out the user's
+  own, and keep only one skill of a course that awards several (SKI-236).
+
 ## 1.3 R2 (2026101401)
 
 - Moodle 4.5: the Skills section of the user profile looks as on Moodle 5.x again. It used Bootstrap 5
