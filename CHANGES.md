@@ -70,12 +70,13 @@
   rule, manual decays with the manager) are recorded in the points history.
 - Skills reports: new report source *Skill points history*.
 - Activity skills: activity awards on the course's Skills page and the Courses for skills page, and in the
-  points history; the profile lists only activities the learner sees.
+  points history; the profile lists only activities the learner sees. Security: only users who manage the
+  activity's skills can save its award rule (SKI-233, see above).
 - Skill progress and Level visuals: the current and next level follow the levels' points, not the order in
   the database.
 - Skill decay and Skill targets: the skill and cohort fields of the manual decay, decay rule and target
   forms start with *Choose...* instead of the first entry (SKI-229).
-- Every addon's changelog has the details. Level visuals and Skill progress are unchanged (1.3).
+- Every addon's changelog has the details.
 
 ## 1.3 R3 (2026101402)
 
