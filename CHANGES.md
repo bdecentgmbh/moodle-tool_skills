@@ -43,6 +43,9 @@
 - Privacy: the *Points awarded* export of a course lists the user's own course awards, each skill under
   its own subpath. It could show another learner's award under the user's name, leave out the user's
   own, and keep only one skill of a course that awards several (SKI-236).
+- Security (Activity skills): only users with `tool/skills:managecourseskillslist` in an activity can save
+  its award rule; before, any logged-in user could award themselves points through the form's web service
+  (SKI-233).
 - Developers: `skills::set_userskill_points()` takes a `points_change` describing the change; see the
   developer guide.
 - Management pages without the profile Skills section: the menu of a course's Skills pages has a
