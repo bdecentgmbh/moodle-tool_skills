@@ -21,7 +21,9 @@
  * @copyright 2023 bdecent GmbH <https://bdecent.de>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace tool_skills;
+
 use moodle_exception;
 
 /**
