@@ -40,6 +40,9 @@
 - Archiving and restoring a skill show their confirmation message again.
 - Privacy: the points history is exported and deleted in the user's context; the manager of a manual
   change in the system context.
+- Security (Activity skills): only users with `tool/skills:managecourseskillslist` in an activity can save
+  its award rule; before, any logged-in user could award themselves points through the form's web service
+  (SKI-233).
 - Developers: `skills::set_userskill_points()` takes a `points_change` describing the change; see the
   developer guide.
 - Management pages without the profile Skills section: the menu of a course's Skills pages has a
